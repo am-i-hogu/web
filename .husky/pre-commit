@@ -1,0 +1,8 @@
+echo "커밋 전 lint 규칙을 적용합니다..."
+if pnpm exec lint-staged; then
+  echo "lint 규칙 적용 완료"
+  exit 0
+else
+  echo "lint 규칙 적용 실패"
+  exit 1
+fi
