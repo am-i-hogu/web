@@ -5,10 +5,6 @@
 @import "../styles/components.css";
 @import "../styles/utilities.css";
 
-/* dark 모드 설정 (현재 적용X, 추후 추가 예정) */
+/* dark 모드 커스텀 variant (필요 시 재활성화)
 @custom-variant dark (&:where(.dark, .dark *));
-
-body {
-  -webkit-user-select: none;
-  user-select: none;
-}
+*/
