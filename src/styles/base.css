@@ -1,0 +1,58 @@
+:root {
+  /* shadcn 토큰 → 디자인 시스템 매핑 (우선 디자인 시스템 매핑 적용, 추후 수정될 예정) */
+  --background: var(--color-bg-01);
+  --foreground: var(--color-text-04);
+
+  --card: var(--color-bg-01);
+  --card-foreground: var(--color-text-04);
+
+  --popover: var(--color-bg-01);
+  --popover-foreground: var(--color-text-04);
+
+  --primary: var(--color-primary);
+  --primary-foreground: var(--color-text-01);
+
+  --secondary: var(--color-secondary);
+  --secondary-foreground: var(--color-text-04);
+
+  --muted: var(--color-bg-02);
+  --muted-foreground: var(--color-text-03);
+
+  --accent: var(--color-bg-02);
+  --accent-foreground: var(--color-text-04);
+
+  --destructive: var(--color-danger);
+  --destructive-foreground: var(--color-text-01);
+
+  --border: var(--color-line-02);
+  --input: var(--color-line-03);
+  --ring: var(--color-primary);
+
+  --radius: var(--radius-md);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    min-height: 100dvh;
+  }
+
+  /* number input의 스핀 버튼(위/아래 화살표) 제거 — WebKit은 pseudo-element로, Firefox는 input appearance로 숨김 */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+}
