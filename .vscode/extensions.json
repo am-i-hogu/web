@@ -1,4 +1,4 @@
 {
   // biome extensions 여부 확인 (온보딩용으로 추가)
-  "recommendations": ["biomejs.biome"]
+  "recommendations": ["biomejs.biome", "bradlc.vscode-tailwindcss"]
 }
