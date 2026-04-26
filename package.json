@@ -10,7 +10,9 @@
     "format": "biome format --write",
     "check": "biome check --write",
     "reporter": "biome check --reporter=summary",
-    "prepare": "husky"
+    "prepare": "husky",
+    "storybook": "storybook dev -c storybook/.storybook -p 6006",
+    "build-storybook": "storybook build -c storybook/.storybook"
   },
   "lint-staged": {
     "*": [
@@ -19,6 +21,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@radix-ui/react-checkbox": "^1.3.3",
     "@tanstack/react-query": "^5.99.2",
     "@tanstack/react-query-devtools": "^5.99.2",
     "class-variance-authority": "^0.7.1",
@@ -37,13 +40,24 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.12",
+    "@chromatic-com/storybook": "^5.1.2",
+    "@storybook/addon-a11y": "^10.3.5",
+    "@storybook/addon-docs": "^10.3.5",
+    "@storybook/addon-links": "^10.3.5",
+    "@storybook/addon-onboarding": "^10.3.5",
+    "@storybook/react": "^10.3.5",
+    "@storybook/react-vite": "^10.3.5",
+    "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4.2.4",
     "@types/node": "^24",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
+    "storybook": "^10.3.5",
     "tailwindcss": "^4.2.4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vite": "^8.0.10",
+    "vite-plugin-svgr": "^5.2.0"
   }
 }
