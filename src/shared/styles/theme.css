@@ -99,6 +99,11 @@
   --color-secondary-default: var(--color-yellow-500);
   --color-secondary-strong: var(--color-yellow-800);
 
+  /* Social (google border, line-03으로 통일할지 고민중) */
+  --color-social-kakao: #fee500;
+  --color-social-google-border: #d6d6d6;
+  --color-social-label-strong: #191919;
+
   /* Status */
   --color-success: var(--color-green-600);
   --color-danger: var(--color-red-500);
