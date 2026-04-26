@@ -1,5 +1,5 @@
 import type * as React from "react";
-import X from "@/assets/icons/x.svg";
+import XIcon from "@/assets/icons/x.svg";
 import { cn } from "@/shared/utils";
 
 type BottomSheetProps = {
@@ -41,7 +41,7 @@ function BottomSheetTitleRow({ className, title, onClose, closeLabel = "닫기" 
         className="inline-flex size-5 items-center justify-center rounded-full text-text-03 hover:bg-bg-02 hover:text-text-04"
         onClick={onClose}
       >
-        <X />
+        <XIcon />
       </button>
     </div>
   );
