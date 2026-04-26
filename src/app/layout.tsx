@@ -4,7 +4,7 @@ import "./globals.css";
 
 // 폰트 설정
 const pretendard = localFont({
-  src: "../../public/fonts/pretendard.woff2",
+  src: "../assets/fonts/pretendard.woff2",
   weight: "100 900",
   style: "normal",
   variable: "--font-pretendard",
