@@ -26,16 +26,17 @@ type PostFilterBottomSheetProps = {
   className?: string;
 };
 
-function PostFilterBottomSheet({
-  selectedOptions,
-  onToggleOption,
-  onSave,
-  onClose,
-  title = "필터",
-  description = "게시글과 관련된 카테고리를 선택해주세요.",
-  saveText = "저장하기",
-  className,
-}: PostFilterBottomSheetProps) {
+function PostFilterBottomSheet(props: PostFilterBottomSheetProps) {
+  const {
+    selectedOptions,
+    onToggleOption,
+    onSave,
+    onClose,
+    title = "필터",
+    description = "게시글과 관련된 카테고리를 선택해주세요.",
+    saveText = "저장하기",
+    className,
+  } = props;
   const isSaveDisabled = selectedOptions.length === 0;
 
   return (

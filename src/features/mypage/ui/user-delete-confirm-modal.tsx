@@ -21,16 +21,18 @@ type UserDeleteConfirmModalProps = {
   className?: string;
 };
 
-function UserDeleteConfirmModal({
-  open,
-  onClose,
-  onConfirmDelete,
-  title = "정말 탈퇴하실 건가요?",
-  description = "탈퇴 시 계정은 복구할 수 없습니다.\n게시글과 댓글은 '탈퇴한 사용자'로 표시됩니다.\n\n탈퇴하시겠습니까?",
-  confirmText = "탈퇴하기",
-  cancelText = "취소하기",
-  className,
-}: UserDeleteConfirmModalProps) {
+function UserDeleteConfirmModal(props: UserDeleteConfirmModalProps) {
+  const {
+    open,
+    onClose,
+    onConfirmDelete,
+    title = "정말 탈퇴하실 건가요?",
+    description = "탈퇴 시 계정은 복구할 수 없습니다.\n게시글과 댓글은 '탈퇴한 사용자'로 표시됩니다.\n\n탈퇴하시겠습니까?",
+    confirmText = "탈퇴하기",
+    cancelText = "취소하기",
+    className,
+  } = props;
+
   if (!open) return null;
 
   return (

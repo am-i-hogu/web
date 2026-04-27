@@ -21,16 +21,17 @@ type UserDeleteFailedModalProps = {
   className?: string;
 };
 
-function UserDeleteFailedModal({
-  open,
-  onClose,
-  onRetry,
-  title = "탈퇴 실패",
-  description = "탈퇴 처리에 실패하였습니다.\n재시도 하시겠습니까?",
-  retryText = "재시도",
-  cancelText = "취소하기",
-  className,
-}: UserDeleteFailedModalProps) {
+function UserDeleteFailedModal(props: UserDeleteFailedModalProps) {
+  const {
+    open,
+    onClose,
+    onRetry,
+    title = "탈퇴 실패",
+    description = "탈퇴 처리에 실패하였습니다.\n재시도 하시겠습니까?",
+    retryText = "재시도",
+    cancelText = "취소하기",
+    className,
+  } = props;
   if (!open) return null;
 
   return (

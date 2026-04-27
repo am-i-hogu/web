@@ -9,7 +9,8 @@ type RadioOptionProps = {
   labelClassName?: string;
 };
 
-function RadioOption({ checked, label, onClick, className, labelClassName }: RadioOptionProps) {
+function RadioOption(props: RadioOptionProps) {
+  const { checked, label, onClick, className, labelClassName } = props;
   return (
     <button type="button" className={clsx("flex items-center gap-2 text-left", className)} onClick={onClick}>
       <span

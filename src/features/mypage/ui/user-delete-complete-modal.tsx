@@ -19,14 +19,16 @@ type UserDeleteCompleteModalProps = {
   className?: string;
 };
 
-function UserDeleteCompleteModal({
-  open,
-  onGoHome,
-  title = "탈퇴 완료",
-  description = "탈퇴가 완료되었습니다.",
-  confirmText = "홈으로 돌아가기",
-  className,
-}: UserDeleteCompleteModalProps) {
+function UserDeleteCompleteModal(props: UserDeleteCompleteModalProps) {
+  const {
+    open,
+    onGoHome,
+    title = "탈퇴 완료",
+    description = "탈퇴가 완료되었습니다.",
+    confirmText = "홈으로 돌아가기",
+    className,
+  } = props;
+
   if (!open) return null;
 
   return (

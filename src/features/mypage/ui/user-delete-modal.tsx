@@ -25,17 +25,19 @@ type UserDeleteModalProps = {
   className?: string;
 };
 
-export function UserDeleteModal({
-  open,
-  onClose,
-  onConfirmDelete,
-  initialStep = "confirm",
-  initialReason = null,
-  initialReasonDetail = "",
-  confirmTitle,
-  confirmDescription,
-  className,
-}: UserDeleteModalProps) {
+export function UserDeleteModal(props: UserDeleteModalProps) {
+  const {
+    open,
+    onClose,
+    onConfirmDelete,
+    initialStep = "confirm",
+    initialReason = null,
+    initialReasonDetail = "",
+    confirmTitle,
+    confirmDescription,
+    className,
+  } = props;
+
   const [step, setStep] = useState<UserDeleteFlowStep>(initialStep);
   const [latestPayload, setLatestPayload] = useState<UserDeleteSubmitPayload | null>(null);
 

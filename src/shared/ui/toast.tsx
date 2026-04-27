@@ -41,7 +41,8 @@ type ToastProps = {
   onClose?: () => void;
 };
 
-function Toast({ className, message, tone = "success", size = "app", onClose }: ToastProps) {
+function Toast(props: ToastProps) {
+  const { className, message, tone = "success", size = "app", onClose } = props;
   const isWeb = size === "web";
 
   return (
