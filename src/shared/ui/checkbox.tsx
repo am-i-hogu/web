@@ -14,6 +14,7 @@ type CheckboxProps = React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Roo
 
 function Checkbox(inputProps: CheckboxProps) {
   const {
+    id: idProp,
     className,
     checked,
     disabled,
@@ -25,7 +26,8 @@ function Checkbox(inputProps: CheckboxProps) {
     ...props
   } = inputProps;
 
-  const id = React.useId();
+  const generatedId = React.useId();
+  const id = idProp ?? generatedId;
 
   function handleCheckedChange(nextChecked: CheckedState) {
     onCheckedChange?.(nextChecked);
