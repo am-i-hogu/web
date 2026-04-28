@@ -1,9 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "../styles/theme.css";
-@import "../styles/base.css";
-@import "../styles/components.css";
-@import "../styles/utilities.css";
+@import "../shared/styles/theme.css";
+@import "../shared/styles/base.css";
+@import "../shared/styles/components.css";
+@import "../shared/styles/utilities.css";
 
 /* dark 모드 커스텀 variant (필요 시 재활성화)
 @custom-variant dark (&:where(.dark, .dark *));

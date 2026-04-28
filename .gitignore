@@ -29,5 +29,6 @@
 *.tsbuildinfo
 next-env.d.ts
 
-# Claude
-CLAUDE.md
+# storybook
+*storybook.log
+storybook-static

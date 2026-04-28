@@ -1,0 +1,274 @@
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-pretendard);
+
+  /* common (앱뷰 적용) */
+  --width-common-width: 475px;
+  --max-width-common-width: 475px;
+  --padding-common-padding: 20px;
+  --radius-common-radius: 8px;
+
+  /* ===== Base Color Palettes (피그마 variables 적용) ===== */
+
+  /* Indigo — primary anchor (900: #002c6e, 950: #001944) */
+  --color-indigo-50: #f9f9fb;
+  --color-indigo-100: #edf1ff;
+  --color-indigo-200: #d9e2ff;
+  --color-indigo-300: #bac9ff;
+  --color-indigo-400: #8aacfa;
+  --color-indigo-500: #6b95f3;
+  --color-indigo-600: #4672d8;
+  --color-indigo-700: #2c52b0;
+  --color-indigo-800: #15388a;
+  --color-indigo-900: #002c6e;
+  --color-indigo-950: #001944;
+
+  /* Yellow — secondary anchor (500: #feb300, 900: #3D2C00) */
+  --color-yellow-50: #fff8e6;
+  --color-yellow-100: #ffeec4;
+  --color-yellow-200: #ffde90;
+  --color-yellow-300: #ffcc55;
+  --color-yellow-400: #ffbe22;
+  --color-yellow-500: #feb300;
+  --color-yellow-600: #d19200;
+  --color-yellow-700: #9a6c00;
+  --color-yellow-800: #664800;
+  --color-yellow-900: #3d2c00;
+  --color-yellow-950: #221800;
+
+  /* Gray — base neutrals */
+  --color-gray-50: #f5f5f5;
+  --color-gray-100: #e8e8e8;
+  --color-gray-200: #d1d1d1;
+  --color-gray-300: #b8b8b8;
+  --color-gray-400: #9e9e9e;
+  --color-gray-500: #878787;
+  --color-gray-600: #6e6e6e;
+  --color-gray-700: #575757;
+  --color-gray-800: #3d3d3d;
+  --color-gray-900: #242424;
+  --color-gray-950: #1a1a1a;
+
+  /* Blue — status/info */
+  --color-blue-50: #d7e7ff;
+  --color-blue-100: #a4c8fe;
+  --color-blue-200: #71aafe;
+  --color-blue-300: #3f8cfd;
+  --color-blue-400: #0c6efd;
+  --color-blue-500: #0257d4;
+  --color-blue-600: #0142a2;
+  --color-blue-700: #012e6f;
+  --color-blue-800: #01193d;
+  --color-blue-900: #00040a;
+
+  /* Green — status/success */
+  --color-green-50: #f0fff5;
+  --color-green-100: #bdffd3;
+  --color-green-200: #8affb1;
+  --color-green-300: #57ff8f;
+  --color-green-400: #24ff6d;
+  --color-green-500: #00f050;
+  --color-green-600: #00bf40;
+  --color-green-700: #008a2e;
+  --color-green-800: #00571d;
+  --color-green-900: #00240c;
+
+  /* Red — status/danger */
+  --color-red-50: #fefafa;
+  --color-red-100: #f8cdcd;
+  --color-red-200: #f3a0a0;
+  --color-red-300: #ed7373;
+  --color-red-400: #e74646;
+  --color-red-500: #df1d1d;
+  --color-red-600: #b01717;
+  --color-red-700: #831111;
+  --color-red-800: #560b0b;
+  --color-red-900: #290505;
+
+  /* ===== Semantic Colors ===== */
+
+  /* Primary */
+  --color-primary: var(--color-indigo-900);
+  --color-primary-default: var(--color-indigo-900);
+  --color-primary-light: #94a3b8;
+  --color-primary-strong: var(--color-indigo-950);
+
+  /* Secondary */
+  --color-secondary: var(--color-yellow-500);
+  --color-secondary-default: var(--color-yellow-500);
+  --color-secondary-strong: var(--color-yellow-800);
+
+  /* Social (google border, line-03으로 통일할지 고민중) */
+  --color-social-kakao: #fee500;
+  --color-social-google-border: #d6d6d6;
+  --color-social-label-strong: #191919;
+
+  /* Status */
+  --color-success: var(--color-green-600);
+  --color-danger: var(--color-red-500);
+  --color-warning: var(--color-yellow-400);
+  --color-info: var(--color-blue-400);
+
+  /* Background */
+  --color-bg-01: #ffffff;
+  --color-bg-02: var(--color-gray-50);
+  --color-bg-03: var(--color-gray-200);
+  --color-bg-04: var(--color-gray-950);
+
+  /* Line */
+  --color-line-01: var(--color-gray-50);
+  --color-line-02: var(--color-gray-100);
+  --color-line-03: var(--color-gray-200);
+  --color-line-04: var(--color-gray-300);
+
+  /* Text */
+  --color-text-01: #ffffff;
+  --color-text-02: var(--color-gray-300);
+  --color-text-03: var(--color-gray-600);
+  --color-text-04: var(--color-gray-950);
+
+  /* Filter */
+  --color-filter-bg: rgb(0 0 0 / 0.5);
+
+  /* ===== shadcn Bridge ===== */
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* ===== Typography =====
+      Pretendard — weight: b(700) / sb(600) / m(500) / r(400)
+      naming: --text-<size>-<weight> (size + weight 번들) */
+
+  /* Heading — 36 / 1.5 / -0.25% */
+  --text-heading-b: 2.25rem;
+  --text-heading-b--line-height: 1.5;
+  --text-heading-b--letter-spacing: -0.0025em;
+  --text-heading-b--font-weight: 700;
+
+  --text-heading-sb: 2.25rem;
+  --text-heading-sb--line-height: 1.5;
+  --text-heading-sb--letter-spacing: -0.0025em;
+  --text-heading-sb--font-weight: 600;
+
+  --text-heading-m: 2.25rem;
+  --text-heading-m--line-height: 1.5;
+  --text-heading-m--letter-spacing: -0.0025em;
+  --text-heading-m--font-weight: 500;
+
+  /* Title1 — 24 / 1.5 / -0.25% */
+  --text-title1-b: 1.5rem;
+  --text-title1-b--line-height: 1.5;
+  --text-title1-b--letter-spacing: -0.0025em;
+  --text-title1-b--font-weight: 700;
+
+  --text-title1-sb: 1.5rem;
+  --text-title1-sb--line-height: 1.5;
+  --text-title1-sb--letter-spacing: -0.0025em;
+  --text-title1-sb--font-weight: 600;
+
+  --text-title1-m: 1.5rem;
+  --text-title1-m--line-height: 1.5;
+  --text-title1-m--letter-spacing: -0.0025em;
+  --text-title1-m--font-weight: 500;
+
+  /* Subtitle — 20 / 1.5 / -0.15% */
+  --text-subtitle-b: 1.25rem;
+  --text-subtitle-b--line-height: 1.5;
+  --text-subtitle-b--letter-spacing: -0.0015em;
+  --text-subtitle-b--font-weight: 700;
+
+  --text-subtitle-sb: 1.25rem;
+  --text-subtitle-sb--line-height: 1.5;
+  --text-subtitle-sb--letter-spacing: -0.0015em;
+  --text-subtitle-sb--font-weight: 600;
+
+  --text-subtitle-m: 1.25rem;
+  --text-subtitle-m--line-height: 1.5;
+  --text-subtitle-m--letter-spacing: -0.0015em;
+  --text-subtitle-m--font-weight: 500;
+
+  /* Title2 — 18 / 1.5 / -0.15% */
+  --text-title2-b: 1.125rem;
+  --text-title2-b--line-height: 1.5;
+  --text-title2-b--letter-spacing: -0.0015em;
+  --text-title2-b--font-weight: 700;
+
+  --text-title2-sb: 1.125rem;
+  --text-title2-sb--line-height: 1.5;
+  --text-title2-sb--letter-spacing: -0.0015em;
+  --text-title2-sb--font-weight: 600;
+
+  --text-title2-m: 1.125rem;
+  --text-title2-m--line-height: 1.5;
+  --text-title2-m--letter-spacing: -0.0015em;
+  --text-title2-m--font-weight: 500;
+
+  /* Body — 15 / 1.6 / 0 */
+  --text-body-b: 0.9375rem;
+  --text-body-b--line-height: 1.6;
+  --text-body-b--letter-spacing: 0em;
+  --text-body-b--font-weight: 700;
+
+  --text-body-sb: 0.9375rem;
+  --text-body-sb--line-height: 1.6;
+  --text-body-sb--letter-spacing: 0em;
+  --text-body-sb--font-weight: 600;
+
+  --text-body-m: 0.9375rem;
+  --text-body-m--line-height: 1.6;
+  --text-body-m--letter-spacing: 0em;
+  --text-body-m--font-weight: 500;
+
+  --text-body-r: 0.9375rem;
+  --text-body-r--line-height: 1.6;
+  --text-body-r--letter-spacing: 0em;
+  --text-body-r--font-weight: 400;
+
+  /* Caption — 13 / 1.5 / 0 */
+  --text-caption-sb: 0.8125rem;
+  --text-caption-sb--line-height: 1.5;
+  --text-caption-sb--letter-spacing: 0em;
+  --text-caption-sb--font-weight: 600;
+
+  --text-caption-m: 0.8125rem;
+  --text-caption-m--line-height: 1.5;
+  --text-caption-m--letter-spacing: 0em;
+  --text-caption-m--font-weight: 500;
+
+  /* Small — 11 / 1.5 / 0 */
+  --text-small-m: 0.6875rem;
+  --text-small-m--line-height: 1.5;
+  --text-small-m--letter-spacing: 0em;
+  --text-small-m--font-weight: 500;
+
+  /* Mini — 9 / 1.5 / 0 */
+  --text-mini-m: 0.5625rem;
+  --text-mini-m--line-height: 1.5;
+  --text-mini-m--letter-spacing: 0em;
+  --text-mini-m--font-weight: 500;
+
+  /* ===== Radius ===== */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+
+  /* ===== Shadow ===== */
+  --shadow-normal: 0 0 1px 0 rgb(0 0 0 / 0.08), 0 0 1px 0 rgb(0 0 0 / 0.08), 0 0 8px 0 rgb(0 0 0 / 0.12);
+  --shadow-emphasize: 0 0 1px 0 rgb(0 0 0 / 0.08), 0 1px 4px 0 rgb(0 0 0 / 0.08), 0 2px 8px 0 rgb(0 0 0 / 0.12);
+  --shadow-strong: 0 0 4px 0 rgb(0 0 0 / 0.08), 0 4px 8px 0 rgb(0 0 0 / 0.08), 0 6px 12px 0 rgb(0 0 0 / 0.12);
+  --shadow-heavy: 0 0 8px 0 rgb(0 0 0 / 0.08), 0 8px 16px 0 rgb(0 0 0 / 0.08), 0 16px 20px 0 rgb(0 0 0 / 0.12);
+}
