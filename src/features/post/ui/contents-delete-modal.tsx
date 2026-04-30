@@ -10,7 +10,7 @@ import {
   ModalTitle,
 } from "@/shared/ui";
 
-type PostDeleteMode = "post" | "opinion" | "reply";
+export type PostDeleteMode = "post" | "opinion" | "reply";
 
 const deleteModalCopyByMode: Record<PostDeleteMode, { title: ReactNode; description: ReactNode }> = {
   post: {
@@ -85,5 +85,3 @@ export function PostDeleteModal(props: PostDeleteModalProps) {
     </div>
   );
 }
-
-export type { PostDeleteMode };

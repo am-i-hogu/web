@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-
 import {
   Modal,
   ModalActionButton,
@@ -10,7 +9,7 @@ import {
   ModalTitle,
 } from "@/shared/ui";
 
-type UserDeleteConfirmModalProps = {
+export type UserDeleteConfirmModalProps = {
   open: boolean;
   onClose: () => void;
   onConfirmDelete: () => void;
@@ -21,7 +20,7 @@ type UserDeleteConfirmModalProps = {
   className?: string;
 };
 
-function UserDeleteConfirmModal(props: UserDeleteConfirmModalProps) {
+export function UserDeleteConfirmModal(props: UserDeleteConfirmModalProps) {
   const {
     open,
     onClose,
@@ -61,6 +60,3 @@ function UserDeleteConfirmModal(props: UserDeleteConfirmModalProps) {
     </div>
   );
 }
-
-export type { UserDeleteConfirmModalProps };
-export { UserDeleteConfirmModal };

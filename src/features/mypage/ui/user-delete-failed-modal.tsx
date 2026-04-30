@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-
 import {
   Modal,
   ModalActionButton,
@@ -10,7 +9,7 @@ import {
   ModalTitle,
 } from "@/shared/ui";
 
-type UserDeleteFailedModalProps = {
+export type UserDeleteFailedModalProps = {
   open: boolean;
   onClose: () => void;
   onRetry: () => void;
@@ -21,7 +20,7 @@ type UserDeleteFailedModalProps = {
   className?: string;
 };
 
-function UserDeleteFailedModal(props: UserDeleteFailedModalProps) {
+export function UserDeleteFailedModal(props: UserDeleteFailedModalProps) {
   const {
     open,
     onClose,
@@ -60,6 +59,3 @@ function UserDeleteFailedModal(props: UserDeleteFailedModalProps) {
     </div>
   );
 }
-
-export type { UserDeleteFailedModalProps };
-export { UserDeleteFailedModal };

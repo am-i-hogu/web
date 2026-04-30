@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
 import type { ReactNode } from "react";
 
-type RadioOptionProps = {
+export type RadioOptionProps = {
   checked: boolean;
   label: ReactNode;
   onClick?: () => void;
@@ -9,7 +9,7 @@ type RadioOptionProps = {
   labelClassName?: string;
 };
 
-function RadioOption(props: RadioOptionProps) {
+export function RadioOption(props: RadioOptionProps) {
   const { checked, label, onClick, className, labelClassName } = props;
   return (
     <button type="button" className={clsx("flex items-center gap-2 text-left", className)} onClick={onClick}>
@@ -26,6 +26,3 @@ function RadioOption(props: RadioOptionProps) {
     </button>
   );
 }
-
-export type { RadioOptionProps };
-export { RadioOption };

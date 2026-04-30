@@ -18,7 +18,6 @@ export type { EmptyStateProps } from "@/shared/ui/empty-state";
 export { EmptyState } from "@/shared/ui/empty-state";
 export type { FilterSortBarProps } from "@/shared/ui/filter-sort-bar";
 export { FilterSortBar } from "@/shared/ui/filter-sort-bar";
-export type { InputProps } from "@/shared/ui/input";
 export { Input } from "@/shared/ui/input";
 export {
   Modal,
