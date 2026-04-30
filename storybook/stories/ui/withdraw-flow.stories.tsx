@@ -8,9 +8,17 @@ import {
   UserDeleteReasonModal,
 } from "@/features/mypage/ui";
 
+const baseArgs = {
+  open: true,
+  onClose: () => {},
+  onConfirmDelete: () => true,
+};
+
 const meta = {
-  title: "Overlay/WithdrawFlow",
+  title: "UI/WithdrawFlow",
+  component: UserDeleteModal,
   tags: ["autodocs"],
+  args: baseArgs,
   parameters: {
     layout: "fullscreen",
   },

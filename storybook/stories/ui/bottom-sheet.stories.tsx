@@ -1,21 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { useEffect, useState } from "react";
 
-import { POST_FILTER_OPTIONS, PostFilterBottomSheet, type PostFilterOption } from "@/features/post/ui";
-
-type BottomSheetStoryArgs = {
-  selected?: boolean;
-};
+import { POST_FILTER_OPTIONS, PostFilterBottomSheet } from "@/features/post/ui";
 
 const meta = {
   title: "UI/BottomSheet",
+  component: PostFilterBottomSheet,
+  tags: ["autodocs"],
   args: {
-    selected: false,
-  },
-  argTypes: {
-    selected: {
-      control: "boolean",
-    },
+    selectedOptions: [],
+    onToggleOption: () => {},
+    onSave: () => {},
   },
   decorators: [
     (Story) => (
@@ -24,7 +18,10 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<BottomSheetStoryArgs>;
+  parameters: {
+    layout: "centered",
+  },
+} satisfies Meta<typeof PostFilterBottomSheet>;
 
 export default meta;
 
@@ -36,25 +33,7 @@ export const FilterEmpty: Story = {
 
 export const FilterSelected: Story = {
   args: {
-    selected: true,
+    selectedOptions: [POST_FILTER_OPTIONS[0]],
   },
-  render: ({ selected }) => {
-    const [selectedOptions, setSelectedOptions] = useState<PostFilterOption[]>(
-      selected ? [POST_FILTER_OPTIONS[0]] : [],
-    );
-
-    useEffect(() => {
-      setSelectedOptions(selected ? [POST_FILTER_OPTIONS[0]] : []);
-    }, [selected]);
-
-    const handleToggleOption = (option: PostFilterOption) => {
-      setSelectedOptions((prev) =>
-        prev.includes(option) ? prev.filter((item) => item !== option) : [...prev, option],
-      );
-    };
-
-    return (
-      <PostFilterBottomSheet selectedOptions={selectedOptions} onToggleOption={handleToggleOption} onSave={() => {}} />
-    );
-  },
+  render: (args) => <PostFilterBottomSheet {...args} />,
 };

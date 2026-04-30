@@ -4,7 +4,7 @@ import PlusIcon from "@/assets/icons/plus.svg";
 import { Button } from "@/shared/ui";
 
 const meta = {
-  title: "UI/Button",
+  title: "UI/Button/Button",
   component: Button,
   tags: ["autodocs"],
   args: {
