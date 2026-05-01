@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
 
-import { POST_FILTER_OPTIONS, PostFilterBottomSheet } from "@/features/post/ui";
+import { POST_FILTER_OPTIONS, PostFilterBottomSheet, type PostFilterOption } from "@/features/post/ui";
 
 const meta = {
   title: "UI/BottomSheet",
@@ -27,13 +28,34 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+type InteractiveBottomSheetProps = {
+  initialSelectedOptions: PostFilterOption[];
+};
+
+function InteractiveBottomSheet({ initialSelectedOptions }: InteractiveBottomSheetProps) {
+  const [selectedOptions, setSelectedOptions] = useState(initialSelectedOptions);
+
+  const handleToggleOption = (option: PostFilterOption) => {
+    setSelectedOptions((prev) => (prev.includes(option) ? prev.filter((item) => item !== option) : [...prev, option]));
+  };
+
+  return (
+    <PostFilterBottomSheet
+      selectedOptions={selectedOptions}
+      onToggleOption={handleToggleOption}
+      onSave={() => {}}
+      onClose={() => setSelectedOptions([])}
+    />
+  );
+}
+
 export const FilterEmpty: Story = {
-  render: () => <PostFilterBottomSheet selectedOptions={[]} onToggleOption={() => {}} onSave={() => {}} />,
+  render: () => <InteractiveBottomSheet initialSelectedOptions={[]} />,
 };
 
 export const FilterSelected: Story = {
   args: {
     selectedOptions: [POST_FILTER_OPTIONS[0]],
   },
-  render: (args) => <PostFilterBottomSheet {...args} />,
+  render: () => <InteractiveBottomSheet initialSelectedOptions={[POST_FILTER_OPTIONS[0]]} />,
 };
