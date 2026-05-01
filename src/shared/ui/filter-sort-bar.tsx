@@ -1,86 +1,11 @@
 "use client";
 
-import { type MouseEvent, type PointerEvent, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import XIcon from "@/assets/icons/x.svg";
+import { useHorizontalDragScroll } from "@/shared/hooks/use-horizontal-drag-scroll";
 import { Button } from "@/shared/ui/button";
 import { SortSelect, type SortSelectOption } from "@/shared/ui/sort-select";
 import { cn } from "@/shared/utils";
-
-// TODO: 공용 컴포넌트 훅 전체를 shared/hooks로 분리할지 팀 내 논의 필요
-function useHorizontalDragScroll() {
-  const isPointerDownRef = useRef(false);
-  const hasDraggedRef = useRef(false);
-  const activePointerIdRef = useRef<number | null>(null);
-  const startXRef = useRef(0);
-  const startScrollLeftRef = useRef(0);
-
-  const handlePointerDown = useCallback((event: PointerEvent<HTMLUListElement>, element: HTMLUListElement | null) => {
-    if (event.pointerType !== "mouse" || !element) {
-      return;
-    }
-
-    const canSlide = element.scrollWidth > element.clientWidth;
-    if (!canSlide) {
-      return;
-    }
-
-    isPointerDownRef.current = true;
-    hasDraggedRef.current = false;
-    activePointerIdRef.current = event.pointerId;
-    startXRef.current = event.clientX;
-    startScrollLeftRef.current = element.scrollLeft;
-  }, []);
-
-  const handlePointerMove = useCallback(
-    (event: PointerEvent<HTMLUListElement>, element: HTMLUListElement | null, onAfterScroll?: () => void) => {
-      if (!isPointerDownRef.current || activePointerIdRef.current !== event.pointerId || !element) {
-        return;
-      }
-
-      const canSlide = element.scrollWidth > element.clientWidth;
-      if (!canSlide) {
-        return;
-      }
-
-      const deltaX = event.clientX - startXRef.current;
-      if (Math.abs(deltaX) > 4) {
-        hasDraggedRef.current = true;
-      }
-
-      if (!hasDraggedRef.current) {
-        return;
-      }
-
-      element.scrollLeft = startScrollLeftRef.current - deltaX;
-      onAfterScroll?.();
-    },
-    [],
-  );
-
-  const handlePointerUp = useCallback(() => {
-    isPointerDownRef.current = false;
-    activePointerIdRef.current = null;
-    hasDraggedRef.current = false;
-  }, []);
-
-  const guardClickWhenDragged = useCallback(<T extends HTMLElement>(event: MouseEvent<T>) => {
-    if (!hasDraggedRef.current) {
-      return false;
-    }
-
-    event.preventDefault();
-    event.stopPropagation();
-    hasDraggedRef.current = false;
-    return true;
-  }, []);
-
-  return {
-    handlePointerDown,
-    handlePointerMove,
-    handlePointerUp,
-    guardClickWhenDragged,
-  };
-}
 
 export type FilterSortBarProps = {
   options?: readonly string[];
