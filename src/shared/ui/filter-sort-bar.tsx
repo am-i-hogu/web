@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-
+import { type MouseEvent, type PointerEvent, useCallback, useEffect, useRef, useState } from "react";
 import XIcon from "@/assets/icons/x.svg";
 import { Button } from "@/shared/ui/button";
 import { SortSelect, type SortSelectOption } from "@/shared/ui/sort-select";
@@ -73,7 +72,7 @@ export function FilterSortBar(props: FilterSortBarProps) {
     }
   }, [selectedOptions.length]);
 
-  const handleCategoryPointerDown = (event: React.PointerEvent<HTMLUListElement>) => {
+  const handleCategoryPointerDown = (event: PointerEvent<HTMLUListElement>) => {
     if (event.pointerType !== "mouse") {
       return;
     }
@@ -95,7 +94,7 @@ export function FilterSortBar(props: FilterSortBarProps) {
     startScrollLeftRef.current = element.scrollLeft;
   };
 
-  const handleCategoryPointerMove = (event: React.PointerEvent<HTMLUListElement>) => {
+  const handleCategoryPointerMove = (event: PointerEvent<HTMLUListElement>) => {
     if (!isPointerDownRef.current || activePointerIdRef.current !== event.pointerId) {
       return;
     }
@@ -123,13 +122,13 @@ export function FilterSortBar(props: FilterSortBarProps) {
     updateCategoryFade();
   };
 
-  const handleCategoryPointerUp = (_event: React.PointerEvent<HTMLUListElement>) => {
+  const handleCategoryPointerUp = (_event: PointerEvent<HTMLUListElement>) => {
     isPointerDownRef.current = false;
     activePointerIdRef.current = null;
     hasDraggedRef.current = false;
   };
 
-  const handleSelectedPointerDown = (event: React.PointerEvent<HTMLUListElement>) => {
+  const handleSelectedPointerDown = (event: PointerEvent<HTMLUListElement>) => {
     if (event.pointerType !== "mouse") {
       return;
     }
@@ -151,7 +150,7 @@ export function FilterSortBar(props: FilterSortBarProps) {
     startScrollLeftRef.current = element.scrollLeft;
   };
 
-  const handleSelectedPointerMove = (event: React.PointerEvent<HTMLUListElement>) => {
+  const handleSelectedPointerMove = (event: PointerEvent<HTMLUListElement>) => {
     if (!isPointerDownRef.current || activePointerIdRef.current !== event.pointerId) {
       return;
     }
@@ -178,7 +177,7 @@ export function FilterSortBar(props: FilterSortBarProps) {
     element.scrollLeft = startScrollLeftRef.current - deltaX;
   };
 
-  const guardClickWhenDragged = <T extends HTMLElement>(event: React.MouseEvent<T>) => {
+  const guardClickWhenDragged = <T extends HTMLElement>(event: MouseEvent<T>) => {
     if (!hasDraggedRef.current) {
       return false;
     }
