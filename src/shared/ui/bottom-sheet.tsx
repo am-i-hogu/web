@@ -38,10 +38,10 @@ export function BottomSheetTitleRow({ className, title, onClose, closeLabel = "ë
       <button
         type="button"
         aria-label={closeLabel}
-        className="inline-flex size-5 items-center justify-center rounded-full text-text-03 hover:bg-bg-02 hover:text-text-04"
+        className="inline-flex size-5 items-center justify-center rounded-full text-text-03"
         onClick={onClose}
       >
-        <XIcon />
+        <XIcon strokeWidth={20} />
       </button>
     </div>
   );
