@@ -35,16 +35,8 @@ function getVisibilityStyle({ shouldShow, animateIn }: VisibilityStyleParams): C
   };
 }
 
-export function TopScrollButton(props: TopScrollButtonProps) {
-  const {
-    useFlexLayout = false,
-    extraBottomOffset = 0,
-    isFloatingOpen = false,
-    threshold = 200,
-    forceVisible,
-    className,
-  } = props;
-
+// TODO: 공용 컴포넌트 훅 전체를 shared/hooks로 분리할지 팀 내 논의 필요
+function useTopScrollVisibility(threshold: number, forceVisible?: boolean) {
   const [isVisible, setIsVisible] = useState(false);
   const [animateIn, setAnimateIn] = useState(false);
   const timeoutRef = useRef<number | null>(null);
@@ -70,7 +62,6 @@ export function TopScrollButton(props: TopScrollButtonProps) {
 
         return true;
       });
-
       return;
     }
 
@@ -95,6 +86,23 @@ export function TopScrollButton(props: TopScrollButtonProps) {
     };
   }, [clearAnimationTimeout, forceVisible, handleScroll]);
 
+  return {
+    shouldShow: forceVisible ?? isVisible,
+    animateIn,
+  };
+}
+
+export function TopScrollButton(props: TopScrollButtonProps) {
+  const {
+    useFlexLayout = false,
+    extraBottomOffset = 0,
+    isFloatingOpen = false,
+    threshold = 200,
+    forceVisible,
+    className,
+  } = props;
+  const { shouldShow, animateIn } = useTopScrollVisibility(threshold, forceVisible);
+
   if (isFloatingOpen) {
     return null;
   }
@@ -104,7 +112,6 @@ export function TopScrollButton(props: TopScrollButtonProps) {
     (document.activeElement as HTMLElement | null)?.blur();
   };
 
-  const shouldShow = forceVisible ?? isVisible;
   const visibilityStyle = getVisibilityStyle({ shouldShow, animateIn });
 
   return (

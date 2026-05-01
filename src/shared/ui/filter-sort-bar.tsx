@@ -6,6 +6,82 @@ import { Button } from "@/shared/ui/button";
 import { SortSelect, type SortSelectOption } from "@/shared/ui/sort-select";
 import { cn } from "@/shared/utils";
 
+// TODO: 공용 컴포넌트 훅 전체를 shared/hooks로 분리할지 팀 내 논의 필요
+function useHorizontalDragScroll() {
+  const isPointerDownRef = useRef(false);
+  const hasDraggedRef = useRef(false);
+  const activePointerIdRef = useRef<number | null>(null);
+  const startXRef = useRef(0);
+  const startScrollLeftRef = useRef(0);
+
+  const handlePointerDown = useCallback((event: PointerEvent<HTMLUListElement>, element: HTMLUListElement | null) => {
+    if (event.pointerType !== "mouse" || !element) {
+      return;
+    }
+
+    const canSlide = element.scrollWidth > element.clientWidth;
+    if (!canSlide) {
+      return;
+    }
+
+    isPointerDownRef.current = true;
+    hasDraggedRef.current = false;
+    activePointerIdRef.current = event.pointerId;
+    startXRef.current = event.clientX;
+    startScrollLeftRef.current = element.scrollLeft;
+  }, []);
+
+  const handlePointerMove = useCallback(
+    (event: PointerEvent<HTMLUListElement>, element: HTMLUListElement | null, onAfterScroll?: () => void) => {
+      if (!isPointerDownRef.current || activePointerIdRef.current !== event.pointerId || !element) {
+        return;
+      }
+
+      const canSlide = element.scrollWidth > element.clientWidth;
+      if (!canSlide) {
+        return;
+      }
+
+      const deltaX = event.clientX - startXRef.current;
+      if (Math.abs(deltaX) > 4) {
+        hasDraggedRef.current = true;
+      }
+
+      if (!hasDraggedRef.current) {
+        return;
+      }
+
+      element.scrollLeft = startScrollLeftRef.current - deltaX;
+      onAfterScroll?.();
+    },
+    [],
+  );
+
+  const handlePointerUp = useCallback(() => {
+    isPointerDownRef.current = false;
+    activePointerIdRef.current = null;
+    hasDraggedRef.current = false;
+  }, []);
+
+  const guardClickWhenDragged = useCallback(<T extends HTMLElement>(event: MouseEvent<T>) => {
+    if (!hasDraggedRef.current) {
+      return false;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    hasDraggedRef.current = false;
+    return true;
+  }, []);
+
+  return {
+    handlePointerDown,
+    handlePointerMove,
+    handlePointerUp,
+    guardClickWhenDragged,
+  };
+}
+
 export type FilterSortBarProps = {
   options?: readonly string[];
   selectedOptions?: string[];
@@ -39,12 +115,9 @@ export function FilterSortBar(props: FilterSortBarProps) {
   const hiddenSelectedCount = Math.max(0, selectedOptions.length - visibleSelectedOptions.length);
   const categoryScrollRef = useRef<HTMLUListElement>(null);
   const selectedScrollRef = useRef<HTMLUListElement>(null);
-  const isPointerDownRef = useRef(false);
-  const hasDraggedRef = useRef(false);
-  const activePointerIdRef = useRef<number | null>(null);
-  const startXRef = useRef(0);
-  const startScrollLeftRef = useRef(0);
   const [showCategoryFade, setShowCategoryFade] = useState(true);
+  const categoryScroll = useHorizontalDragScroll();
+  const selectedScroll = useHorizontalDragScroll();
 
   const updateCategoryFade = useCallback(() => {
     const element = categoryScrollRef.current;
@@ -72,133 +145,19 @@ export function FilterSortBar(props: FilterSortBarProps) {
     }
   }, [selectedOptions.length]);
 
-  const handleCategoryPointerDown = (event: PointerEvent<HTMLUListElement>) => {
-    if (event.pointerType !== "mouse") {
-      return;
-    }
-
-    const element = categoryScrollRef.current;
-    if (!element) {
-      return;
-    }
-
-    const canSlide = element.scrollWidth > element.clientWidth;
-    if (!canSlide) {
-      return;
-    }
-
-    isPointerDownRef.current = true;
-    hasDraggedRef.current = false;
-    activePointerIdRef.current = event.pointerId;
-    startXRef.current = event.clientX;
-    startScrollLeftRef.current = element.scrollLeft;
-  };
-
-  const handleCategoryPointerMove = (event: PointerEvent<HTMLUListElement>) => {
-    if (!isPointerDownRef.current || activePointerIdRef.current !== event.pointerId) {
-      return;
-    }
-
-    const element = categoryScrollRef.current;
-    if (!element) {
-      return;
-    }
-
-    const canSlide = element.scrollWidth > element.clientWidth;
-    if (!canSlide) {
-      return;
-    }
-
-    const deltaX = event.clientX - startXRef.current;
-    if (Math.abs(deltaX) > 4) {
-      hasDraggedRef.current = true;
-    }
-
-    if (!hasDraggedRef.current) {
-      return;
-    }
-
-    element.scrollLeft = startScrollLeftRef.current - deltaX;
-    updateCategoryFade();
-  };
-
-  const handleCategoryPointerUp = (_event: PointerEvent<HTMLUListElement>) => {
-    isPointerDownRef.current = false;
-    activePointerIdRef.current = null;
-    hasDraggedRef.current = false;
-  };
-
-  const handleSelectedPointerDown = (event: PointerEvent<HTMLUListElement>) => {
-    if (event.pointerType !== "mouse") {
-      return;
-    }
-
-    const element = selectedScrollRef.current;
-    if (!element) {
-      return;
-    }
-
-    const canSlide = element.scrollWidth > element.clientWidth;
-    if (!canSlide) {
-      return;
-    }
-
-    isPointerDownRef.current = true;
-    hasDraggedRef.current = false;
-    activePointerIdRef.current = event.pointerId;
-    startXRef.current = event.clientX;
-    startScrollLeftRef.current = element.scrollLeft;
-  };
-
-  const handleSelectedPointerMove = (event: PointerEvent<HTMLUListElement>) => {
-    if (!isPointerDownRef.current || activePointerIdRef.current !== event.pointerId) {
-      return;
-    }
-
-    const element = selectedScrollRef.current;
-    if (!element) {
-      return;
-    }
-
-    const canSlide = element.scrollWidth > element.clientWidth;
-    if (!canSlide) {
-      return;
-    }
-
-    const deltaX = event.clientX - startXRef.current;
-    if (Math.abs(deltaX) > 4) {
-      hasDraggedRef.current = true;
-    }
-
-    if (!hasDraggedRef.current) {
-      return;
-    }
-
-    element.scrollLeft = startScrollLeftRef.current - deltaX;
-  };
-
-  const guardClickWhenDragged = <T extends HTMLElement>(event: MouseEvent<T>) => {
-    if (!hasDraggedRef.current) {
-      return false;
-    }
-
-    event.preventDefault();
-    event.stopPropagation();
-    hasDraggedRef.current = false;
-    return true;
-  };
-
   return (
     <section className={cn("flex w-full flex-col gap-5", className)}>
       <div className="relative">
         <ul
           ref={categoryScrollRef}
           onScroll={updateCategoryFade}
-          onPointerDown={handleCategoryPointerDown}
-          onPointerMove={handleCategoryPointerMove}
-          onPointerUp={handleCategoryPointerUp}
-          onPointerCancel={handleCategoryPointerUp}
-          onPointerLeave={handleCategoryPointerUp}
+          onPointerDown={(event) => categoryScroll.handlePointerDown(event, categoryScrollRef.current)}
+          onPointerMove={(event) =>
+            categoryScroll.handlePointerMove(event, categoryScrollRef.current, updateCategoryFade)
+          }
+          onPointerUp={categoryScroll.handlePointerUp}
+          onPointerCancel={categoryScroll.handlePointerUp}
+          onPointerLeave={categoryScroll.handlePointerUp}
           className={cn(
             "flex gap-2 overflow-x-auto",
             showCategoryFade ? "pr-10" : "",
@@ -212,7 +171,7 @@ export function FilterSortBar(props: FilterSortBarProps) {
               variant="chip"
               size="chip"
               onClick={(event) => {
-                if (guardClickWhenDragged(event)) {
+                if (categoryScroll.guardClickWhenDragged(event)) {
                   return;
                 }
                 onResetOptions?.();
@@ -236,7 +195,7 @@ export function FilterSortBar(props: FilterSortBarProps) {
                   variant="chip"
                   size="chip"
                   onClick={(event) => {
-                    if (guardClickWhenDragged(event)) {
+                    if (categoryScroll.guardClickWhenDragged(event)) {
                       return;
                     }
                     onToggleOption?.(option);
@@ -260,11 +219,11 @@ export function FilterSortBar(props: FilterSortBarProps) {
       <div className="flex min-h-9 items-center justify-between gap-2">
         <ul
           ref={selectedScrollRef}
-          onPointerDown={handleSelectedPointerDown}
-          onPointerMove={handleSelectedPointerMove}
-          onPointerUp={handleCategoryPointerUp}
-          onPointerCancel={handleCategoryPointerUp}
-          onPointerLeave={handleCategoryPointerUp}
+          onPointerDown={(event) => selectedScroll.handlePointerDown(event, selectedScrollRef.current)}
+          onPointerMove={(event) => selectedScroll.handlePointerMove(event, selectedScrollRef.current)}
+          onPointerUp={selectedScroll.handlePointerUp}
+          onPointerCancel={selectedScroll.handlePointerUp}
+          onPointerLeave={selectedScroll.handlePointerUp}
           className="flex items-center gap-2 overflow-x-auto"
           style={{ touchAction: "pan-x" }}
         >
