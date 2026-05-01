@@ -1,6 +1,7 @@
-import { type ChangeEventHandler, useRef, useState } from "react";
+import type { ChangeEventHandler } from "react";
 import MagnifyingGlassIcon from "@/assets/icons/magnifying-glass.svg";
 import XIcon from "@/assets/icons/x.svg";
+import { useControllableInputValue } from "@/shared/hooks/use-controllable-input-value";
 import { Input } from "@/shared/ui/input";
 import { cn } from "@/shared/utils";
 
@@ -30,38 +31,18 @@ export function SearchTextfield(props: SearchTextfieldProps) {
     showClearButton = false,
     className,
   } = props;
-  const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue ?? "");
-  const inputRef = useRef<HTMLInputElement>(null);
-  const currentValue = value ?? uncontrolledValue;
+  const { currentValue, isControlled, handleChange, clearValue } = useControllableInputValue<HTMLInputElement>({
+    value,
+    defaultValue,
+    onChange,
+  });
   const isReadOnly = value !== undefined && onChange === undefined;
 
-  const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-    if (value === undefined) {
-      setUncontrolledValue(event.target.value);
-    }
-
-    onChange?.(event);
-  };
-
-  const handleClear = () => {
-    if (value === undefined) {
-      setUncontrolledValue("");
-    }
-
-    if (!inputRef.current) {
-      return;
-    }
-
-    inputRef.current.value = "";
-    inputRef.current.dispatchEvent(new Event("input", { bubbles: true }));
-  };
-
   return (
-    <div className={cn("flex h-[46px] w-full items-center gap-2 rounded-common-radius bg-bg-02 px-3 py-2", className)}>
+    <div className={cn("flex w-full items-center gap-2 rounded-common-radius bg-bg-02 p-3", className)}>
       <MagnifyingGlassIcon aria-hidden className="size-5 text-text-03" strokeWidth={20} />
       <div className="relative min-w-0 flex-1">
         <Input
-          ref={inputRef}
           variant="plain"
           type="text"
           id={id}
@@ -75,10 +56,10 @@ export function SearchTextfield(props: SearchTextfieldProps) {
           placeholder={placeholder}
           className="min-w-0 w-full pr-8 placeholder:text-text-02"
         />
-        {showClearButton && currentValue && !isReadOnly && !disabled ? (
+        {showClearButton && currentValue && (isControlled ? !isReadOnly : true) && !disabled ? (
           <button
             type="button"
-            onClick={handleClear}
+            onClick={clearValue}
             className="absolute right-0 top-1/2 -translate-y-1/2 text-text-04"
             aria-label="검색어 지우기"
           >

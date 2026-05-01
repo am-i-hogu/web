@@ -1,7 +1,8 @@
 "use client";
 
-import { type ChangeEvent, type ChangeEventHandler, useId, useMemo, useState } from "react";
+import { type ChangeEventHandler, useId, useMemo } from "react";
 import XIcon from "@/assets/icons/x.svg";
+import { useControllableInputValue } from "@/shared/hooks/use-controllable-input-value";
 import { Input } from "@/shared/ui/input";
 import { Textarea } from "@/shared/ui/textarea";
 import { cn } from "@/shared/utils";
@@ -57,8 +58,7 @@ export function Textfield(props: TextfieldProps) {
   } = props;
   const generatedId = useId();
   const fieldId = id ?? generatedId;
-  const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue ?? "");
-  const currentValue = value ?? uncontrolledValue;
+  const { currentValue, handleChange, clearValue } = useControllableInputValue({ value, defaultValue, onChange });
 
   const computedCountText = useMemo(() => {
     if (countText) {
@@ -77,26 +77,6 @@ export function Textfield(props: TextfieldProps) {
 
     return `${currentLength}`;
   }, [countText, currentValue.length, maxLength, showCount]);
-
-  const handleFieldChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (value === undefined) {
-      setUncontrolledValue(event.target.value);
-    }
-
-    onChange?.(event);
-  };
-
-  const handleClear = () => {
-    if (value === undefined) {
-      setUncontrolledValue("");
-      return;
-    }
-
-    onChange?.({
-      target: { value: "" },
-      currentTarget: { value: "" },
-    } as ChangeEvent<HTMLInputElement | HTMLTextAreaElement>);
-  };
 
   return (
     <section className={cn("flex w-full flex-col", className)}>
@@ -118,7 +98,7 @@ export function Textfield(props: TextfieldProps) {
             name={name}
             value={currentValue}
             defaultValue={defaultValue}
-            onChange={handleFieldChange}
+            onChange={handleChange}
             disabled={disabled}
             placeholder={placeholder}
             maxLength={maxLength}
@@ -133,7 +113,7 @@ export function Textfield(props: TextfieldProps) {
               name={name}
               value={currentValue}
               defaultValue={defaultValue}
-              onChange={handleFieldChange}
+              onChange={handleChange}
               disabled={disabled}
               placeholder={placeholder}
               maxLength={maxLength}
@@ -142,7 +122,7 @@ export function Textfield(props: TextfieldProps) {
             {showClearButton && currentValue ? (
               <button
                 type="button"
-                onClick={handleClear}
+                onClick={clearValue}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-text-04"
                 aria-label="입력값 지우기"
               >
