@@ -16,6 +16,9 @@ type FilterSortBarStoryProps = {
   totalCount: number;
 };
 
+const isSortValue = (value: string): value is (typeof SORT_OPTIONS)[number]["value"] =>
+  SORT_OPTIONS.some((option) => option.value === value);
+
 function FilterSortBarStory(props: FilterSortBarStoryProps) {
   const { defaultSelectedOptions, defaultSort, totalCount } = props;
   const [selectedOptions, setSelectedOptions] = useState<string[]>(defaultSelectedOptions);
@@ -35,7 +38,11 @@ function FilterSortBarStory(props: FilterSortBarStoryProps) {
       onResetOptions={() => setSelectedOptions([])}
       sortValue={sort}
       sortOptions={SORT_OPTIONS}
-      onSortChange={(nextSort) => setSort(nextSort)}
+      onSortChange={(nextSort) => {
+        if (isSortValue(nextSort)) {
+          setSort(nextSort);
+        }
+      }}
       totalCount={selectedOptions.length > 0 ? totalCount : FILTER_OPTIONS.length}
       allLabel="전체"
     />
