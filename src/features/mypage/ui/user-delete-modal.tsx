@@ -11,7 +11,7 @@ import {
   type UserDeleteSubmitPayload,
 } from "@/features/mypage/ui/user-delete-reason-modal";
 
-type UserDeleteFlowStep = "confirm" | "reason" | "complete" | "failed";
+export type UserDeleteFlowStep = "confirm" | "reason" | "complete" | "failed";
 
 type UserDeleteModalProps = {
   open: boolean;
@@ -104,5 +104,3 @@ export function UserDeleteModal(props: UserDeleteModalProps) {
     </>
   );
 }
-
-export type { UserDeleteFlowStep, UserDeleteReason, UserDeleteSubmitPayload };

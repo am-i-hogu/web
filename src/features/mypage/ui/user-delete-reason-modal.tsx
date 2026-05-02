@@ -14,15 +14,15 @@ import {
   RadioOption,
 } from "@/shared/ui";
 
-type UserDeleteReason = (typeof USER_DELETE_REASONS)[number]["value"];
+export type UserDeleteReason = (typeof USER_DELETE_REASONS)[number]["value"];
 
-type UserDeleteSubmitPayload = {
+export type UserDeleteSubmitPayload = {
   reason: UserDeleteReason;
   reasonLabel: string;
   detail?: string;
 };
 
-type UserDeleteReasonModalProps = {
+export type UserDeleteReasonModalProps = {
   open: boolean;
   onClose: () => void;
   onConfirmDelete: (payload: UserDeleteSubmitPayload) => void;
@@ -35,7 +35,7 @@ type UserDeleteReasonModalProps = {
   className?: string;
 };
 
-function UserDeleteReasonModal(props: UserDeleteReasonModalProps) {
+export function UserDeleteReasonModal(props: UserDeleteReasonModalProps) {
   const {
     open,
     onClose,
@@ -92,12 +92,12 @@ function UserDeleteReasonModal(props: UserDeleteReasonModalProps) {
         <ModalHeader>
           <ModalTitle>{title}</ModalTitle>
           <ModalDescription>{description}</ModalDescription>
-          <div className="flex w-full flex-col gap-2 pl-2 pt-1">
+          <ul className="flex w-full flex-col gap-2 pl-2 pt-1">
             {USER_DELETE_REASONS.map((reason) => {
               const isSelected = selectedReason === reason.value;
 
               return (
-                <div key={reason.value} className="w-full">
+                <li key={reason.value} className="w-full">
                   <RadioOption
                     checked={isSelected}
                     label={reason.label}
@@ -112,10 +112,10 @@ function UserDeleteReasonModal(props: UserDeleteReasonModalProps) {
                       className="mt-2"
                     />
                   ) : null}
-                </div>
+                </li>
               );
             })}
-          </div>
+          </ul>
         </ModalHeader>
         <ModalFooter>
           <ModalActionButton
@@ -130,6 +130,3 @@ function UserDeleteReasonModal(props: UserDeleteReasonModalProps) {
     </div>
   );
 }
-
-export type { UserDeleteReason, UserDeleteReasonModalProps, UserDeleteSubmitPayload };
-export { UserDeleteReasonModal };

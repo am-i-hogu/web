@@ -6,7 +6,7 @@ import { Checkbox, type CheckboxProps } from "@/shared/ui";
 type CheckboxStoryArgs = CheckboxProps;
 
 const meta = {
-  title: "UI/CheckBox",
+  title: "UI/Checkbox",
   component: Checkbox,
   tags: ["autodocs"],
   args: {
@@ -39,7 +39,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const isChecked: Story = {
+export const Checked: Story = {
   render: (args) => {
     const [{ checked }, updateArgs] = useArgs();
 

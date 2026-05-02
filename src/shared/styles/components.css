@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border-radius: var(--radius-common-radius);
+  border-radius: var(--button-radius, var(--radius-common-radius));
   border: 1px solid transparent;
   white-space: nowrap;
 }
@@ -35,11 +35,6 @@
   line-height: var(--text-body-r--line-height);
   letter-spacing: var(--text-body-r--letter-spacing);
   font-weight: var(--text-body-r--font-weight);
-}
-
-[data-slot="button"][data-size="iconSm"],
-[data-slot="button"][data-size="iconLg"] {
-  border-radius: 9999px;
 }
 
 [data-slot="button"][data-variant="google"] {

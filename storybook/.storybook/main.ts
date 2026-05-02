@@ -1,9 +1,11 @@
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { StorybookConfig } from "@storybook/react-vite";
 import svgr from "vite-plugin-svgr";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
+const publicDir = path.resolve(dirname, "../../public");
 
 const config: StorybookConfig = {
   stories: ["../overview.mdx", "../storybook-guide.mdx", "../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
@@ -18,7 +20,7 @@ const config: StorybookConfig = {
     name: "@storybook/react-vite",
     options: {},
   },
-  staticDirs: ["../../public"],
+  staticDirs: fs.existsSync(publicDir) ? ["../../public"] : [],
   async viteFinal(viteConfig) {
     return {
       ...viteConfig,

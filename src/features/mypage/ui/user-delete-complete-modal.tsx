@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-
 import {
   Modal,
   ModalActionButton,
@@ -10,7 +9,7 @@ import {
   ModalTitle,
 } from "@/shared/ui";
 
-type UserDeleteCompleteModalProps = {
+export type UserDeleteCompleteModalProps = {
   open: boolean;
   onGoHome: () => void;
   title?: ReactNode;
@@ -19,7 +18,7 @@ type UserDeleteCompleteModalProps = {
   className?: string;
 };
 
-function UserDeleteCompleteModal(props: UserDeleteCompleteModalProps) {
+export function UserDeleteCompleteModal(props: UserDeleteCompleteModalProps) {
   const {
     open,
     onGoHome,
@@ -52,6 +51,3 @@ function UserDeleteCompleteModal(props: UserDeleteCompleteModalProps) {
     </div>
   );
 }
-
-export type { UserDeleteCompleteModalProps };
-export { UserDeleteCompleteModal };

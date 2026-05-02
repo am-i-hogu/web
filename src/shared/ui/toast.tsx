@@ -1,11 +1,20 @@
-import type * as React from "react";
+import type { ReactNode } from "react";
 import CheckIcon from "@/assets/icons/check.svg";
 import ExclamationIcon from "@/assets/icons/exclamation-mark.svg";
 import XIcon from "@/assets/icons/x.svg";
 import { cn } from "@/shared/utils";
 
-type ToastTone = "success" | "warning";
-type ToastSize = "app" | "web";
+export type ToastSize = "app" | "web";
+
+export type ToastTone = "success" | "warning";
+
+export type ToastProps = {
+  className?: string;
+  message: ReactNode;
+  tone?: ToastTone;
+  size?: ToastSize;
+  onClose?: () => void;
+};
 
 type StatusIconProps = {
   tone: ToastTone;
@@ -33,15 +42,7 @@ function StatusIcon({ tone, size }: StatusIconProps) {
   );
 }
 
-type ToastProps = {
-  className?: string;
-  message: React.ReactNode;
-  tone?: ToastTone;
-  size?: ToastSize;
-  onClose?: () => void;
-};
-
-function Toast(props: ToastProps) {
+export function Toast(props: ToastProps) {
   const { className, message, tone = "success", size = "app", onClose } = props;
   const isWeb = size === "web";
 
@@ -73,6 +74,3 @@ function Toast(props: ToastProps) {
     </div>
   );
 }
-
-export type { ToastProps, ToastSize, ToastTone };
-export { Toast };

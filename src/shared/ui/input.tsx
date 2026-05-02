@@ -1,20 +1,24 @@
-import { clsx } from "clsx";
-import type * as React from "react";
+import type { ComponentProps } from "react";
+import { cn } from "@/shared/utils";
 
-type InputProps = React.ComponentProps<"input">;
+export const inputTextClassName = "w-full bg-transparent text-text-04 focus-visible:outline-none disabled:text-text-02";
+type InputVariant = "filled" | "plain";
+type InputProps = ComponentProps<"input"> & {
+  variant?: InputVariant;
+};
 
-function Input({ className, ...props }: InputProps) {
+export function Input({ className, variant = "filled", ...props }: InputProps) {
   return (
     <input
       data-slot="input"
-      className={clsx(
-        "px-3 py-2 h-11 w-full rounded-[var(--radius-common-radius)] bg-bg-02 px-2 text-body-r text-text-04 placeholder:text-text-02 focus-visible:outline-none disabled:pointer-events-none disabled:text-text-02",
+      className={cn(
+        inputTextClassName,
+        variant === "filled" &&
+          "h-11 rounded-[var(--radius-common-radius)] bg-bg-02 px-3 py-2 placeholder:text-text-02 disabled:pointer-events-none",
+        variant === "plain" && "h-full min-w-0 flex-1 bg-transparent px-0 py-0 placeholder:text-text-02",
         className,
       )}
       {...props}
     />
   );
 }
-
-export type { InputProps };
-export { Input };

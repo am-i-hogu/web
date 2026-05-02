@@ -6,7 +6,7 @@ import { RadioOption } from "@/shared/ui";
 const options = ["중고거래", "직장", "소비", "연애"] as const;
 
 const meta = {
-  title: "UI/RadioGroupCard",
+  title: "UI/RadioOption",
   component: RadioOption,
   tags: ["autodocs"],
   parameters: {

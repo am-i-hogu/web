@@ -13,9 +13,9 @@ import {
   Checkbox,
 } from "@/shared/ui";
 
-type PostFilterOption = (typeof POST_FILTER_OPTIONS)[number];
+export type PostFilterOption = (typeof POST_FILTER_OPTIONS)[number];
 
-type PostFilterBottomSheetProps = {
+export type PostFilterBottomSheetProps = {
   selectedOptions: PostFilterOption[];
   onToggleOption: (option: PostFilterOption) => void;
   onSave: () => void;
@@ -26,7 +26,7 @@ type PostFilterBottomSheetProps = {
   className?: string;
 };
 
-function PostFilterBottomSheet(props: PostFilterBottomSheetProps) {
+export function PostFilterBottomSheet(props: PostFilterBottomSheetProps) {
   const {
     selectedOptions,
     onToggleOption,
@@ -76,6 +76,3 @@ function PostFilterBottomSheet(props: PostFilterBottomSheetProps) {
     </BottomSheet>
   );
 }
-
-export type { PostFilterBottomSheetProps, PostFilterOption };
-export { PostFilterBottomSheet };
