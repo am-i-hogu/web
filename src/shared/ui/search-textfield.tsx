@@ -1,3 +1,5 @@
+"use client";
+
 import type { ChangeEventHandler } from "react";
 import MagnifyingGlassIcon from "@/assets/icons/magnifying-glass.svg";
 import XIcon from "@/assets/icons/x.svg";
