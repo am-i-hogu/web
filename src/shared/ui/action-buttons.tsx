@@ -1,5 +1,4 @@
-import type * as React from "react";
-
+import type { ReactNode } from "react";
 import { Button, type ButtonProps } from "@/shared/ui/button";
 import { cn } from "@/shared/utils";
 
@@ -7,24 +6,24 @@ type ModalActionButtonProps = Omit<ButtonProps, "size" | "fullWidth"> & {
   size?: "modal" | "default";
 };
 
-function ModalActionButton({ size = "modal", className, ...props }: ModalActionButtonProps) {
-  return <Button size={size} fullWidth className={cn("shrink-0", className)} {...props} />;
-}
-
 type BottomSheetActionButtonProps = Omit<ButtonProps, "size" | "fullWidth">;
-
-function BottomSheetActionButton({ className, ...props }: BottomSheetActionButtonProps) {
-  return <Button size="default" fullWidth className={className} {...props} />;
-}
 
 type ModalActionsProps = {
   className?: string;
   layout?: "single" | "double" | "stacked";
-  primary: React.ReactNode;
-  secondary?: React.ReactNode;
+  primary: ReactNode;
+  secondary?: ReactNode;
 };
 
-function ModalActions(props: ModalActionsProps) {
+export function ModalActionButton({ size = "modal", className, ...props }: ModalActionButtonProps) {
+  return <Button size={size} fullWidth className={cn("shrink-0", className)} {...props} />;
+}
+
+export function BottomSheetActionButton({ className, ...props }: BottomSheetActionButtonProps) {
+  return <Button size="default" fullWidth className={className} {...props} />;
+}
+
+export function ModalActions(props: ModalActionsProps) {
   const { className, layout = "single", primary, secondary } = props;
 
   if (layout === "single") {
@@ -47,5 +46,3 @@ function ModalActions(props: ModalActionsProps) {
     </div>
   );
 }
-
-export { BottomSheetActionButton, ModalActionButton, ModalActions };

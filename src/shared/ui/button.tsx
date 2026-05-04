@@ -1,10 +1,16 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { Slot } from "radix-ui";
-import type * as React from "react";
-
+import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/shared/utils";
 
-const buttonVariants = cva("", {
+export type ButtonProps = ComponentProps<"button"> &
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean;
+    leftIcon?: ReactNode;
+    rightIcon?: ReactNode;
+  };
+
+export const buttonVariants = cva("", {
   variants: {
     variant: {
       primary: "bg-primary-default text-text-01 hover:bg-primary-strong",
@@ -13,12 +19,14 @@ const buttonVariants = cva("", {
       danger: "bg-danger text-text-01 hover:bg-red-600",
       kakao: "bg-social-kakao text-social-label-strong hover:brightness-95",
       google: "border bg-bg-01 text-social-label-strong hover:bg-bg-02",
+      chip: "bg-bg-02 text-text-03",
     },
     size: {
       default: "h-12 px-5",
       modal: "h-11 px-4 py-2",
-      iconSm: "size-7 rounded-full p-0",
-      iconLg: "size-14 rounded-full p-0 [&_svg:not([class*='size-'])]:size-6",
+      chip: "h-9 px-4 text-caption-m [--button-radius:var(--radius-round)]",
+      iconSm: "size-7 p-0 [--button-radius:var(--radius-round)]",
+      iconLg: "size-14 p-0 [--button-radius:var(--radius-round)] [&_svg:not([class*='size-'])]:size-6",
     },
     fullWidth: {
       true: "w-full",
@@ -32,14 +40,7 @@ const buttonVariants = cva("", {
   },
 });
 
-function Button(
-  inputProps: React.ComponentProps<"button"> &
-    VariantProps<typeof buttonVariants> & {
-      asChild?: boolean;
-      leftIcon?: React.ReactNode;
-      rightIcon?: React.ReactNode;
-    },
-) {
+export function Button(inputProps: ButtonProps) {
   const {
     className,
     variant = "primary",
@@ -67,13 +68,3 @@ function Button(
     </Comp>
   );
 }
-
-type ButtonProps = React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean;
-    leftIcon?: React.ReactNode;
-    rightIcon?: React.ReactNode;
-  };
-
-export type { ButtonProps };
-export { Button, buttonVariants };

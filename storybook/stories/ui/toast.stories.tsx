@@ -5,6 +5,7 @@ import { Toast } from "@/shared/ui/toast";
 const meta = {
   title: "UI/Toast",
   component: Toast,
+  tags: ["autodocs"],
   args: {
     message: "메시지 내용입니다.",
     tone: "success",
@@ -27,6 +28,9 @@ const meta = {
       </div>
     ),
   ],
+  parameters: {
+    layout: "centered",
+  },
 } satisfies Meta<typeof Toast>;
 
 export default meta;
@@ -39,6 +43,13 @@ export const APP: Story = {
     size: "app",
     message: "메시지 내용이 들어갑니다.",
   },
+  parameters: {
+    docs: {
+      description: {
+        story: "앱 규격 토스트 크기 예시입니다.",
+      },
+    },
+  },
 };
 
 export const Web: Story = {
@@ -46,5 +57,12 @@ export const Web: Story = {
     tone: "success",
     size: "web",
     message: "메시지 내용이 들어갑니다.",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "웹 규격 토스트 크기 예시입니다.",
+      },
+    },
   },
 };

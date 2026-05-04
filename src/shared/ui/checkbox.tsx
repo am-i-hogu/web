@@ -1,18 +1,18 @@
 import type { CheckedState } from "@radix-ui/react-checkbox";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
-import * as React from "react";
+import { type ComponentPropsWithoutRef, type ReactNode, useId } from "react";
 import CheckIcon from "@/assets/icons/check.svg";
 
 import { cn } from "@/shared/utils";
 
-type CheckboxProps = React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root> & {
-  label?: React.ReactNode;
+export type CheckboxProps = ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root> & {
+  label?: ReactNode;
   labelClassName?: string;
   containerClassName?: string;
   onChange?: (checked: boolean) => void;
 };
 
-function Checkbox(inputProps: CheckboxProps) {
+export function Checkbox(inputProps: CheckboxProps) {
   const {
     id: idProp,
     className,
@@ -26,7 +26,7 @@ function Checkbox(inputProps: CheckboxProps) {
     ...props
   } = inputProps;
 
-  const generatedId = React.useId();
+  const generatedId = useId();
   const id = idProp ?? generatedId;
 
   function handleCheckedChange(nextChecked: CheckedState) {
@@ -68,6 +68,3 @@ function Checkbox(inputProps: CheckboxProps) {
     </div>
   );
 }
-
-export type { CheckboxProps };
-export { Checkbox };

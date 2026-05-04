@@ -1,21 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { POST_FILTER_OPTIONS, PostFilterBottomSheet, type PostFilterOption } from "@/features/post/ui";
 
-type BottomSheetStoryArgs = {
-  selected?: boolean;
-};
-
 const meta = {
   title: "UI/BottomSheet",
+  component: PostFilterBottomSheet,
+  tags: ["autodocs"],
   args: {
-    selected: false,
-  },
-  argTypes: {
-    selected: {
-      control: "boolean",
-    },
+    selectedOptions: [],
+    onToggleOption: () => {},
+    onSave: () => {},
   },
   decorators: [
     (Story) => (
@@ -24,37 +19,43 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<BottomSheetStoryArgs>;
+  parameters: {
+    layout: "centered",
+  },
+} satisfies Meta<typeof PostFilterBottomSheet>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+type InteractiveBottomSheetProps = {
+  initialSelectedOptions: PostFilterOption[];
+};
+
+function InteractiveBottomSheet({ initialSelectedOptions }: InteractiveBottomSheetProps) {
+  const [selectedOptions, setSelectedOptions] = useState(initialSelectedOptions);
+
+  const handleToggleOption = (option: PostFilterOption) => {
+    setSelectedOptions((prev) => (prev.includes(option) ? prev.filter((item) => item !== option) : [...prev, option]));
+  };
+
+  return (
+    <PostFilterBottomSheet
+      selectedOptions={selectedOptions}
+      onToggleOption={handleToggleOption}
+      onSave={() => {}}
+      onClose={() => setSelectedOptions([])}
+    />
+  );
+}
+
 export const FilterEmpty: Story = {
-  render: () => <PostFilterBottomSheet selectedOptions={[]} onToggleOption={() => {}} onSave={() => {}} />,
+  render: () => <InteractiveBottomSheet initialSelectedOptions={[]} />,
 };
 
 export const FilterSelected: Story = {
   args: {
-    selected: true,
+    selectedOptions: [POST_FILTER_OPTIONS[0]],
   },
-  render: ({ selected }) => {
-    const [selectedOptions, setSelectedOptions] = useState<PostFilterOption[]>(
-      selected ? [POST_FILTER_OPTIONS[0]] : [],
-    );
-
-    useEffect(() => {
-      setSelectedOptions(selected ? [POST_FILTER_OPTIONS[0]] : []);
-    }, [selected]);
-
-    const handleToggleOption = (option: PostFilterOption) => {
-      setSelectedOptions((prev) =>
-        prev.includes(option) ? prev.filter((item) => item !== option) : [...prev, option],
-      );
-    };
-
-    return (
-      <PostFilterBottomSheet selectedOptions={selectedOptions} onToggleOption={handleToggleOption} onSave={() => {}} />
-    );
-  },
+  render: () => <InteractiveBottomSheet initialSelectedOptions={[POST_FILTER_OPTIONS[0]]} />,
 };
