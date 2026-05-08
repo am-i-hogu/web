@@ -18,7 +18,7 @@ export type PostImageCarouselProps = {
 export function PostImageCarousel(props: PostImageCarouselProps) {
   const {
     title = "게시물 이미지",
-    description = "추천 비율 - 4:3 / 최대 5장, 5MB이하",
+    description = "추천 비율 - 0:0 / 최대 4장, 5MB이하", // TODO: 추후 문구 수정
     children,
     className,
     titleClassName,
@@ -61,8 +61,8 @@ export function PostImageCarousel(props: PostImageCarouselProps) {
   return (
     <section className={cn("flex w-full flex-col items-start gap-2", className)} {...restProps}>
       <header className="flex w-full flex-col items-start gap-0.5">
-        <h3 className={cn("text-body-m text-text-04", titleClassName)}>{title}</h3>
-        <p className={cn("text-caption-m text-text-03", descriptionClassName)}>{description}</p>
+        <h3 className={cn("!text-body-m text-text-04", titleClassName)}>{title}</h3>
+        <p className={cn("!text-caption-m text-text-03", descriptionClassName)}>{description}</p>
       </header>
       <div
         data-drag-scroll="x"
