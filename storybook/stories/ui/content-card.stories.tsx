@@ -1,10 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { ContentCard, ContentCardBody, ContentCardFooter, ContentCardHeader } from "@/shared/ui";
 
-const previewImage = `data:image/svg+xml;utf8,${encodeURIComponent(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="327" height="184"><rect width="327" height="184" fill="#e2e8f0"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#64748b" font-size="16">Preview Image</text></svg>`,
-)}`;
-
 const meta = {
   title: "UI/Card/ContentCard",
   component: ContentCard,
@@ -31,7 +27,11 @@ export const Default: Story = {
       <ContentCardBody
         title="이 상황이면 제가 먼저 사과하는 게 맞을까요?"
         description="친구랑 약속 시간 문제로 다퉜는데 제가 너무 예민했던 것 같기도 해요. 여러분 의견이 궁금합니다."
-        image={<img src={previewImage} alt="게시물 미리보기" className="h-auto w-full object-cover" />}
+        image={
+          <div className="flex h-[184px] w-full items-center justify-center rounded-[8px] bg-slate-200 text-sm text-slate-500">
+            Preview Image
+          </div>
+        }
       />
       <ContentCardFooter votes={284} comments={37} />
     </ContentCard>
