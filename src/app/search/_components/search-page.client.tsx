@@ -2,10 +2,10 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { POST_CATEGORY_VALUE_BY_LABEL } from "@/features/post/constants";
 import {
-  CATEGORY_TO_PARAM,
   mockSearchPosts,
-  PARAM_TO_CATEGORY,
+  PARAM_TO_CATEGORY_LABEL,
   parseCategoryParams,
   parseCursor,
   parsePageSize,
@@ -37,7 +37,7 @@ export default function SearchPageClient() {
 
   const keyword = searchParams.get("keyword") ?? "";
   const selectedCategoryParams = parseCategoryParams(searchParams.get("categories"));
-  const selectedCategories = selectedCategoryParams.map((category) => PARAM_TO_CATEGORY[category]);
+  const selectedCategories = selectedCategoryParams.map((category) => PARAM_TO_CATEGORY_LABEL[category]);
   const sortValue = parseSortValue(searchParams.get("sortBy"));
   const pageSize = parsePageSize(searchParams.get("pageSize"));
   const cursor = parseCursor(searchParams.get("cursor"));
@@ -82,7 +82,7 @@ export default function SearchPageClient() {
     }
 
     if (nextCategories.length > 0) {
-      query.set("categories", nextCategories.map((label) => CATEGORY_TO_PARAM[label]).join(","));
+      query.set("categories", nextCategories.map((label) => POST_CATEGORY_VALUE_BY_LABEL[label]).join(","));
     } else {
       query.delete("categories");
     }

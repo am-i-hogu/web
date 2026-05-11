@@ -1,28 +1,11 @@
+import { POST_CATEGORIES, POST_CATEGORY_LABEL_BY_VALUE } from "@/features/post/constants";
 import { HOME_POSTS_MOCK } from "@/features/post/model/post.mock";
-import type { CategoryLabel, CategoryParam, SearchPostItem, SearchPostsResponse, SortValue } from "./search.types";
-
-export const CATEGORY_TO_PARAM: Record<CategoryLabel, CategoryParam> = {
-  중고거래: "TRADE",
-  직장: "WORK",
-  소비: "SPEND",
-  연애: "RELATIONSHIP",
-  계약: "CONTRACT",
-  기타: "ETC",
-};
-
-export const PARAM_TO_CATEGORY: Record<CategoryParam, CategoryLabel> = {
-  TRADE: "중고거래",
-  WORK: "직장",
-  SPEND: "소비",
-  RELATIONSHIP: "연애",
-  CONTRACT: "계약",
-  ETC: "기타",
-};
+import type { CategoryParam, SearchPostItem, SearchPostsResponse, SortValue } from "./search.types";
 
 export const SEARCH_POSTS_MOCK: SearchPostItem[] = HOME_POSTS_MOCK.map((post) => ({
   postId: post.id,
   isBookmarked: post.isBookmarked,
-  categories: CATEGORY_TO_PARAM[post.category as CategoryLabel] ?? "TRADE",
+  categories: post.category,
   title: post.title,
   createdAt: post.createdAt,
   viewCount: post.viewCount,
@@ -67,8 +50,12 @@ export function parseCategoryParams(value: string | null): CategoryParam[] {
     .split(",")
     .map((item) => item.trim())
     .filter(Boolean);
-  return raw.filter((item): item is CategoryParam => item in PARAM_TO_CATEGORY);
+  return raw.filter((item): item is CategoryParam =>
+    (POST_CATEGORIES as readonly { value: string }[]).some((category) => category.value === item),
+  );
 }
+
+export const PARAM_TO_CATEGORY_LABEL = POST_CATEGORY_LABEL_BY_VALUE;
 
 export function mockSearchPosts(params: {
   keyword: string;
