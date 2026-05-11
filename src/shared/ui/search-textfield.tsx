@@ -1,6 +1,6 @@
 "use client";
 
-import type { ChangeEventHandler } from "react";
+import type { ChangeEventHandler, KeyboardEventHandler } from "react";
 import MagnifyingGlassIcon from "@/assets/icons/magnifying-glass.svg";
 import XIcon from "@/assets/icons/x.svg";
 import { useControllableInputValue } from "@/shared/hooks/use-controllable-input-value";
@@ -12,6 +12,7 @@ export type SearchTextfieldProps = {
   value?: string;
   defaultValue?: string;
   onChange?: ChangeEventHandler<HTMLInputElement>;
+  onKeyDown?: KeyboardEventHandler<HTMLInputElement>;
   placeholder?: string;
   name?: string;
   ariaLabel?: string;
@@ -26,6 +27,7 @@ export function SearchTextfield(props: SearchTextfieldProps) {
     value,
     defaultValue,
     onChange,
+    onKeyDown,
     placeholder = "textfield",
     name,
     ariaLabel = "검색어 입력",
@@ -53,6 +55,7 @@ export function SearchTextfield(props: SearchTextfieldProps) {
           value={currentValue}
           defaultValue={defaultValue}
           onChange={handleChange}
+          onKeyDown={onKeyDown}
           readOnly={isReadOnly}
           disabled={disabled}
           placeholder={placeholder}

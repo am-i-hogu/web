@@ -1,9 +1,10 @@
 "use client";
 
+import type { PointerEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import XIcon from "@/assets/icons/x.svg";
 import { useHorizontalDragScroll } from "@/shared/hooks/use-horizontal-drag-scroll";
-import { Button } from "@/shared/ui/button";
+import { Chip } from "@/shared/ui/chip";
 import { SortSelect, type SortSelectOption } from "@/shared/ui/sort-select";
 import { cn } from "@/shared/utils";
 
@@ -19,6 +20,39 @@ export type FilterSortBarProps = {
   allLabel?: string;
   className?: string;
 };
+
+type UseCategoryFadeEffectParams = {
+  updateCategoryFade: () => void;
+};
+
+type UseSelectedCategoryExpandedEffectParams = {
+  selectedOptionsLength: number;
+  setIsSelectedCategoryExpanded: (value: boolean) => void;
+};
+
+// TODO: effect 로직 분리는 진행했지만, 드래그/스크롤 결합 로직은 훅 승격 기준 논의 필요
+function useCategoryFadeEffect({ updateCategoryFade }: UseCategoryFadeEffectParams) {
+  useEffect(() => {
+    updateCategoryFade();
+    window.addEventListener("resize", updateCategoryFade);
+
+    return () => {
+      window.removeEventListener("resize", updateCategoryFade);
+    };
+  }, [updateCategoryFade]);
+}
+
+// TODO: 선택칩 확장 상태 관리가 다른 화면에도 필요해지면 shared/hooks 승격 검토
+function useSelectedCategoryExpandedEffect({
+  selectedOptionsLength,
+  setIsSelectedCategoryExpanded,
+}: UseSelectedCategoryExpandedEffectParams) {
+  useEffect(() => {
+    if (selectedOptionsLength <= 2) {
+      setIsSelectedCategoryExpanded(false);
+    }
+  }, [selectedOptionsLength, setIsSelectedCategoryExpanded]);
+}
 
 export function FilterSortBar(props: FilterSortBarProps) {
   const {
@@ -41,8 +75,8 @@ export function FilterSortBar(props: FilterSortBarProps) {
   const categoryScrollRef = useRef<HTMLUListElement>(null);
   const selectedScrollRef = useRef<HTMLUListElement>(null);
   const [showCategoryFade, setShowCategoryFade] = useState(true);
-  const categoryScroll = useHorizontalDragScroll();
-  const selectedScroll = useHorizontalDragScroll();
+  const categoryScroll = useHorizontalDragScroll({ preventDefaultOnPointerDown: false });
+  const selectedScroll = useHorizontalDragScroll({ preventDefaultOnPointerDown: false });
 
   const updateCategoryFade = useCallback(() => {
     const element = categoryScrollRef.current;
@@ -55,34 +89,42 @@ export function FilterSortBar(props: FilterSortBarProps) {
     setShowCategoryFade(canScroll && !reachedEnd);
   }, []);
 
-  useEffect(() => {
-    updateCategoryFade();
-    window.addEventListener("resize", updateCategoryFade);
+  useCategoryFadeEffect({ updateCategoryFade });
+  useSelectedCategoryExpandedEffect({
+    selectedOptionsLength: selectedOptions.length,
+    setIsSelectedCategoryExpanded,
+  });
 
-    return () => {
-      window.removeEventListener("resize", updateCategoryFade);
-    };
-  }, [updateCategoryFade]);
+  const onCategoryPointerDown = (event: PointerEvent<HTMLUListElement>) => {
+    categoryScroll.handlePointerDown(event, categoryScrollRef.current);
+  };
 
-  useEffect(() => {
-    if (selectedOptions.length <= 2) {
-      setIsSelectedCategoryExpanded(false);
-    }
-  }, [selectedOptions.length]);
+  const onSelectedPointerDown = (event: PointerEvent<HTMLUListElement>) => {
+    selectedScroll.handlePointerDown(event, selectedScrollRef.current);
+  };
+
+  const onCategoryPointerEnd = (event: PointerEvent<HTMLUListElement>) => {
+    categoryScroll.handlePointerUp(event, categoryScrollRef.current);
+  };
+
+  const onSelectedPointerEnd = (event: PointerEvent<HTMLUListElement>) => {
+    selectedScroll.handlePointerUp(event, selectedScrollRef.current);
+  };
 
   return (
     <section className={cn("flex w-full flex-col gap-5", className)}>
       <div className="relative">
         <ul
+          data-drag-scroll="x"
           ref={categoryScrollRef}
           onScroll={updateCategoryFade}
-          onPointerDown={(event) => categoryScroll.handlePointerDown(event, categoryScrollRef.current)}
+          onPointerDown={onCategoryPointerDown}
           onPointerMove={(event) =>
             categoryScroll.handlePointerMove(event, categoryScrollRef.current, updateCategoryFade)
           }
-          onPointerUp={categoryScroll.handlePointerUp}
-          onPointerCancel={categoryScroll.handlePointerUp}
-          onPointerLeave={categoryScroll.handlePointerUp}
+          onPointerUp={onCategoryPointerEnd}
+          onPointerCancel={onCategoryPointerEnd}
+          onPointerLeave={onCategoryPointerEnd}
           className={cn(
             "flex gap-2 overflow-x-auto",
             showCategoryFade ? "pr-10" : "",
@@ -91,23 +133,18 @@ export function FilterSortBar(props: FilterSortBarProps) {
           style={{ touchAction: "pan-x" }}
         >
           <li>
-            <Button
-              type="button"
-              variant="chip"
-              size="chip"
+            <Chip
               onClick={(event) => {
                 if (categoryScroll.guardClickWhenDragged(event)) {
                   return;
                 }
                 onResetOptions?.();
               }}
-              className={cn(
-                "h-9 shrink-0 px-4 text-caption-m",
-                hasSelectedOptions ? "bg-bg-02 text-text-03" : "bg-primary-default text-text-01",
-              )}
+              tone={hasSelectedOptions ? "inactive" : "active"}
+              className="shrink-0"
             >
               {allLabel}
-            </Button>
+            </Chip>
           </li>
 
           {options.map((option) => {
@@ -115,23 +152,18 @@ export function FilterSortBar(props: FilterSortBarProps) {
 
             return (
               <li key={option}>
-                <Button
-                  type="button"
-                  variant="chip"
-                  size="chip"
+                <Chip
                   onClick={(event) => {
                     if (categoryScroll.guardClickWhenDragged(event)) {
                       return;
                     }
                     onToggleOption?.(option);
                   }}
-                  className={cn(
-                    "h-9 shrink-0 px-4 text-caption-m",
-                    isActive ? "bg-primary-default text-text-01" : "bg-bg-02 text-text-03",
-                  )}
+                  tone={isActive ? "active" : "inactive"}
+                  className="shrink-0"
                 >
                   {option}
-                </Button>
+                </Chip>
               </li>
             );
           })}
@@ -143,41 +175,48 @@ export function FilterSortBar(props: FilterSortBarProps) {
 
       <div className="flex min-h-9 items-center justify-between gap-2">
         <ul
+          data-drag-scroll="x"
           ref={selectedScrollRef}
-          onPointerDown={(event) => selectedScroll.handlePointerDown(event, selectedScrollRef.current)}
+          onPointerDown={onSelectedPointerDown}
           onPointerMove={(event) => selectedScroll.handlePointerMove(event, selectedScrollRef.current)}
-          onPointerUp={selectedScroll.handlePointerUp}
-          onPointerCancel={selectedScroll.handlePointerUp}
-          onPointerLeave={selectedScroll.handlePointerUp}
+          onPointerUp={onSelectedPointerEnd}
+          onPointerCancel={onSelectedPointerEnd}
+          onPointerLeave={onSelectedPointerEnd}
           className="flex items-center gap-2 overflow-x-auto"
           style={{ touchAction: "pan-x" }}
         >
           {visibleSelectedOptions.map((option) => (
             <li key={option}>
-              <Button
-                type="button"
-                variant="chip"
-                size="chip"
-                onClick={() => onToggleOption?.(option)}
-                className="shrink-0 gap-1 font-medium"
+              <Chip
+                onClick={(event) => {
+                  if (selectedScroll.guardClickWhenDragged(event)) {
+                    return;
+                  }
+                  onToggleOption?.(option);
+                }}
+                tone="inactive"
+                className="shrink-0"
+                rightIcon={<XIcon aria-hidden className="size-4 text-text-03" strokeWidth={20} />}
               >
                 {option}
-                <XIcon aria-hidden className="size-4 text-text-03" strokeWidth={20} />
-              </Button>
+              </Chip>
             </li>
           ))}
           {hiddenSelectedCount > 0 ? (
             <li>
-              <Button
-                type="button"
-                variant="chip"
-                size="chip"
-                onClick={() => setIsSelectedCategoryExpanded(true)}
-                className="shrink-0 font-medium"
+              <Chip
+                onClick={(event) => {
+                  if (selectedScroll.guardClickWhenDragged(event)) {
+                    return;
+                  }
+                  setIsSelectedCategoryExpanded(true);
+                }}
+                tone="inactive"
+                className="shrink-0"
                 aria-label={`숨겨진 카테고리 ${hiddenSelectedCount}개 보기`}
               >
                 +{hiddenSelectedCount}
-              </Button>
+              </Chip>
             </li>
           ) : null}
 
