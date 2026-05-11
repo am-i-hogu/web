@@ -25,13 +25,23 @@ export function useHorizontalDragScroll(options?: UseHorizontalDragScrollOptions
   const { preventDefaultOnPointerDown = true } = options ?? {};
   const isPointerDownRef = useRef(false);
   const hasDraggedRef = useRef(false);
+  const hasPointerCaptureRef = useRef(false);
   const activePointerIdRef = useRef<number | null>(null);
   const startXRef = useRef(0);
   const startScrollLeftRef = useRef(0);
+  const startedOnInteractiveRef = useRef(false);
+
+  const isInteractiveTarget = useCallback((target: EventTarget | null) => {
+    if (!(target instanceof Element)) {
+      return false;
+    }
+
+    return target.closest("button,a,input,select,textarea,[role='button']") !== null;
+  }, []);
 
   const handlePointerDown = useCallback(
     (event: PointerEvent<HTMLElement>, element: HTMLElement | null) => {
-      if (event.pointerType !== "mouse" || !element) {
+      if (event.pointerType !== "mouse" || event.button !== 0 || !element) {
         return;
       }
 
@@ -40,11 +50,13 @@ export function useHorizontalDragScroll(options?: UseHorizontalDragScrollOptions
         return;
       }
 
-      // 캐러셀처럼 기본 drag/select를 막아야 하는 경우에만 pointerdown 기본 동작을 막는다.
-      if (preventDefaultOnPointerDown) {
+      startedOnInteractiveRef.current = isInteractiveTarget(event.target);
+      hasPointerCaptureRef.current = false;
+
+      // 인터랙티브 요소 클릭은 우선 통과시키고, 실제 드래그 전환 시점에만 막는다.
+      if (preventDefaultOnPointerDown && !startedOnInteractiveRef.current) {
         event.preventDefault();
       }
-      element.setPointerCapture(event.pointerId);
 
       // 드래그 시작 시점의 pointer/좌표/스크롤 위치를 저장
       isPointerDownRef.current = true;
@@ -53,7 +65,7 @@ export function useHorizontalDragScroll(options?: UseHorizontalDragScrollOptions
       startXRef.current = event.clientX;
       startScrollLeftRef.current = element.scrollLeft;
     },
-    [preventDefaultOnPointerDown],
+    [isInteractiveTarget, preventDefaultOnPointerDown],
   );
 
   const handlePointerMove = useCallback(
@@ -69,13 +81,18 @@ export function useHorizontalDragScroll(options?: UseHorizontalDragScrollOptions
 
       const deltaX = event.clientX - startXRef.current;
 
-      // 작은 흔들림은 클릭으로 취급, 임계값(4px) 이상부터 드래그로 전환
-      if (Math.abs(deltaX) > 4) {
+      // 작은 흔들림은 클릭으로 취급, 임계값(8px) 이상부터 드래그로 전환
+      if (Math.abs(deltaX) > 8) {
         hasDraggedRef.current = true;
       }
 
       if (!hasDraggedRef.current) {
         return;
+      }
+
+      if (!hasPointerCaptureRef.current) {
+        element.setPointerCapture(event.pointerId);
+        hasPointerCaptureRef.current = true;
       }
 
       event.preventDefault();
@@ -92,6 +109,8 @@ export function useHorizontalDragScroll(options?: UseHorizontalDragScrollOptions
 
     // 드래그 종료 시 추적 상태 초기화
     isPointerDownRef.current = false;
+    hasPointerCaptureRef.current = false;
+    startedOnInteractiveRef.current = false;
     activePointerIdRef.current = null;
   }, []);
 
