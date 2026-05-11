@@ -1,9 +1,8 @@
-export const POST_CATEGORIES = ["중고거래", "직장", "소비", "연애", "계약", "기타"] as const;
-export type PostCategory = (typeof POST_CATEGORIES)[number];
+import type { PostCategoryValue } from "@/features/post/constants";
 
 export type MockPost = {
   id: number;
-  category: PostCategory;
+  category: PostCategoryValue;
   createdAt: string;
   title: string;
   description: string;
@@ -18,7 +17,7 @@ export type MockPost = {
 export const HOME_POSTS_MOCK: MockPost[] = [
   {
     id: 1,
-    category: "중고거래",
+    category: "USED_TRADE",
     createdAt: "2026-05-03T10:00:00.000Z",
     title: "아이폰 17 프로 중고로 120만원에 샀는데... 이거 호구인가요?",
     description:
@@ -32,7 +31,7 @@ export const HOME_POSTS_MOCK: MockPost[] = [
   },
   {
     id: 2,
-    category: "중고거래",
+    category: "WORK",
     createdAt: "2026-05-02T12:00:00.000Z",
     title: "우녹스 노랭이 20만원 어떤가요?",
     description:
@@ -46,7 +45,7 @@ export const HOME_POSTS_MOCK: MockPost[] = [
   },
   {
     id: 3,
-    category: "중고거래",
+    category: "PURCHASE",
     createdAt: "2026-05-01T12:00:00.000Z",
     title: "ek43 130 어떤가요?",
     description:
