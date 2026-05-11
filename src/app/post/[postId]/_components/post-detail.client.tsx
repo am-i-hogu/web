@@ -1,5 +1,6 @@
 "use client";
 
+import { toPostCategoryLabel } from "@/features/post/constants";
 import { HOME_POSTS_MOCK } from "@/features/post/model/post.mock";
 import {
   createDetailVoteOptions,
@@ -37,7 +38,7 @@ export default function PostDetailPageClient({ postId }: PostDetailPageClientPro
         <PostDetailCard>
           <PostDetailHeader
             postId={selectedPost.id}
-            category={selectedPost.category}
+            category={toPostCategoryLabel(selectedPost.category)}
             meta={formatRelativeTime(selectedPost.createdAt)}
             viewCount={selectedPost.viewCount}
             isBookmarked={selectedPost.isBookmarked}

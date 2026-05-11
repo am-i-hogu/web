@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import SectionPlusIcon from "@/assets/icons/selection-plus.svg";
-import { HOME_POSTS_MOCK, type PostCategory } from "@/features/post/model/post.mock";
+import { POST_CATEGORY_VALUE_BY_LABEL, type PostCategoryLabel, toPostCategoryLabel } from "@/features/post/constants";
+import { HOME_POSTS_MOCK } from "@/features/post/model/post.mock";
 import { ContentCard, ContentCardBody, ContentCardFooter, ContentCardHeader, EmptyState } from "@/shared/ui";
 import { formatRelativeTime } from "@/shared/utils/format";
 import { FooterWidget } from "@/widgets/footer/ui";
 import type { SubHeadingWidgetProps } from "@/widgets/sub-heading/ui/sub-heading.widget";
 import { SubHeadingWidget } from "@/widgets/sub-heading/ui/sub-heading.widget";
 
-type HomeCategory = Extract<NonNullable<SubHeadingWidgetProps["selectedOptions"]>[number], PostCategory>;
+type HomeCategory = Extract<NonNullable<SubHeadingWidgetProps["selectedOptions"]>[number], PostCategoryLabel>;
 type HomeSortValue = NonNullable<SubHeadingWidgetProps["sortValue"]>;
 
 export default function HomePageClient() {
@@ -18,9 +19,13 @@ export default function HomePageClient() {
   const [sortValue, setSortValue] = useState<HomeSortValue>("latest");
 
   const posts = useMemo(() => {
+    const selectedCategoryValues = selectedCategories
+      .map((category) => POST_CATEGORY_VALUE_BY_LABEL[category])
+      .filter(Boolean);
+
     const filtered =
       selectedCategories.length > 0
-        ? HOME_POSTS_MOCK.filter((post) => selectedCategories.includes(post.category))
+        ? HOME_POSTS_MOCK.filter((post) => selectedCategoryValues.includes(post.category))
         : HOME_POSTS_MOCK;
 
     const sorted = [...filtered];
@@ -73,7 +78,7 @@ export default function HomePageClient() {
                     <ContentCard>
                       <ContentCardHeader
                         authorName={post.author}
-                        category={post.category}
+                        category={toPostCategoryLabel(post.category)}
                         meta={formatRelativeTime(post.createdAt)}
                         viewCount={post.viewCount}
                         isBookmarked={post.isBookmarked}
