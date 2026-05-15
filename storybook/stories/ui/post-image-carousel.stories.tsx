@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { PostImageCarousel, PostImageTile } from "@/shared/ui";
+import { PostImageCarousel } from "@/shared/ui";
 
 const makeColorTile = (color: string) =>
   `data:image/svg+xml;utf8,${encodeURIComponent(
@@ -13,7 +13,7 @@ const meta = {
   args: {
     title: "게시물 이미지",
     description: "추천 비율 - 4:3 / 최대 5장, 5MB이하",
-    children: null,
+    items: [],
   },
   argTypes: {
     title: {
@@ -41,14 +41,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: (args) => (
-    <PostImageCarousel {...args}>
-      <PostImageTile aria-label="이미지 추가 1" />
-      <PostImageTile aria-label="이미지 추가 2" />
-      <PostImageTile aria-label="이미지 추가 3" />
-      <PostImageTile aria-label="이미지 추가 4" />
-    </PostImageCarousel>
-  ),
+  args: {
+    items: [
+      { id: "tile-1", "aria-label": "이미지 추가 1" },
+      { id: "tile-2", "aria-label": "이미지 추가 2" },
+      { id: "tile-3", "aria-label": "이미지 추가 3" },
+      { id: "tile-4", "aria-label": "이미지 추가 4" },
+    ],
+  },
   parameters: {
     docs: {
       description: {
@@ -59,15 +59,15 @@ export const Default: Story = {
 };
 
 export const MixedItems: Story = {
-  render: (args) => (
-    <PostImageCarousel {...args}>
-      <PostImageTile key="tile-red" imageUrl={makeColorTile("#ef4444")} aria-label="업로드된 이미지 1" />
-      <PostImageTile key="tile-blue" imageUrl={makeColorTile("#3b82f6")} aria-label="업로드된 이미지 2" />
-      <PostImageTile aria-label="이미지 추가 3" />
-      <PostImageTile aria-label="이미지 추가 4" />
-      <PostImageTile aria-label="이미지 추가 5" />
-    </PostImageCarousel>
-  ),
+  args: {
+    items: [
+      { id: "tile-red", imageUrl: makeColorTile("#ef4444"), "aria-label": "업로드된 이미지 1" },
+      { id: "tile-blue", imageUrl: makeColorTile("#3b82f6"), "aria-label": "업로드된 이미지 2" },
+      { id: "tile-3", "aria-label": "이미지 추가 3" },
+      { id: "tile-4", "aria-label": "이미지 추가 4" },
+      { id: "tile-5", "aria-label": "이미지 추가 5" },
+    ],
+  },
   parameters: {
     docs: {
       description: {
