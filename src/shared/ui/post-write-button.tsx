@@ -19,7 +19,6 @@ export type PostWriteButtonProps = {
   onItemClick?: MouseEventHandler<HTMLAnchorElement>;
 };
 
-// TODO: shared/ui 내부 로컬 훅 정리 후 shared/hooks 승격 기준 논의 필요
 function usePostWriteButtonToggleEffect(isOpen: boolean, onToggle?: (isOpen: boolean) => void) {
   useEffect(() => {
     onToggle?.(isOpen);

@@ -30,7 +30,6 @@ type UseSelectedCategoryExpandedEffectParams = {
   setIsSelectedCategoryExpanded: (value: boolean) => void;
 };
 
-// TODO: effect 로직 분리는 진행했지만, 드래그/스크롤 결합 로직은 훅 승격 기준 논의 필요
 function useCategoryFadeEffect({ updateCategoryFade }: UseCategoryFadeEffectParams) {
   useEffect(() => {
     updateCategoryFade();
@@ -42,7 +41,6 @@ function useCategoryFadeEffect({ updateCategoryFade }: UseCategoryFadeEffectPara
   }, [updateCategoryFade]);
 }
 
-// TODO: 선택칩 확장 상태 관리가 다른 화면에도 필요해지면 shared/hooks 승격 검토
 function useSelectedCategoryExpandedEffect({
   selectedOptionsLength,
   setIsSelectedCategoryExpanded,

@@ -36,7 +36,6 @@ function getVisibilityStyle({ shouldShow, animateIn }: VisibilityStyleParams): C
   };
 }
 
-// TODO: 공용 컴포넌트 훅 전체를 shared/hooks로 분리할지 팀 내 논의 필요
 function useTopScrollVisibility(threshold: number, forceVisible?: boolean) {
   const [isVisible, setIsVisible] = useState(false);
   const [animateIn, setAnimateIn] = useState(false);

@@ -23,7 +23,6 @@ type UseSortSelectMenuCloseEffectParams = {
   setIsOpen: (isOpen: boolean) => void;
 };
 
-// TODO: 바깥 클릭/ESC 닫기 패턴 공용화 시 shared/hooks 승격 검토
 function useSortSelectMenuCloseEffect({ isOpen, rootRef, setIsOpen }: UseSortSelectMenuCloseEffectParams) {
   useEffect(() => {
     if (!isOpen) {
