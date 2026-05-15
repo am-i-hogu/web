@@ -1,1 +1,1 @@
-export { LoginRequiredModal } from "@/features/home/ui/login-required-modal";
+export * from "./login-required-modal";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { type RefObject, useEffect, useId, useRef, useState } from "react";
 import CaretDownIcon from "@/assets/icons/caret-down-fill.svg";
 import { cn } from "@/shared/utils";
 
@@ -16,6 +16,40 @@ export type SortSelectProps<T extends string> = {
   ariaLabel?: string;
   className?: string;
 };
+
+type UseSortSelectMenuCloseEffectParams = {
+  isOpen: boolean;
+  rootRef: RefObject<HTMLDivElement | null>;
+  setIsOpen: (isOpen: boolean) => void;
+};
+
+function useSortSelectMenuCloseEffect({ isOpen, rootRef, setIsOpen }: UseSortSelectMenuCloseEffectParams) {
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isOpen, rootRef, setIsOpen]);
+}
 
 type SortSelectTriggerProps = {
   ariaLabel: string;
@@ -109,33 +143,7 @@ export function SortSelect<T extends string>(props: SortSelectProps<T>) {
   const rootRef = useRef<HTMLDivElement>(null);
   const listboxId = useId();
 
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handlePointerDown);
-    document.addEventListener("touchstart", handlePointerDown);
-    document.addEventListener("keydown", handleEscape);
-
-    return () => {
-      document.removeEventListener("mousedown", handlePointerDown);
-      document.removeEventListener("touchstart", handlePointerDown);
-      document.removeEventListener("keydown", handleEscape);
-    };
-  }, [isOpen]);
+  useSortSelectMenuCloseEffect({ isOpen, rootRef, setIsOpen });
 
   const selectedOption = options.find((option) => option.value === value) ?? options[0];
 

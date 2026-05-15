@@ -1,6 +1,5 @@
-export { UserDeleteCompleteModal } from "@/features/mypage/ui/user-delete-complete-modal";
-export { UserDeleteConfirmModal } from "@/features/mypage/ui/user-delete-confirm-modal";
-export { UserDeleteFailedModal } from "@/features/mypage/ui/user-delete-failed-modal";
-export { UserDeleteModal } from "@/features/mypage/ui/user-delete-modal";
-export type { UserDeleteReason, UserDeleteSubmitPayload } from "@/features/mypage/ui/user-delete-reason-modal";
-export { UserDeleteReasonModal } from "@/features/mypage/ui/user-delete-reason-modal";
+export * from "./user-delete-complete-modal";
+export * from "./user-delete-confirm-modal";
+export * from "./user-delete-failed-modal";
+export * from "./user-delete-modal";
+export * from "./user-delete-reason-modal";

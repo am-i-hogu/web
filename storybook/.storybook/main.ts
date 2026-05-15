@@ -25,6 +25,10 @@ const config: StorybookConfig = {
     return {
       ...viteConfig,
       plugins: [...(viteConfig.plugins ?? []), svgr({ include: "**/*.svg" })],
+      define: {
+        ...(viteConfig.define ?? {}),
+        "process.env": JSON.stringify({}),
+      },
       resolve: {
         ...viteConfig.resolve,
         alias: {
