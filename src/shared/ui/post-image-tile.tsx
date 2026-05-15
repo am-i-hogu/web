@@ -70,7 +70,7 @@ export function PostImageTile(props: PostImageTileProps) {
       >
         {resolvedImageUrl ? (
           <>
-            <Image src={resolvedImageUrl} alt="" fill className="object-cover" sizes={`${size}px`} />
+            <Image src={resolvedImageUrl} alt="" fill draggable={false} className="object-cover" sizes={`${size}px`} />
             <Badge tone={isRepresentative ? "strong" : "default"} className="absolute bottom-[8px] left-[8px]">
               <CheckIcon aria-hidden className="size-2" strokeWidth={3} />
               대표 이미지

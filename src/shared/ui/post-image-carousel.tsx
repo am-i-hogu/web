@@ -34,7 +34,6 @@ export function PostImageCarousel(props: PostImageCarouselProps) {
   } = props;
   const viewportRef = useRef<HTMLDivElement>(null);
   const dragScroll = useHorizontalDragScroll({
-    ignorePointerDownSelector: "button",
     preventDefaultOnPointerDown: false,
   });
   const { orderedItems, moveToRepresentative, remove } = usePostImageCarouselOrder(items);
@@ -70,6 +69,7 @@ export function PostImageCarousel(props: PostImageCarouselProps) {
         onPointerUp={onViewportPointerEnd}
         onPointerCancel={onViewportPointerEnd}
         onPointerLeave={onViewportPointerEnd}
+        onClickCapture={dragScroll.guardClickWhenDragged}
         className={cn(
           "w-full overflow-x-auto overflow-y-hidden no-scrollbar",
           "cursor-grab active:cursor-grabbing",
