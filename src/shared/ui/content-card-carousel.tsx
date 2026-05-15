@@ -1,11 +1,16 @@
 "use client";
 
-import { Children, type PointerEvent, type ReactNode, useMemo, useRef, useState } from "react";
+import { type PointerEvent, type ReactNode, useMemo, useRef, useState } from "react";
 import { useHorizontalDragScroll } from "@/shared/hooks/use-horizontal-drag-scroll";
 import { cn } from "@/shared/utils";
 
+export type ContentCardCarouselItem = {
+  id: string;
+  content: ReactNode;
+};
+
 export type ContentCardCarouselProps = {
-  children: ReactNode;
+  items: ContentCardCarouselItem[];
   className?: string;
   itemClassName?: string;
   showPagination?: boolean;
@@ -22,12 +27,12 @@ function resolveActiveIndex(element: HTMLUListElement) {
 }
 
 export function ContentCardCarousel(props: ContentCardCarouselProps) {
-  const { children, className, itemClassName, showPagination = false, paginationClassName } = props;
+  const { items, className, itemClassName, showPagination = false, paginationClassName } = props;
   const listRef = useRef<HTMLUListElement | null>(null);
   const { handlePointerDown, handlePointerMove, handlePointerUp } = useHorizontalDragScroll();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const itemCount = useMemo(() => Children.count(children), [children]);
+  const itemCount = items.length;
   const paginationDotKeys = useMemo(
     () => Array.from({ length: itemCount }, (_, order) => `carousel-dot-${order + 1}`),
     [itemCount],
@@ -80,7 +85,9 @@ export function ContentCardCarousel(props: ContentCardCarouselProps) {
           className,
         )}
       >
-        {children}
+        {items.map((item) => (
+          <li key={item.id}>{item.content}</li>
+        ))}
       </ul>
       {showPagination && itemCount > 1 ? (
         <div className={cn("pointer-events-none absolute inset-x-0 bottom-2 flex justify-center", paginationClassName)}>

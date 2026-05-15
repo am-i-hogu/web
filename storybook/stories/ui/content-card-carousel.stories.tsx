@@ -30,6 +30,7 @@ const meta = {
   component: ContentCardCarousel,
   tags: ["autodocs"],
   args: {
+    items: [],
     showPagination: true,
   },
   parameters: {
@@ -49,45 +50,41 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    children: null,
+    items: cardData.map((card) => ({
+      id: card.title,
+      content: (
+        <ContentCard>
+          <ContentCardHeader
+            authorName={card.author}
+            category="투표중"
+            meta="방금 전"
+            viewCount={Math.round(card.votes * 4.2)}
+          />
+          <ContentCardBody title={card.title} description={card.description} />
+          <ContentCardFooter votes={card.votes} comments={card.comments} />
+        </ContentCard>
+      ),
+    })),
   },
-  render: (args) => (
-    <ContentCardCarousel {...args}>
-      {cardData.map((card) => (
-        <li key={card.title}>
-          <ContentCard>
-            <ContentCardHeader
-              authorName={card.author}
-              category="투표중"
-              meta="방금 전"
-              viewCount={Math.round(card.votes * 4.2)}
-            />
-            <ContentCardBody title={card.title} description={card.description} />
-            <ContentCardFooter votes={card.votes} comments={card.comments} />
-          </ContentCard>
-        </li>
-      ))}
-    </ContentCardCarousel>
-  ),
 };
 
 export const SingleItem: Story = {
   args: {
-    children: null,
+    items: [
+      {
+        id: "single-card",
+        content: (
+          <ContentCard>
+            <ContentCardHeader authorName="단일카드" category="투표중" meta="방금 전" viewCount={31} />
+            <ContentCardBody
+              title="단일 아이템 상태"
+              description="아이템이 하나일 때 페이지네이션이 노출되지 않아야 합니다."
+            />
+            <ContentCardFooter votes={12} comments={3} />
+          </ContentCard>
+        ),
+      },
+    ],
     showPagination: true,
   },
-  render: (args) => (
-    <ContentCardCarousel {...args}>
-      <li>
-        <ContentCard>
-          <ContentCardHeader authorName="단일카드" category="투표중" meta="방금 전" viewCount={31} />
-          <ContentCardBody
-            title="단일 아이템 상태"
-            description="아이템이 하나일 때 페이지네이션이 노출되지 않아야 합니다."
-          />
-          <ContentCardFooter votes={12} comments={3} />
-        </ContentCard>
-      </li>
-    </ContentCardCarousel>
-  ),
 };
