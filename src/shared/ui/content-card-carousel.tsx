@@ -29,7 +29,9 @@ function resolveActiveIndex(element: HTMLUListElement) {
 export function ContentCardCarousel(props: ContentCardCarouselProps) {
   const { items, className, itemClassName, showPagination = false, paginationClassName } = props;
   const listRef = useRef<HTMLUListElement | null>(null);
-  const { handlePointerDown, handlePointerMove, handlePointerUp } = useHorizontalDragScroll();
+  const { handlePointerDown, handlePointerMove, handlePointerUp } = useHorizontalDragScroll({
+    ignorePointerDownSelector: "button, a, input, textarea, select",
+  });
   const [activeIndex, setActiveIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const itemCount = items.length;

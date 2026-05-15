@@ -1,6 +1,6 @@
 "use client";
 
-import { type ComponentProps, type PointerEvent, useRef } from "react";
+import { type ComponentProps, type PointerEvent, useEffect, useRef } from "react";
 import { useHorizontalDragScroll } from "@/shared/hooks/use-horizontal-drag-scroll";
 import { usePostImageCarouselOrder } from "@/shared/hooks/use-post-image-carousel-order";
 import { PostImageTile, type PostImageTileProps } from "@/shared/ui/post-image-tile";
@@ -8,6 +8,7 @@ import { cn } from "@/shared/utils";
 
 export type PostImageCarouselItem = Omit<PostImageTileProps, "isRepresentative" | "onPromoteToRepresentative"> & {
   id: string;
+  isThumbnail?: boolean;
   onPromoteToRepresentative?: () => void;
 };
 
@@ -32,8 +33,20 @@ export function PostImageCarousel(props: PostImageCarouselProps) {
     ...restProps
   } = props;
   const viewportRef = useRef<HTMLDivElement>(null);
-  const dragScroll = useHorizontalDragScroll({ preventDefaultOnPointerDown: false });
-  const { orderedItems, moveToRepresentative, removeAt } = usePostImageCarouselOrder(items);
+  const dragScroll = useHorizontalDragScroll({
+    ignorePointerDownSelector: "button",
+    preventDefaultOnPointerDown: false,
+  });
+  const { orderedItems, moveToRepresentative, remove } = usePostImageCarouselOrder(items);
+  const thumbnailItemId = orderedItems.find((item) => item.isThumbnail)?.id;
+
+  useEffect(() => {
+    if (!thumbnailItemId) {
+      return;
+    }
+
+    viewportRef.current?.scrollTo({ left: 0 });
+  }, [thumbnailItemId]);
 
   const onViewportPointerDown = (event: PointerEvent<HTMLDivElement>) => {
     dragScroll.handlePointerDown(event, viewportRef.current);
@@ -57,9 +70,6 @@ export function PostImageCarousel(props: PostImageCarouselProps) {
         onPointerUp={onViewportPointerEnd}
         onPointerCancel={onViewportPointerEnd}
         onPointerLeave={onViewportPointerEnd}
-        onClickCapture={(event) => {
-          dragScroll.guardClickWhenDragged(event);
-        }}
         className={cn(
           "w-full overflow-x-auto overflow-y-hidden no-scrollbar",
           "cursor-grab active:cursor-grabbing",
@@ -68,18 +78,18 @@ export function PostImageCarousel(props: PostImageCarouselProps) {
         style={{ touchAction: "pan-x" }}
       >
         <div className="flex min-w-max items-center gap-4">
-          {orderedItems.map(({ id, onPromoteToRepresentative, onRemove, ...item }, index) => (
+          {orderedItems.map(({ id, isThumbnail, onPromoteToRepresentative, onRemove, ...item }) => (
             <PostImageTile
               key={id}
               {...item}
-              isRepresentative={index === 0}
+              isRepresentative={isThumbnail}
               onPromoteToRepresentative={() => {
                 onPromoteToRepresentative?.();
-                moveToRepresentative(index);
+                moveToRepresentative(id);
               }}
               onRemove={() => {
                 onRemove?.();
-                removeAt(index);
+                remove(id);
               }}
             />
           ))}

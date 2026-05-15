@@ -10,6 +10,7 @@ import { type MouseEvent, type PointerEvent, useCallback, useRef } from "react";
  *
  * @param options.preventDefaultOnPointerDown - pointerdown 시 기본 동작 차단 여부입니다.
  * 기본값은 `true`입니다.
+ * @param options.ignorePointerDownSelector - 해당 selector 내부에서 시작한 pointerdown은 드래그 시작으로 처리하지 않습니다.
  *
  * @returns handlePointerDown - 드래그 시작 핸들러입니다.
  * @returns handlePointerMove - 드래그 이동 핸들러입니다.
@@ -19,10 +20,11 @@ import { type MouseEvent, type PointerEvent, useCallback, useRef } from "react";
 
 type UseHorizontalDragScrollOptions = {
   preventDefaultOnPointerDown?: boolean;
+  ignorePointerDownSelector?: string;
 };
 
 export function useHorizontalDragScroll(options?: UseHorizontalDragScrollOptions) {
-  const { preventDefaultOnPointerDown = true } = options ?? {};
+  const { preventDefaultOnPointerDown = true, ignorePointerDownSelector } = options ?? {};
   const isPointerDownRef = useRef(false);
   const hasDraggedRef = useRef(false);
   const activePointerIdRef = useRef<number | null>(null);
@@ -31,6 +33,14 @@ export function useHorizontalDragScroll(options?: UseHorizontalDragScrollOptions
 
   const handlePointerDown = useCallback(
     (event: PointerEvent<HTMLElement>, element: HTMLElement | null) => {
+      if (
+        ignorePointerDownSelector &&
+        event.target instanceof Element &&
+        event.target.closest(ignorePointerDownSelector)
+      ) {
+        return;
+      }
+
       if (event.pointerType !== "mouse" || !element) {
         return;
       }
@@ -53,7 +63,7 @@ export function useHorizontalDragScroll(options?: UseHorizontalDragScrollOptions
       startXRef.current = event.clientX;
       startScrollLeftRef.current = element.scrollLeft;
     },
-    [preventDefaultOnPointerDown],
+    [ignorePointerDownSelector, preventDefaultOnPointerDown],
   );
 
   const handlePointerMove = useCallback(

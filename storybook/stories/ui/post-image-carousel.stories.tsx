@@ -62,8 +62,8 @@ export const MixedItems: Story = {
   args: {
     items: [
       { id: "tile-red", imageUrl: makeColorTile("#ef4444"), "aria-label": "업로드된 이미지 1" },
-      { id: "tile-blue", imageUrl: makeColorTile("#3b82f6"), "aria-label": "업로드된 이미지 2" },
-      { id: "tile-3", "aria-label": "이미지 추가 3" },
+      { id: "tile-blue", imageUrl: makeColorTile("#3b82f6"), isThumbnail: true, "aria-label": "업로드된 이미지 2" },
+      { id: "tile-green", imageUrl: makeColorTile("#22c55e"), "aria-label": "업로드된 이미지 3" },
       { id: "tile-4", "aria-label": "이미지 추가 4" },
       { id: "tile-5", "aria-label": "이미지 추가 5" },
     ],
@@ -71,7 +71,7 @@ export const MixedItems: Story = {
   parameters: {
     docs: {
       description: {
-        story: "업로드된 이미지와 추가 타일이 함께 있는 상태입니다.",
+        story: "업로드된 이미지와 추가 타일이 함께 있는 상태입니다. 이미지 클릭 시 대표 이미지가 변경됩니다.",
       },
     },
   },
