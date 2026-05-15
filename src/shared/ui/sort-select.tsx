@@ -30,7 +30,7 @@ function useSortSelectMenuCloseEffect({ isOpen, rootRef, setIsOpen }: UseSortSel
       return;
     }
 
-    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
+    const handlePointerDown = (event: PointerEvent) => {
       if (!rootRef.current?.contains(event.target as Node)) {
         setIsOpen(false);
       }
@@ -42,13 +42,11 @@ function useSortSelectMenuCloseEffect({ isOpen, rootRef, setIsOpen }: UseSortSel
       }
     };
 
-    document.addEventListener("mousedown", handlePointerDown);
-    document.addEventListener("touchstart", handlePointerDown);
+    document.addEventListener("pointerdown", handlePointerDown);
     document.addEventListener("keydown", handleEscape);
 
     return () => {
-      document.removeEventListener("mousedown", handlePointerDown);
-      document.removeEventListener("touchstart", handlePointerDown);
+      document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleEscape);
     };
   }, [isOpen, rootRef, setIsOpen]);

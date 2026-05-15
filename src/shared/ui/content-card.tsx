@@ -46,7 +46,7 @@ export function ContentCardHeader({
   return (
     <header className={cn(className)}>
       <div className="flex flex-row justify-between items-center gap-2">
-        <div className="flex items-center  gap-2 text-caption-m text-text-03">
+        <div className="flex items-center gap-2 text-caption-m text-text-03">
           {authorImage ? (
             <Image
               src={authorImage}
