@@ -1,18 +1,16 @@
 import { clsx } from "clsx";
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 
-export type RadioOptionProps = {
+export type RadioOptionProps = ComponentProps<"button"> & {
   checked: boolean;
   label: ReactNode;
-  onClick?: () => void;
-  className?: string;
   labelClassName?: string;
 };
 
 export function RadioOption(props: RadioOptionProps) {
-  const { checked, label, onClick, className, labelClassName } = props;
+  const { checked, label, className, labelClassName, type = "button", ...restProps } = props;
   return (
-    <button type="button" className={clsx("flex items-center gap-2 text-left", className)} onClick={onClick}>
+    <button type={type} className={clsx("flex items-center gap-2 text-left", className)} {...restProps}>
       <span
         className={
           checked
