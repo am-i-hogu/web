@@ -8,11 +8,11 @@ import { type ChangeEvent, useEffect, useRef, useState } from "react";
  * @description
  * 선택한 파일을 Object URL로 미리보기하고, URL 해제(revoke) 수명주기를 관리합니다.
  * 외부 `imageUrl`이 바뀌면 제거 상태를 초기화해 최신 소스를 다시 표시합니다.
- * `onRemove`가 제공되면 삭제 책임을 외부로 위임하고, 없으면 내부 preview 상태를 정리합니다.
+ * `onRemove`가 제공되면 삭제 이벤트를 알린 뒤 내부 preview 상태를 정리합니다.
  *
  * @param params.imageUrl - 외부에서 전달되는 이미지 URL입니다.
  * @param params.onImageSelect - 파일 선택 시 호출되는 콜백입니다.
- * @param params.onRemove - 삭제 동작을 외부에서 처리할 때 사용하는 콜백입니다.
+ * @param params.onRemove - 삭제 이벤트를 외부에 알릴 때 사용하는 콜백입니다.
  *
  * @returns inputRef - 파일 input 요소 ref입니다.
  * @returns resolvedImageUrl - 현재 표시할 이미지 URL입니다.
@@ -70,10 +70,7 @@ export function usePostImageTileState({ imageUrl, onImageSelect, onRemove }: Use
   };
 
   const handleRemove = () => {
-    if (onRemove) {
-      onRemove();
-      return;
-    }
+    onRemove?.();
 
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);
