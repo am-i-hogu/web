@@ -6,6 +6,7 @@ import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/utils";
 
 export type TopScrollButtonProps = {
+  mode?: "single" | "withPostWrite";
   useFlexLayout?: boolean;
   extraBottomOffset?: number;
   isFloatingOpen?: boolean;
@@ -35,7 +36,6 @@ function getVisibilityStyle({ shouldShow, animateIn }: VisibilityStyleParams): C
   };
 }
 
-// TODO: 공용 컴포넌트 훅 전체를 shared/hooks로 분리할지 팀 내 논의 필요
 function useTopScrollVisibility(threshold: number, forceVisible?: boolean) {
   const [isVisible, setIsVisible] = useState(false);
   const [animateIn, setAnimateIn] = useState(false);
@@ -94,6 +94,7 @@ function useTopScrollVisibility(threshold: number, forceVisible?: boolean) {
 
 export function TopScrollButton(props: TopScrollButtonProps) {
   const {
+    mode = "single",
     useFlexLayout = false,
     extraBottomOffset = 0,
     isFloatingOpen = false,
@@ -118,7 +119,9 @@ export function TopScrollButton(props: TopScrollButtonProps) {
     <div
       className={cn(
         "z-40 h-fit w-fit",
-        !useFlexLayout && "fixed bottom-12 right-4 xs:right-6 sm:right-8 tb:right-12 lt:right-[6.875rem]",
+        !useFlexLayout && "fixed right-[max(1rem,calc((100vw-475px)/2+1rem))]",
+        !useFlexLayout && mode === "single" && "bottom-12",
+        !useFlexLayout && mode === "withPostWrite" && "bottom-[11.25rem]",
         useFlexLayout && "relative",
         className,
       )}
@@ -130,10 +133,10 @@ export function TopScrollButton(props: TopScrollButtonProps) {
         size="iconLg"
         onClick={scrollToTop}
         style={visibilityStyle}
-        className="shadow-strong h-12 w-12 bg-primary-strong mb:h-14 mb:w-14 tb:h-16 tb:w-16"
+        className="shadow-strong h-12 w-12 bg-primary-strong"
         aria-label="최상단으로 이동"
       >
-        <ArrowUpIcon aria-hidden className="h-4 w-4 mb:h-5 mb:w-5 tb:h-6 tb:w-6" strokeWidth={20} />
+        <ArrowUpIcon aria-hidden className="size-5" strokeWidth={24} />
       </Button>
     </div>
   );

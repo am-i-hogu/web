@@ -16,10 +16,7 @@ export type BottomSheetTitleRowProps = {
 
 export function BottomSheet({ className, children }: BottomSheetProps) {
   return (
-    <section
-      data-slot="bottom-sheet"
-      className={cn("flex w-full max-w-[375px] flex-col rounded-t-lg bg-bg-01", className)}
-    >
+    <section data-slot="bottom-sheet" className={cn("flex w-full flex-col rounded-t-lg bg-bg-01", className)}>
       {children}
     </section>
   );
