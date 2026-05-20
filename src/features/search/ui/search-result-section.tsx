@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { PARAM_TO_CATEGORY } from "@/features/search/model/search.mock";
+import { PARAM_TO_CATEGORY_LABEL } from "@/features/search/model/search.mock";
 import type { CategoryLabel, SearchPostsResponse, SortValue } from "@/features/search/model/search.types";
 import { ContentCard, ContentCardBody, ContentCardFooter, ContentCardHeader } from "@/shared/ui";
 import { formatRelativeTime } from "@/shared/utils/format";
@@ -41,7 +41,7 @@ export function SearchResultSection(props: SearchResultSectionProps) {
                     <ContentCardHeader
                       authorName={post.writer.nickname}
                       authorImage={post.writer.profileImageUrl || undefined}
-                      category={PARAM_TO_CATEGORY[post.categories]}
+                      category={PARAM_TO_CATEGORY_LABEL[post.categories]}
                       meta={formatRelativeTime(post.createdAt)}
                       viewCount={post.viewCount}
                       isBookmarked={post.isBookmarked}

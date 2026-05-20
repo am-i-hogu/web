@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 
-import { POST_FILTER_OPTIONS, PostFilterBottomSheet, type PostFilterOption } from "@/features/post/ui";
+import { POST_FILTER_OPTIONS } from "@/features/post/constants/post-filter.constants";
+import { PostFilterBottomSheet, type PostFilterOption } from "@/features/post/ui";
 
 const meta = {
   title: "UI/BottomSheet",
