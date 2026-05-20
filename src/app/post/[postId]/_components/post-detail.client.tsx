@@ -30,6 +30,10 @@ export default function PostDetailPageClient({ postId }: PostDetailPageClientPro
 
   const content = `${selectedPost.description}`;
   const voteOptions = createDetailVoteOptions();
+  const imageCarouselItems = selectedPost.images.map((gradientClassName, index) => ({
+    id: `${selectedPost.id}-image-${index + 1}`,
+    content: <div className={`h-[196px] w-full rounded-[8px] bg-gradient-to-br ${gradientClassName}`} />,
+  }));
 
   return (
     <div className="flex min-h-full flex-col">
@@ -48,13 +52,12 @@ export default function PostDetailPageClient({ postId }: PostDetailPageClientPro
             authorName={selectedPost.author}
             content={content}
             media={
-              <ContentCardCarousel className="gap-0 px-0 pb-0" showPagination paginationClassName="bottom-4">
-                {selectedPost.images.map((gradientClassName) => (
-                  <li key={`${selectedPost.id}-${gradientClassName}`}>
-                    <div className={`h-[196px] w-full rounded-[8px] bg-gradient-to-br ${gradientClassName}`} />
-                  </li>
-                ))}
-              </ContentCardCarousel>
+              <ContentCardCarousel
+                items={imageCarouselItems}
+                className="gap-0 px-0 pb-0"
+                showPagination
+                paginationClassName="bottom-4"
+              />
             }
             mediaContainerClassName="rounded-[8px] bg-bg-02"
           />

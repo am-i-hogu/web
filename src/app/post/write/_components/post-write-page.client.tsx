@@ -7,12 +7,16 @@ import XIcon from "@/assets/icons/x.svg";
 import type { POST_FILTER_OPTIONS } from "@/features/post/constants/post-filter.constants";
 import { postWriteSchema } from "@/features/post/model/post-write.schema";
 import { PostFilterBottomSheet } from "@/features/post/ui/post-filter-bottom-sheet";
-import { Button, Chip, PostImageCarousel, PostImageTile, Textarea, Textfield } from "@/shared/ui";
+import { Button, Chip, PostImageCarousel, Textarea, Textfield } from "@/shared/ui";
 import { HeaderWidget } from "@/widgets/header/ui";
 
 const TITLE_LIMIT = 50;
 const IMAGE_SLOT_COUNT = 4;
 const IMAGE_SLOT_IDS = Array.from({ length: IMAGE_SLOT_COUNT }, (_, order) => `post-image-slot-${order + 1}`);
+const IMAGE_SLOT_ITEMS = IMAGE_SLOT_IDS.map((slotId, index) => ({
+  id: slotId,
+  "aria-label": `이미지 추가 ${index + 1}`,
+}));
 type CategoryOption = (typeof POST_FILTER_OPTIONS)[number];
 
 // TODO : 추후 컴포넌트 리팩토링 필요 (아직 못함 ^-^)
@@ -156,11 +160,7 @@ export default function PostWritePageClient() {
                 />
               </section>
 
-              <PostImageCarousel>
-                {IMAGE_SLOT_IDS.map((slotId) => (
-                  <PostImageTile key={slotId} />
-                ))}
-              </PostImageCarousel>
+              <PostImageCarousel items={IMAGE_SLOT_ITEMS} />
             </div>
           </section>
 
