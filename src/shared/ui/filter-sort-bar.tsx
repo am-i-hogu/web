@@ -123,11 +123,7 @@ export function FilterSortBar(props: FilterSortBarProps) {
           onPointerUp={onCategoryPointerEnd}
           onPointerCancel={onCategoryPointerEnd}
           onPointerLeave={onCategoryPointerEnd}
-          className={cn(
-            "flex gap-2 overflow-x-auto",
-            showCategoryFade ? "pr-10" : "",
-            showCategoryFade ? "cursor-grab active:cursor-grabbing" : "",
-          )}
+          className={cn("flex gap-2 overflow-x-auto", showCategoryFade ? "pr-10" : "")}
           style={{ touchAction: "pan-x" }}
         >
           <li>
