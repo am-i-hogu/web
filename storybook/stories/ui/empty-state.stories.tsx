@@ -3,7 +3,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 import ChatsIcon from "@/assets/icons/chats.svg";
 import QuestionIcon from "@/assets/icons/question.svg";
 import SectionPlusIcon from "@/assets/icons/selection-plus.svg";
-import { EmptyState } from "@/shared/ui";
+import SmileyXEyesIcon from "@/assets/icons/smiley-x-eyes.svg";
+import { Button, EmptyState } from "@/shared/ui";
 
 const meta = {
   title: "UI/EmptyState",
@@ -20,6 +21,10 @@ const meta = {
     description: {
       control: "text",
       description: "보조 문구를 입력합니다.",
+    },
+    action: {
+      control: false,
+      description: "아이콘·텍스트 아래에 렌더링할 행동 요소입니다. 버튼 등 ReactNode를 전달합니다.",
     },
   },
   parameters: {
@@ -75,6 +80,21 @@ export const LevelUnavailable: Story = {
     docs: {
       description: {
         story: "레벨 계산 실패 상태 예시입니다.",
+      },
+    },
+  },
+};
+
+export const WithError: Story = {
+  args: {
+    icon: <SmileyXEyesIcon className="size-20 text-text-03" />,
+    title: "오류가 발생했습니다.\n잠시 후 다시 시도해주세요.",
+    action: <Button fullWidth>돌아가기</Button>,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "API 오류 등 에러 상태 예시입니다. action prop으로 버튼을 주입합니다.",
       },
     },
   },
