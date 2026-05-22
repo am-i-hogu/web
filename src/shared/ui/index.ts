@@ -12,6 +12,7 @@ export * from "./editable-avatar";
 export * from "./empty-state";
 export * from "./filter-sort-bar";
 export * from "./input";
+export * from "./loading-state";
 export * from "./menu-list";
 export * from "./modal";
 export * from "./post-image-carousel";
