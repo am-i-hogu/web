@@ -1,4 +1,4 @@
-import ScalesLoadingIcon from "@/assets/icons/scales-loading.svg";
+import ScalesLoadingIcon from "@/assets/icons/scales.svg";
 import { cn } from "@/shared/utils";
 
 type LoadingStateProps = {
