@@ -12,7 +12,8 @@
     "reporter": "biome check --reporter=summary",
     "prepare": "husky",
     "storybook": "storybook dev -c storybook/.storybook -p 6006",
-    "build-storybook": "storybook build -c storybook/.storybook"
+    "build-storybook": "storybook build -c storybook/.storybook",
+    "sync:api": "node scripts/api-sync/index.mjs"
   },
   "lint-staged": {
     "*": [
@@ -53,6 +54,7 @@
     "@types/node": "^24",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "dotenv": "^17.4.2",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "storybook": "^10.3.5",
