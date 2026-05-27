@@ -1,0 +1,94 @@
+import { ApiError } from "./error";
+
+const DEFAULT_API_TIMEOUT_MS = 15_000;
+
+type JsonRecord = Record<string, unknown>;
+
+export type ApiClientOptions = Omit<RequestInit, "body"> & {
+  body?: BodyInit | JsonRecord | unknown[] | null;
+  query?: Record<string, string | number | boolean | null | undefined>;
+  timeoutMs?: number;
+};
+
+function getApiBaseUrl() {
+  return process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+}
+
+function createApiUrl(path: string, query?: ApiClientOptions["query"]) {
+  const baseUrl = getApiBaseUrl();
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const url = baseUrl ? new URL(normalizedPath, baseUrl) : new URL(normalizedPath, "http://localhost");
+
+  for (const [key, value] of Object.entries(query ?? {})) {
+    if (value !== null && value !== undefined) {
+      url.searchParams.set(key, String(value));
+    }
+  }
+
+  return baseUrl ? url.toString() : `${url.pathname}${url.search}`;
+}
+
+function isJsonBody(body: ApiClientOptions["body"]): body is JsonRecord | unknown[] {
+  return Boolean(body) && typeof body === "object" && !(body instanceof FormData) && !(body instanceof Blob);
+}
+
+async function parseResponseBody(response: Response) {
+  if (response.status === 204) {
+    return null;
+  }
+
+  const contentType = response.headers.get("content-type") ?? "";
+  if (contentType.includes("application/json")) {
+    return response.json();
+  }
+
+  return response.text();
+}
+
+function getErrorMessage(data: unknown, fallback: string) {
+  if (data && typeof data === "object" && "message" in data && typeof data.message === "string") {
+    return data.message;
+  }
+
+  return fallback;
+}
+
+export async function apiClient<T>(path: string, options: ApiClientOptions = {}): Promise<T> {
+  const { body, headers, query, timeoutMs = DEFAULT_API_TIMEOUT_MS, ...requestInit } = options;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  const shouldJsonStringify = isJsonBody(body);
+
+  try {
+    const response = await fetch(createApiUrl(path, query), {
+      ...requestInit,
+      body: shouldJsonStringify ? JSON.stringify(body) : body,
+      headers: {
+        ...(shouldJsonStringify ? { "Content-Type": "application/json" } : {}),
+        ...headers,
+      },
+      signal: controller.signal,
+    });
+    const data = await parseResponseBody(response);
+
+    if (!response.ok) {
+      throw new ApiError({
+        status: response.status,
+        message: getErrorMessage(data, response.statusText),
+        data,
+      });
+    }
+
+    return data as T;
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw new ApiError({
+        message: `Request timed out after ${timeoutMs} ms`,
+      });
+    }
+
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { GlobalFloatingControls } from "@/features/home/ui";
+import { QueryProvider } from "@/shared/providers/query-provider";
 import "./globals.css";
 
 // 폰트 설정
@@ -26,12 +27,14 @@ export default function RootLayout({
   return (
     <html lang="ko" className={`${pretendard.variable} h-full antialiased`}>
       <body className={`${pretendard.className} min-h-full flex`}>
-        <div className="flex w-full grow flex-row justify-center">
-          <div id="app-layout" className="max-w-common-width flex w-full flex-col shadow-2xl">
-            {children}
-            <GlobalFloatingControls />
+        <QueryProvider>
+          <div className="flex w-full grow flex-row justify-center">
+            <div id="app-layout" className="max-w-common-width flex w-full flex-col shadow-2xl">
+              {children}
+              <GlobalFloatingControls />
+            </div>
           </div>
-        </div>
+        </QueryProvider>
       </body>
     </html>
   );
