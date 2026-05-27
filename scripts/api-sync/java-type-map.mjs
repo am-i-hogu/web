@@ -1,14 +1,9 @@
 const PRIMITIVE_TYPE_MAP = new Map([
   ["long", "number"],
-  ["Long", "number"],
   ["int", "number"],
-  ["Integer", "number"],
   ["double", "number"],
-  ["Double", "number"],
   ["float", "number"],
-  ["Float", "number"],
   ["boolean", "boolean"],
-  ["Boolean", "boolean"],
   ["String", "string"],
   ["LocalDate", "string"],
   ["LocalDateTime", "string"],
@@ -16,6 +11,18 @@ const PRIMITIVE_TYPE_MAP = new Map([
   ["ZonedDateTime", "string"],
   ["Instant", "string"],
 ]);
+
+const WRAPPER_TYPE_MAP = new Map([
+  ["Long", "number | null"],
+  ["Integer", "number | null"],
+  ["Double", "number | null"],
+  ["Float", "number | null"],
+  ["Boolean", "boolean | null"],
+]);
+
+function withNull(tsType) {
+  return tsType.includes("null") ? tsType : `${tsType} | null`;
+}
 
 /**
  * Java DTO record 이름을 프론트 DTO 타입 이름으로 변환합니다.
@@ -37,7 +44,8 @@ export function toDtoTypeName(javaType) {
  * Java 필드 타입을 TypeScript 필드 타입으로 변환합니다.
  *
  * @description
- * primitive/date 타입은 프론트 primitive로 변환하고, collection 타입은 배열로 변환합니다.
+ * primitive/date 타입은 프론트 primitive로 변환하고, Java wrapper 타입은 nullable로 변환합니다.
+ * collection 타입은 배열로 변환합니다.
  * `JsonNullable<T>`는 API 응답에서 값이 없을 수 있으므로 `T | null`로 취급합니다.
  * 그 외 reference 타입은 DTO type alias 이름으로 변환합니다.
  *
@@ -49,16 +57,21 @@ export function javaTypeToTsType(javaType) {
   const cleanType = javaType.trim();
   const listMatch = cleanType.match(/^(?:List|ArrayList|Set)<(.+)>$/);
   if (listMatch) {
-    return `${javaTypeToTsType(listMatch[1])}[]`;
+    const itemType = javaTypeToTsType(listMatch[1]);
+    return itemType.includes("|") ? `(${itemType})[]` : `${itemType}[]`;
   }
 
   const nullableMatch = cleanType.match(/^JsonNullable<(.+)>$/);
   if (nullableMatch) {
-    return `${javaTypeToTsType(nullableMatch[1])} | null`;
+    return withNull(javaTypeToTsType(nullableMatch[1]));
   }
 
   if (PRIMITIVE_TYPE_MAP.has(cleanType)) {
     return PRIMITIVE_TYPE_MAP.get(cleanType);
+  }
+
+  if (WRAPPER_TYPE_MAP.has(cleanType)) {
+    return WRAPPER_TYPE_MAP.get(cleanType);
   }
 
   return toDtoTypeName(cleanType);
