@@ -4,10 +4,14 @@
   --font-sans: var(--font-pretendard);
 
   /* common (앱뷰 적용) */
-  --width-common-width: 475px;
   --max-width-common-width: 475px;
+  --width-common-width: min(100vw, var(--max-width-common-width));
   --padding-common-padding: 20px;
   --radius-common-radius: 8px;
+  --width-modal-width: min(343px, calc(var(--width-common-width) - (var(--padding-common-padding) * 2)));
+  --width-toast-app-width: min(343px, calc(var(--width-common-width) - (var(--padding-common-padding) * 2)));
+  --width-toast-web-width: min(400px, calc(var(--width-common-width) - (var(--padding-common-padding) * 2)));
+  --spacing-app-floating-edge: max(1rem, calc((100vw - var(--max-width-common-width)) / 2 + 1rem));
 
   /* ===== Base Color Palettes (피그마 variables 적용) ===== */
 
