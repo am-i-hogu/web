@@ -52,7 +52,7 @@ export const DETAIL_COMMENTS_MOCK = {
       isDeleted: false,
       isHelpful: true,
       totalHelpfulCount: 12,
-      parentId: 0,
+      parentId: null,
       depth: 1,
     },
     {
@@ -85,7 +85,7 @@ export const COMMENT_CURSOR_REQUEST_MOCK = {
 } satisfies CursorRequestDto;
 
 export const COMMENT_CREATE_REQUEST_MOCK = {
-  parentId: 0,
+  parentId: null,
   content: "진짜 대박 호구시네요... 당장 환불하세요. 지금 쿠X에서도 새제품 110만원대면 삽니다.",
 } satisfies CommentCreateRequestDto;
 
@@ -146,7 +146,7 @@ export const COMMENT_UPDATE_RESPONSE_MOCK = {
   updatedAt: "2026-05-03T13:30:00.000Z",
   isHelpful: true,
   totalHelpfulCount: 12,
-  parentId: 0,
+  parentId: null,
   depth: 1,
 } satisfies CommentUpdateResponseDto;
 

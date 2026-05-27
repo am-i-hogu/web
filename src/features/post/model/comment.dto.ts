@@ -3,12 +3,12 @@
 // Domain: comment
 
 export type CommentCreateRequestDto = {
-  parentId: number;
+  parentId: number | null;
   content: string;
 };
 
 export type CommentCreateResponseDto = {
-  commentId: number;
+  commentId: number | null;
   content: string;
   isMine: boolean;
   writer: CommentWriterResponseDto;
@@ -16,12 +16,17 @@ export type CommentCreateResponseDto = {
   updatedAt: string;
   isHelpful: boolean;
   totalHelpfulCount: number;
-  parentId: number;
+  parentId: number | null;
   depth: number;
 };
 
+export type CommentHelpfulResponseDto = {
+  totalHelpfulCount: number;
+  isHelpful: boolean;
+};
+
 export type CommentItemResponseDto = {
-  commentId: number;
+  commentId: number | null;
   content: string;
   isMine: boolean;
   writer: CommentWriterResponseDto;
@@ -30,7 +35,7 @@ export type CommentItemResponseDto = {
   isDeleted: boolean;
   isHelpful: boolean;
   totalHelpfulCount: number;
-  parentId: number;
+  parentId: number | null;
   depth: number;
 };
 
@@ -45,7 +50,7 @@ export type CommentUpdateRequestDto = {
 };
 
 export type CommentUpdateResponseDto = {
-  commentId: number;
+  commentId: number | null;
   content: string;
   isMine: boolean;
   writer: CommentWriterResponseDto;
@@ -53,7 +58,7 @@ export type CommentUpdateResponseDto = {
   updatedAt: string;
   isHelpful: boolean;
   totalHelpfulCount: number;
-  parentId: number;
+  parentId: number | null;
   depth: number;
 };
 
@@ -65,6 +70,6 @@ export type CommentWriterResponseDto = {
 
 export type CursorRequestDto = {
   sortBy: string;
-  pageSize: number;
+  pageSize: number | null;
   cursor: string;
 };
