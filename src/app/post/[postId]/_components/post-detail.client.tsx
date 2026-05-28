@@ -24,6 +24,10 @@ export default function PostDetailPageClient({ postId }: PostDetailPageClientPro
   }
 
   const voteOptions = createDetailVoteOptions();
+  const initialSelectedVoteId =
+    selectedPost.vote.myVote === "HOGU" || selectedPost.vote.myVote === "NOT_HOGU"
+      ? selectedPost.vote.myVote
+      : undefined;
   const imageCarouselItems = selectedPost.images.map((gradientClassName, index) => ({
     id: `${selectedPost.postId}-image-${index + 1}`,
     content: <div className={`h-[196px] w-full rounded-[8px] bg-gradient-to-br ${gradientClassName}`} />,
@@ -59,7 +63,7 @@ export default function PostDetailPageClient({ postId }: PostDetailPageClientPro
           <PostVoteSection
             options={voteOptions}
             totalVotes={selectedPost.vote.totalVotes}
-            initialSelectedId={selectedPost.vote.myVote === "HOGU" ? "HOGU" : "NOT_HOGU"}
+            initialSelectedId={initialSelectedVoteId}
             aria-label={`판결 참여 ${formatNumber(selectedPost.vote.totalVotes)}명`}
           />
         </PostDetailCard>
