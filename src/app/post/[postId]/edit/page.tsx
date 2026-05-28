@@ -14,7 +14,7 @@ function resolvePost(postId: string) {
 export default async function PostEditPage({ params }: { params: Promise<{ postId: string }> }) {
   const { postId } = await params;
   const post = resolvePost(postId);
-  if (!post) {
+  if (!post?.isMine) {
     notFound();
   }
 
