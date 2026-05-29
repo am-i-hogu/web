@@ -1,6 +1,6 @@
 name: 🔧 General Task
 description: 일반적인 작업 요청 (style, test, chore, comment, design, remove, rename)
-title: '[] '
+title: 'task: '
 labels: ['task']
 body:
   - type: markdown
@@ -39,9 +39,9 @@ body:
       label: 대상 파일/폴더
       description: 작업할 파일이나 폴더를 명시해주세요.
       placeholder: |
-        - src/components/Button.tsx
-        - styles/global.css
-        - tests/
+        - src/app/
+        - src/shared/ui/
+        - src/shared/styles/
     validations:
       required: false
 
@@ -54,15 +54,15 @@ body:
     validations:
       required: true
 
-  - type: checkboxes
+  - type: textarea
     id: task-checklist
     attributes:
       label: 작업 체크리스트
       description: 완료해야 할 작업들을 체크리스트로 작성해주세요.
-      options:
-        - label: 작업 1
-        - label: 작업 2
-        - label: 작업 3
+      placeholder: |
+        - [ ] 작업 1
+        - [ ] 작업 2
+        - [ ] 작업 3
     validations:
       required: false
 
