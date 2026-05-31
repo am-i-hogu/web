@@ -3,12 +3,18 @@
 import { Controller } from "react-hook-form";
 import { Button, Textfield } from "@/shared/ui";
 import { useOnboardingForm } from "../_hooks/use-onboarding-form";
+import type { OnboardingFormData } from "../_models/schema";
 
 export default function OnboardingPageClient() {
   const { control, handleSubmit, helperText, tone, isValid } = useOnboardingForm();
 
+  const handleOnboardingSubmit = (data: OnboardingFormData) => {
+    // TODO: 온보딩 완료 API 연동 후 홈 또는 이전 페이지로 이동
+    console.log("제출된 데이터:", data);
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col flex-1 justify-between">
+    <form onSubmit={handleSubmit(handleOnboardingSubmit)} className="flex flex-col flex-1 justify-between">
       <section className="flex flex-col gap-10">
         <h1 className="text-title2-b">프로필을 완성해 주세요!</h1>
 

@@ -46,13 +46,9 @@ export function useOnboardingForm() {
     };
   };
 
-  const onSubmit = (data: OnboardingFormData) => {
-    console.log("제출된 데이터:", data);
-  };
-
   return {
     control,
-    handleSubmit: handleSubmit(onSubmit),
+    handleSubmit,
     isValid,
     ...getHelperState(),
   };
