@@ -31,7 +31,7 @@ export default function OnboardingPageClient() {
             )}
           />
 
-          <p className="text-small-m text-[#767683]">
+          <p className="text-small-m text-text-03">
             가입함으로써 귀하는 당사의 <span className="text-indigo-950">커뮤니티 가이드라인</span>에 동의하며, <br />
             때로는 자신이 정말로 호구일 수 있음을 인정하게 됩니다.
           </p>
