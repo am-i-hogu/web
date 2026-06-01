@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { type OnboardingFormData, onboardingSchema } from "../_models/schema";
+import { type OnboardingFormData, onboardingSchema } from "@/features/onboarding/models";
 
 export function useOnboardingForm() {
   const {

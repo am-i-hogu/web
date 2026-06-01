@@ -1,9 +1,9 @@
 "use client";
 
 import { Controller } from "react-hook-form";
+import { useOnboardingForm } from "@/features/onboarding/hooks";
+import type { OnboardingFormData } from "@/features/onboarding/models";
 import { Button, Textfield } from "@/shared/ui";
-import { useOnboardingForm } from "../_hooks/use-onboarding-form";
-import type { OnboardingFormData } from "../_models/schema";
 
 export default function OnboardingPageClient() {
   const { control, handleSubmit, helperText, tone, isValid } = useOnboardingForm();
