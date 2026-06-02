@@ -25,7 +25,6 @@
 
 # generated from backend OpenAPI docs
 scripts/fetch-api-generator/openapi.json
-src/shared/api/generated/
 
 # vercel
 .vercel
