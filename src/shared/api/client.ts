@@ -2,10 +2,10 @@ import { ApiError } from "./error";
 
 const DEFAULT_API_TIMEOUT_MS = 15_000;
 
-type JsonRecord = Record<string, unknown>;
+type JsonObject = object;
 
 export type ApiClientOptions = Omit<RequestInit, "body"> & {
-  body?: BodyInit | JsonRecord | unknown[] | null;
+  body?: BodyInit | JsonObject | unknown[] | null;
   query?: Record<string, string | number | boolean | null | undefined>;
   timeoutMs?: number;
 };
@@ -28,7 +28,7 @@ function createApiUrl(path: string, query?: ApiClientOptions["query"]) {
   return baseUrl ? url.toString() : `${url.pathname}${url.search}`;
 }
 
-function isJsonBody(body: ApiClientOptions["body"]): body is JsonRecord | unknown[] {
+function isJsonBody(body: ApiClientOptions["body"]): body is JsonObject | unknown[] {
   return Boolean(body) && typeof body === "object" && !(body instanceof FormData) && !(body instanceof Blob);
 }
 
