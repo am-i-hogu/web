@@ -53,7 +53,6 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </Button>
           <Button
             asChild
-            type="button"
             variant="google"
             fullWidth={true}
             leftIcon={<GoogleLogoIcon aria-hidden={true} className="size-4" />}
