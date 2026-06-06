@@ -1,9 +1,22 @@
 import GoogleLogoIcon from "@/assets/icons/google-logo.svg";
 import KakaoLogoIcon from "@/assets/icons/kakao-logo.svg";
 import ScalesIcon from "@/assets/icons/scales.svg";
+import { getOAuthErrorMessage, getOAuthLoginUrl } from "@/features/auth/utils";
 import { Button } from "@/shared/ui";
 
-export default function LoginPage() {
+type LoginPageProps = {
+  searchParams?: Promise<{
+    errorCode?: string;
+  }>;
+};
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const params = await searchParams;
+  const errorCode = params?.errorCode;
+  const errorMessage = getOAuthErrorMessage(errorCode);
+  const kakaoLoginUrl = getOAuthLoginUrl("KAKAO");
+  const googleLoginUrl = getOAuthLoginUrl("GOOGLE");
+
   return (
     <main className="flex min-h-dvh flex-col bg-bg-01 px-4">
       <section className="flex flex-1 flex-col items-center justify-center pb-23 pt-10 text-center">
@@ -24,23 +37,28 @@ export default function LoginPage() {
 
       <section className="pb-11.5" aria-label="소셜 로그인">
         <div className="flex flex-col gap-3">
+          {errorCode ? (
+            <p className="text-center text-small-m text-danger" role="alert">
+              {errorMessage}
+            </p>
+          ) : null}
           <Button
-            type="button"
+            asChild
             variant="kakao"
             fullWidth={true}
             leftIcon={<KakaoLogoIcon aria-hidden={true} className="size-4" />}
             className="text-body-m"
           >
-            카카오로 계속하기
+            <a href={kakaoLoginUrl}>카카오로 계속하기</a>
           </Button>
           <Button
-            type="button"
+            asChild
             variant="google"
             fullWidth={true}
             leftIcon={<GoogleLogoIcon aria-hidden={true} className="size-4" />}
             className="text-body-m text-text-03"
           >
-            구글로 계속하기
+            <a href={googleLoginUrl}>구글로 계속하기</a>
           </Button>
         </div>
       </section>
