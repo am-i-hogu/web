@@ -13,7 +13,9 @@ import { Button, Textfield } from "@/shared/ui";
 export default function OnboardingPageClient() {
   const router = useRouter();
   const [submitErrorMessage, setSubmitErrorMessage] = useState<string | null>(null);
-  const { control, handleSubmit, helperText, tone, isCheckingNickname, isValid, setError } = useOnboardingForm();
+  const { control, handleSubmit, helperText, tone, isCheckingNickname, isSubmitting, isValid, setError } =
+    useOnboardingForm();
+  const isSubmitDisabled = !isValid || isCheckingNickname || isSubmitting;
 
   const handleOnboardingSubmit = async (data: OnboardingFormData) => {
     setSubmitErrorMessage(null);
@@ -75,12 +77,7 @@ export default function OnboardingPageClient() {
             {submitErrorMessage}
           </p>
         ) : null}
-        <Button
-          type="submit"
-          disabled={!isValid || isCheckingNickname}
-          variant={isValid && !isCheckingNickname ? "primary" : "disabled"}
-          fullWidth
-        >
+        <Button type="submit" disabled={isSubmitDisabled} variant={isSubmitDisabled ? "disabled" : "primary"} fullWidth>
           완료하기
         </Button>
       </div>

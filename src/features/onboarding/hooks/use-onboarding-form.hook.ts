@@ -16,7 +16,7 @@ export function useOnboardingForm() {
     handleSubmit,
     setError,
     watch,
-    formState: { errors, isValid },
+    formState: { errors, isSubmitting, isValid },
   } = useForm<OnboardingFormData>({
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
@@ -115,6 +115,7 @@ export function useOnboardingForm() {
     control,
     handleSubmit,
     isCheckingNickname,
+    isSubmitting,
     isValid,
     setError,
     ...getHelperState(),
