@@ -1,4 +1,5 @@
 import { ApiError } from "./error";
+import type { ErrorResponse } from "./generated";
 
 const DEFAULT_API_TIMEOUT_MS = 15_000;
 
@@ -75,7 +76,7 @@ export async function apiClient<T>(path: string, options: ApiClientOptions = {})
       throw new ApiError({
         status: response.status,
         message: getErrorMessage(data, response.statusText),
-        data,
+        data: data as ErrorResponse,
       });
     }
 
