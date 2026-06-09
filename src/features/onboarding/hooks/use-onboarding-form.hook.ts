@@ -39,10 +39,11 @@ export function useOnboardingForm() {
 
     const checkId = latestCheckIdRef.current + 1;
     latestCheckIdRef.current = checkId;
-    setIsCheckingNickname(true);
 
     // Debouncing을 위한 timer
     const timeoutId = window.setTimeout(async () => {
+      setIsCheckingNickname(true);
+
       const result = await checkNicknameAction(nicknameValue);
 
       // 마지막 요청이 아닐 경우 중지한다.
