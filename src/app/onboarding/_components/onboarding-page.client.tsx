@@ -1,16 +1,41 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Controller } from "react-hook-form";
+import { createOnboardingUser } from "@/features/onboarding/api";
 import { useOnboardingForm } from "@/features/onboarding/hooks";
 import type { OnboardingFormData } from "@/features/onboarding/models";
+import { getOnboardingNicknameErrorMessage, getOnboardingSubmitErrorMessage } from "@/features/onboarding/utils";
+import { toApiError } from "@/shared/api";
 import { Button, Textfield } from "@/shared/ui";
 
 export default function OnboardingPageClient() {
-  const { control, handleSubmit, helperText, tone, isValid } = useOnboardingForm();
+  const router = useRouter();
+  const [submitErrorMessage, setSubmitErrorMessage] = useState<string | null>(null);
+  const { control, handleSubmit, helperText, tone, isCheckingNickname, isValid, setError } = useOnboardingForm();
 
-  const handleOnboardingSubmit = (data: OnboardingFormData) => {
-    // TODO: 온보딩 완료 API 연동 후 홈 또는 이전 페이지로 이동
-    console.log("제출된 데이터:", data);
+  const handleOnboardingSubmit = async (data: OnboardingFormData) => {
+    setSubmitErrorMessage(null);
+
+    try {
+      await createOnboardingUser(data);
+      router.replace("/");
+      return;
+    } catch (error) {
+      const apiError = toApiError(error);
+      const nicknameErrorMessage = getOnboardingNicknameErrorMessage(apiError.data);
+
+      if (nicknameErrorMessage) {
+        setError("nickname", {
+          type: "server",
+          message: nicknameErrorMessage,
+        });
+        return;
+      }
+
+      setSubmitErrorMessage(getOnboardingSubmitErrorMessage(apiError.data));
+    }
   };
 
   return (
@@ -44,9 +69,21 @@ export default function OnboardingPageClient() {
         </div>
       </section>
 
-      <Button type="submit" disabled={!isValid} variant={isValid ? "primary" : "disabled"} fullWidth>
-        완료하기
-      </Button>
+      <div className="flex flex-col gap-3">
+        {submitErrorMessage ? (
+          <p className="text-center text-small-m text-danger" role="alert">
+            {submitErrorMessage}
+          </p>
+        ) : null}
+        <Button
+          type="submit"
+          disabled={!isValid || isCheckingNickname}
+          variant={isValid && !isCheckingNickname ? "primary" : "disabled"}
+          fullWidth
+        >
+          완료하기
+        </Button>
+      </div>
     </form>
   );
 }
