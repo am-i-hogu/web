@@ -13,9 +13,9 @@ import { Button, Textfield } from "@/shared/ui";
 export default function OnboardingPageClient() {
   const router = useRouter();
   const [submitErrorMessage, setSubmitErrorMessage] = useState<string | null>(null);
-  const { control, handleSubmit, helperText, tone, isCheckingNickname, isSubmitting, isValid, setError } =
+  const { control, handleSubmit, helperText, tone, isNicknameCheckPending, isSubmitting, isValid, setError } =
     useOnboardingForm();
-  const isSubmitDisabled = !isValid || isCheckingNickname || isSubmitting;
+  const isSubmitDisabled = !isValid || isNicknameCheckPending || isSubmitting;
 
   const handleOnboardingSubmit = async (data: OnboardingFormData) => {
     setSubmitErrorMessage(null);

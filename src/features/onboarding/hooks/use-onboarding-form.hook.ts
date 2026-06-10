@@ -8,7 +8,7 @@ import { getNicknameCheckErrorMessage } from "@/features/onboarding/utils";
 const NICKNAME_CHECK_DELAY_MS = 500;
 
 export function useOnboardingForm() {
-  const [isCheckingNickname, setIsCheckingNickname] = useState(false);
+  const [isNicknameCheckPending, setIsNicknameCheckPending] = useState(false);
   const latestCheckIdRef = useRef(0);
   const {
     clearErrors,
@@ -33,17 +33,16 @@ export function useOnboardingForm() {
   useEffect(() => {
     if (!nicknameValue || hasNicknameFormatError) {
       latestCheckIdRef.current += 1;
-      setIsCheckingNickname(false);
+      setIsNicknameCheckPending(false);
       return;
     }
 
     const checkId = latestCheckIdRef.current + 1;
     latestCheckIdRef.current = checkId;
+    setIsNicknameCheckPending(true);
 
     // Debouncing을 위한 timer
     const timeoutId = window.setTimeout(async () => {
-      setIsCheckingNickname(true);
-
       const result = await checkNicknameAction(nicknameValue);
 
       // 마지막 요청이 아닐 경우 중지한다.
@@ -51,7 +50,7 @@ export function useOnboardingForm() {
         return;
       }
 
-      setIsCheckingNickname(false);
+      setIsNicknameCheckPending(false);
 
       // type: "server"는 실제 API 요청 후, 서버에서 받은 에러를 나타낸다.
       if (!result.success) {
@@ -86,7 +85,7 @@ export function useOnboardingForm() {
       };
     }
 
-    if (isCheckingNickname) {
+    if (isNicknameCheckPending) {
       return {
         helperText: "닉네임 중복 확인 중입니다.",
         tone: "default" as const,
@@ -115,7 +114,7 @@ export function useOnboardingForm() {
   return {
     control,
     handleSubmit,
-    isCheckingNickname,
+    isNicknameCheckPending,
     isSubmitting,
     isValid,
     setError,
