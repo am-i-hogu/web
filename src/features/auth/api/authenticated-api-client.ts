@@ -26,7 +26,7 @@ function createAuthenticatedHeaders(headers: ApiClientOptions["headers"], access
  *
  * @description
  * - 예를 들어 3번의 각각 다른 API 요청을 병렬로 보낸다면 첫 번째 요청만 갱신에 성공할 것이고,
- *   나머지 두 요청은 갱신 실패로 인해 401 에러를 반환할 것이다.
+ *   나머지 두 요청은 첫 번째 요청이 만든 Promise를 기다린 뒤 같은 갱신 결과를 받는다.
  * - 이 때 refreshPromise가 null이라면 새로 생성하고, null이 아니면 기존의 promise를 반환한다.
  *
  * @returns access token 갱신 응답
@@ -59,19 +59,23 @@ export async function authenticatedApiClient<T>(path: string, options: ApiClient
       throw error;
     }
 
-    // access token 을 갱신하고 다시 요청한다.
-    try {
-      const reissueResponse = await refreshAccessTokenOnce();
-      setAccessToken(reissueResponse.accessToken);
+    let reissueResponse: Awaited<ReturnType<typeof refreshAccessToken>>;
 
-      return await apiClient<T>(path, {
-        ...options,
-        headers: createAuthenticatedHeaders(options.headers, reissueResponse.accessToken),
-      });
+    // access token 갱신 요청을 보낸다.
+    try {
+      reissueResponse = await refreshAccessTokenOnce();
     } catch (refreshError) {
       // access token 갱신 실패시 인증 정보(store)를 초기화 한 후 에러를 던진다.
       clearAccessToken();
       throw refreshError;
     }
+
+    setAccessToken(reissueResponse.accessToken);
+
+    // 갱신된 access token으로 원래 요청을 다시 보낸다.
+    return await apiClient<T>(path, {
+      ...options,
+      headers: createAuthenticatedHeaders(options.headers, reissueResponse.accessToken),
+    });
   }
 }
