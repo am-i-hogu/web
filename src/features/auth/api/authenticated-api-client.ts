@@ -43,8 +43,35 @@ function refreshAccessTokenOnce() {
   return refreshPromise;
 }
 
-export async function authenticatedApiClient<T>(path: string, options: ApiClientOptions = {}) {
+/**
+ * 인증 정보를 반환한다.
+ *
+ * @description
+ * - store에 인증 정보가 없다면 access token을 갱신하고 반환한다.
+ * - access token 갱신에 실패하면 인증 정보를 초기화하고 에러를 던진다.
+ *
+ * @returns access token
+ */
+async function getAccessToken() {
   const { accessToken, clearAccessToken, setAccessToken } = useAuthStore.getState();
+
+  if (accessToken) {
+    return accessToken;
+  }
+
+  try {
+    const reissueResponse = await refreshAccessTokenOnce();
+    setAccessToken(reissueResponse.accessToken);
+
+    return reissueResponse.accessToken;
+  } catch (error) {
+    clearAccessToken();
+    throw error;
+  }
+}
+
+export async function authenticatedApiClient<T>(path: string, options: ApiClientOptions = {}) {
+  const accessToken = await getAccessToken();
 
   try {
     return await apiClient<T>(path, {
@@ -60,6 +87,7 @@ export async function authenticatedApiClient<T>(path: string, options: ApiClient
     }
 
     let reissueResponse: Awaited<ReturnType<typeof refreshAccessToken>>;
+    const { clearAccessToken, setAccessToken } = useAuthStore.getState();
 
     // access token 갱신 요청을 보낸다.
     try {
