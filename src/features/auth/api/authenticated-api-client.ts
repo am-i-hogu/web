@@ -1,3 +1,5 @@
+"use client";
+
 import { type ApiClientOptions, apiClient, isApiError } from "@/shared/api";
 import { useAuthStore } from "../model";
 import { refreshAccessToken } from "./auth.service";
