@@ -5,5 +5,6 @@ export async function refreshAccessToken() {
   return apiClient<ReissueResponse>("/api/auth/refresh", {
     method: "POST",
     cache: "no-store",
+    credentials: "include",
   });
 }
