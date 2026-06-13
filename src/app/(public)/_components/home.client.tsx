@@ -88,7 +88,7 @@ export default function HomePageClient() {
                         title={post.title}
                         description={post.contentPreview}
                         image={
-                          <div className={`aspect-[5/3] w-full rounded-[8px] bg-gradient-to-br ${post.thumbnailUrl}`} />
+                          <div className={`aspect-5/3 w-full rounded-[8px] bg-linear-to-br ${post.thumbnailUrl}`} />
                         }
                         imageContainerClassName="rounded-[8px] bg-bg-02"
                       />
