@@ -14,7 +14,7 @@ type AuthGuardProps = {
   redirectPath?: string;
 };
 
-export function AuthGuard({ children, fallback, redirectPath = "/login" }: AuthGuardProps) {
+export function AuthGuard({ children, fallback, redirectPath = "/login?errorCode=AUTH_REQUIRED" }: AuthGuardProps) {
   const router = useRouter();
   const accessToken = useAuthStore((state) => state.accessToken);
   const setAccessToken = useAuthStore((state) => state.setAccessToken);

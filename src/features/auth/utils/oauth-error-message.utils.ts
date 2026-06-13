@@ -1,6 +1,7 @@
 const DEFAULT_OAUTH_ERROR_MESSAGE = "로그인에 실패했어요. 다시 시도해 주세요.";
 
 const OAUTH_ERROR_MESSAGES: Record<string, string> = {
+  AUTH_REQUIRED: "로그인이 필요한 페이지예요.",
   INVALID_AUTH_CODE: "로그인 인증 코드가 유효하지 않아요. 다시 시도해 주세요.",
   INVALID_ID_TOKEN: "소셜 계정 인증 정보가 유효하지 않아요. 다시 시도해 주세요.",
   INVALID_STATE: "로그인 요청이 유효하지 않아요. 다시 시도해 주세요.",
