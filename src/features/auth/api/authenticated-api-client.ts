@@ -2,9 +2,7 @@
 
 import { type ApiClientOptions, apiClient, isApiError } from "@/shared/api";
 import { useAuthStore } from "../model";
-import { refreshAccessToken } from "./auth.service";
-
-let refreshPromise: ReturnType<typeof refreshAccessToken> | null = null;
+import { type refreshAccessToken, refreshAccessTokenOnce } from "./auth.service";
 
 /**
  * 요청에 대한 인증 헤더를 생성한다.
@@ -21,28 +19,6 @@ function createAuthenticatedHeaders(headers: ApiClientOptions["headers"], access
   }
 
   return Object.fromEntries(nextHeaders.entries());
-}
-
-/**
- * 401 에러가 여러개 발생했을 때 중복해서 refreshAccessToken 함수가 호출되는 것을 방지한다.
- *
- * @description
- * - 예를 들어 3번의 각각 다른 API 요청을 병렬로 보낸다면 첫 번째 요청만 갱신에 성공할 것이고,
- *   나머지 두 요청은 첫 번째 요청이 만든 Promise를 기다린 뒤 같은 갱신 결과를 받는다.
- * - 이 때 refreshPromise가 null이라면 새로 생성하고, null이 아니면 기존의 promise를 반환한다.
- *
- * @returns access token 갱신 응답
- */
-function refreshAccessTokenOnce() {
-  if (!refreshPromise) {
-    refreshPromise = refreshAccessToken().finally(() => {
-      // null로 초기화해야 이후 401 에러가 발생했을 때 새로운 refreshAccessToken이 호출된다.
-      // 그렇지 않으면, 만료된 refresh token을 받은 Promise를 재사용하게 된다.
-      refreshPromise = null;
-    });
-  }
-
-  return refreshPromise;
 }
 
 /**
