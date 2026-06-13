@@ -12,9 +12,10 @@ type GuestOnlyGuardProps = {
   children: ReactNode;
   fallback?: ReactNode;
   redirectPath?: string;
+  skipRefresh?: boolean;
 };
 
-export function GuestOnlyGuard({ children, fallback, redirectPath = "/" }: GuestOnlyGuardProps) {
+export function GuestOnlyGuard({ children, fallback, redirectPath = "/", skipRefresh = false }: GuestOnlyGuardProps) {
   const router = useRouter();
   const accessToken = useAuthStore((state) => state.accessToken);
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
@@ -24,6 +25,11 @@ export function GuestOnlyGuard({ children, fallback, redirectPath = "/" }: Guest
   useEffect(() => {
     if (accessToken) {
       router.replace(redirectPath);
+      return;
+    }
+
+    if (skipRefresh) {
+      setStatus("guest");
       return;
     }
 
@@ -52,7 +58,7 @@ export function GuestOnlyGuard({ children, fallback, redirectPath = "/" }: Guest
     return () => {
       isActive = false;
     };
-  }, [accessToken, clearAccessToken, redirectPath, router, setAccessToken]);
+  }, [accessToken, clearAccessToken, redirectPath, router, setAccessToken, skipRefresh]);
 
   if (status === "checking") {
     return fallback ?? <LoadingState className="min-h-dvh" />;

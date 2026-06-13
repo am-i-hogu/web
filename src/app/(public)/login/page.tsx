@@ -19,7 +19,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const googleLoginUrl = getOAuthLoginUrl("GOOGLE");
 
   return (
-    <GuestOnlyGuard>
+    <GuestOnlyGuard skipRefresh={Boolean(errorCode)}>
       <main className="flex min-h-dvh flex-col bg-bg-01 px-4">
         <section className="flex flex-1 flex-col items-center justify-center pb-23 pt-10 text-center">
           <div className="flex size-20 items-center justify-center rounded-3xl bg-primary-default text-secondary-default">
