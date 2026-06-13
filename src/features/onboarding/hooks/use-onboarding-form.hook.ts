@@ -1,9 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { checkNicknameAction } from "@/features/onboarding/api/onboarding.action";
+import { checkNickname } from "@/features/onboarding/api";
 import { type OnboardingFormData, onboardingSchema } from "@/features/onboarding/models";
 import { getNicknameCheckErrorMessage } from "@/features/onboarding/utils";
+import { toApiError } from "@/shared/api";
 
 const NICKNAME_CHECK_DELAY_MS = 500;
 
@@ -43,33 +44,39 @@ export function useOnboardingForm() {
 
     // Debouncing을 위한 timer
     const timeoutId = window.setTimeout(async () => {
-      const result = await checkNicknameAction(nicknameValue);
+      try {
+        const result = await checkNickname(nicknameValue);
 
-      // 마지막 요청이 아닐 경우 중지한다.
-      if (latestCheckIdRef.current !== checkId) {
-        return;
-      }
+        // 마지막 요청이 아닐 경우 중지한다.
+        if (latestCheckIdRef.current !== checkId) {
+          return;
+        }
 
-      setIsNicknameCheckPending(false);
+        if (!result.isAvailable) {
+          setError("nickname", {
+            type: "server",
+            message: "중복된 닉네임입니다.",
+          });
+          return;
+        }
 
-      // type: "server"는 실제 API 요청 후, 서버에서 받은 에러를 나타낸다.
-      if (!result.success) {
+        clearErrors("nickname");
+      } catch (error) {
+        if (latestCheckIdRef.current !== checkId) {
+          return;
+        }
+
+        const apiError = toApiError(error);
+
         setError("nickname", {
           type: "server",
-          message: getNicknameCheckErrorMessage(result.error.data),
+          message: getNicknameCheckErrorMessage(apiError.data),
         });
-        return;
+      } finally {
+        if (latestCheckIdRef.current === checkId) {
+          setIsNicknameCheckPending(false);
+        }
       }
-
-      if (!result.data.isAvailable) {
-        setError("nickname", {
-          type: "server",
-          message: "중복된 닉네임입니다.",
-        });
-        return;
-      }
-
-      clearErrors("nickname");
     }, NICKNAME_CHECK_DELAY_MS);
 
     return () => {

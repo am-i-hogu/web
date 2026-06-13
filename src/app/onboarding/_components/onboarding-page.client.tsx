@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller } from "react-hook-form";
+import { useAuthStore } from "@/features/auth/model";
 import { createOnboardingUser } from "@/features/onboarding/api";
 import { useOnboardingForm } from "@/features/onboarding/hooks";
 import type { OnboardingFormData } from "@/features/onboarding/models";
@@ -12,6 +13,7 @@ import { Button, Textfield } from "@/shared/ui";
 
 export default function OnboardingPageClient() {
   const router = useRouter();
+  const setAccessToken = useAuthStore((state) => state.setAccessToken);
   const [submitErrorMessage, setSubmitErrorMessage] = useState<string | null>(null);
   const { control, handleSubmit, helperText, tone, isNicknameCheckPending, isSubmitting, isValid, setError } =
     useOnboardingForm();
@@ -21,8 +23,11 @@ export default function OnboardingPageClient() {
     setSubmitErrorMessage(null);
 
     try {
-      await createOnboardingUser(data);
+      const { accessToken } = await createOnboardingUser(data);
+
+      setAccessToken(accessToken);
       router.replace("/");
+
       return;
     } catch (error) {
       const apiError = toApiError(error);
@@ -33,6 +38,7 @@ export default function OnboardingPageClient() {
           type: "server",
           message: nicknameErrorMessage,
         });
+
         return;
       }
 

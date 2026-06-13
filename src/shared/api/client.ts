@@ -12,6 +12,11 @@ export type ApiClientOptions = Omit<RequestInit, "body"> & {
 };
 
 function getApiBaseUrl() {
+  if (typeof window !== "undefined") {
+    // 클라이언트(브라우저)에서는 NEXT_PUBLIC_ 접두사가 붙은 환경 변수만 사용할 수 있다.
+    return process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+  }
+
   return process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 }
 
