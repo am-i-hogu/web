@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { AuthGuard } from "@/features/auth/ui";
 import { createPostFormInitialValues, POST_DETAIL_RESPONSE_MOCKS } from "@/features/post/model";
 import PostWritePageClient from "../../write/_components/post-write-page.client";
 
@@ -19,12 +20,14 @@ export default async function PostEditPage({ params }: { params: Promise<{ postI
   }
 
   return (
-    <PostWritePageClient
-      mode="edit"
-      headerTitle="게시글 수정"
-      submitLabel="수정하기"
-      submitAriaLabel="게시글 수정"
-      initialValues={createPostFormInitialValues(post)}
-    />
+    <AuthGuard>
+      <PostWritePageClient
+        mode="edit"
+        headerTitle="게시글 수정"
+        submitLabel="수정하기"
+        submitAriaLabel="게시글 수정"
+        initialValues={createPostFormInitialValues(post)}
+      />
+    </AuthGuard>
   );
 }
