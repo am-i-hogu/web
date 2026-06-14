@@ -31,7 +31,7 @@ function isRefreshTokenErrorCode(code?: string): code is string {
 function redirectToLoginWithError(errorCode: string) {
   const searchParams = new URLSearchParams({ errorCode });
 
-  window.location.assign(`/login?${searchParams.toString()}`);
+  window.location.replace(`/login?${searchParams.toString()}`);
 }
 
 /**
