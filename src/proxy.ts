@@ -7,6 +7,7 @@ const SERVICE_ENTRY_PATH = "/";
 const LOGIN_PATH = "/login";
 const ONBOARDING_PATH = "/onboarding";
 const EMPTY_REGISTER_TOKEN_ERROR_CODE = "EMPTY_REGISTER_TOKEN";
+const EMPTY_REFRESH_TOKEN_ERROR_CODE = "EMPTY_REFRESH_TOKEN";
 
 function redirectTo(pathname: string, request: NextRequest) {
   return NextResponse.redirect(new URL(pathname, request.url));
@@ -41,8 +42,8 @@ export function proxy(request: NextRequest) {
     return hasRegisterToken ? NextResponse.next() : redirectToLoginWithError(EMPTY_REGISTER_TOKEN_ERROR_CODE, request);
   }
 
-  // `/login`, `/onboarding` 외 matcher 대상은 protected route로 간주한다.
-  return hasRefreshToken ? NextResponse.next() : redirectTo(LOGIN_PATH, request);
+  // `/login`, `/onboarding` 외 matcher는 모두 protected route다.
+  return hasRefreshToken ? NextResponse.next() : redirectToLoginWithError(EMPTY_REFRESH_TOKEN_ERROR_CODE, request);
 }
 
 export const config = {

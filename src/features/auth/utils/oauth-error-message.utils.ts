@@ -1,6 +1,7 @@
 const DEFAULT_OAUTH_ERROR_MESSAGE = "로그인에 실패했어요. 다시 시도해 주세요.";
 
 const OAUTH_ERROR_MESSAGES: Record<string, string> = {
+  EMPTY_REFRESH_TOKEN: "로그인이 필요한 페이지입니다. 로그인해 주세요.",
   EMPTY_REGISTER_TOKEN: "가입 인증 정보가 없습니다. 다시 로그인해 주세요.",
   INVALID_STATE: "로그인 요청이 유효하지 않아요. 다시 시도해 주세요.",
   LOGIN_FAILED: DEFAULT_OAUTH_ERROR_MESSAGE,
