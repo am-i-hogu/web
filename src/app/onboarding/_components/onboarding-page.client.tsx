@@ -11,6 +11,22 @@ import { getOnboardingNicknameErrorMessage, getOnboardingSubmitErrorMessage } fr
 import { toApiError } from "@/shared/api";
 import { Button, Textfield } from "@/shared/ui";
 
+const REGISTER_TOKEN_ERROR_CODES = new Set([
+  "EMPTY_REGISTER_TOKEN",
+  "REGISTER_TOKEN_EXPIRED",
+  "INVALID_REGISTER_TOKEN",
+]);
+
+function isRegisterTokenErrorCode(code?: string): code is string {
+  return Boolean(code && REGISTER_TOKEN_ERROR_CODES.has(code));
+}
+
+function getLoginErrorPath(errorCode: string) {
+  const searchParams = new URLSearchParams({ errorCode });
+
+  return `/login?${searchParams.toString()}`;
+}
+
 export default function OnboardingPageClient() {
   const router = useRouter();
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
@@ -32,6 +48,13 @@ export default function OnboardingPageClient() {
     } catch (error) {
       const apiError = toApiError(error);
       const nicknameErrorMessage = getOnboardingNicknameErrorMessage(apiError.data);
+      const errorCode = apiError.data?.code;
+
+      if (isRegisterTokenErrorCode(errorCode)) {
+        router.replace(getLoginErrorPath(errorCode));
+
+        return;
+      }
 
       if (nicknameErrorMessage) {
         setError("nickname", {
