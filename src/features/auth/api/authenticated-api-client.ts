@@ -6,12 +6,53 @@ import { refreshAccessToken } from "./auth.service";
 
 let refreshPromise: ReturnType<typeof refreshAccessToken> | null = null;
 
+const REFRESH_TOKEN_ERROR_CODES = new Set([
+  "EMPTY_REFRESH_TOKEN",
+  "REFRESH_TOKEN_EXPIRED",
+  "INVALID_REFRESH_TOKEN",
+  "REFRESH_TOKEN_REUSED",
+]);
+
 /**
- * 요청에 대한 인증 헤더를 생성한다.
+ * 전달된 에러 코드가 refresh token 관련 에러 코드인지 판별한다.
  *
- * @param headers 인증 헤더를 제외한 나머지 헤더들
+ * @param code - 백엔드에서 전달된 인증 관련 에러 코드
+ * @returns refresh token 관련 에러 코드 여부
+ */
+function isRefreshTokenErrorCode(code?: string): code is string {
+  return Boolean(code && REFRESH_TOKEN_ERROR_CODES.has(code));
+}
+
+/**
+ * refresh token 관련 에러 발생시 로그인 화면으로 이동한다.
+ *
+ * @param errorCode - 백엔드에서 전달된 refresh token 관련 에러 코드
+ */
+function redirectToLoginWithError(errorCode: string) {
+  const searchParams = new URLSearchParams({ errorCode });
+
+  window.location.assign(`/login?${searchParams.toString()}`);
+}
+
+/**
+ * refresh token 관련 에러가 발생했는지 확인하고 로그인 화면으로 이동한다.
+ *
+ * @param error - API 호출시 발생한 에러
+ */
+function redirectOnRefreshTokenError(error: unknown) {
+  const errorCode = isApiError(error) ? error.data?.code : undefined;
+
+  if (isRefreshTokenErrorCode(errorCode)) {
+    redirectToLoginWithError(errorCode);
+  }
+}
+
+/**
+ * 인증 헤더를 포함한 요청 헤더를 생성한다.
+ *
+ * @param headers 인증 헤더를 제외한 나머지 헤더
  * @param accessToken access token
- * @returns 인증 헤더가 추가된 헤더 객체
+ * @returns 인증 헤더가 포함된 헤더 객체
  */
 function createAuthenticatedHeaders(headers: ApiClientOptions["headers"], accessToken: string | null) {
   const nextHeaders = new Headers(headers);
@@ -68,6 +109,7 @@ async function getAccessToken() {
     return reissueResponse.accessToken;
   } catch (error) {
     clearAccessToken();
+    redirectOnRefreshTokenError(error);
     throw error;
   }
 }
@@ -97,6 +139,7 @@ export async function authenticatedApiClient<T>(path: string, options: ApiClient
     } catch (refreshError) {
       // access token 갱신 실패시 인증 정보(store)를 초기화 한 후 에러를 던진다.
       clearAccessToken();
+      redirectOnRefreshTokenError(refreshError);
       throw refreshError;
     }
 
