@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { AUTH_ERROR_CODE } from "@/features/auth/model/auth-error-code";
 
 const REFRESH_TOKEN_COOKIE = "refreshToken";
 const REGISTER_TOKEN_COOKIE = "registerToken";
@@ -6,8 +7,6 @@ const REGISTER_TOKEN_COOKIE = "registerToken";
 const SERVICE_ENTRY_PATH = "/";
 const LOGIN_PATH = "/login";
 const ONBOARDING_PATH = "/onboarding";
-const EMPTY_REGISTER_TOKEN_ERROR_CODE = "EMPTY_REGISTER_TOKEN";
-const EMPTY_REFRESH_TOKEN_ERROR_CODE = "EMPTY_REFRESH_TOKEN";
 
 function redirectTo(pathname: string, request: NextRequest) {
   return NextResponse.redirect(new URL(pathname, request.url));
@@ -39,11 +38,13 @@ export function proxy(request: NextRequest) {
       return redirectTo(SERVICE_ENTRY_PATH, request);
     }
 
-    return hasRegisterToken ? NextResponse.next() : redirectToLoginWithError(EMPTY_REGISTER_TOKEN_ERROR_CODE, request);
+    return hasRegisterToken
+      ? NextResponse.next()
+      : redirectToLoginWithError(AUTH_ERROR_CODE.EMPTY_REGISTER_TOKEN, request);
   }
 
   // `/login`, `/onboarding` 외 matcher는 모두 protected route다.
-  return hasRefreshToken ? NextResponse.next() : redirectToLoginWithError(EMPTY_REFRESH_TOKEN_ERROR_CODE, request);
+  return hasRefreshToken ? NextResponse.next() : redirectToLoginWithError(AUTH_ERROR_CODE.EMPTY_REFRESH_TOKEN, request);
 }
 
 export const config = {

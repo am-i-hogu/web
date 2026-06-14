@@ -4,18 +4,13 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller } from "react-hook-form";
 import { useAuthStore } from "@/features/auth/model";
+import { REGISTER_TOKEN_ERROR_CODES } from "@/features/auth/model/auth-error-code";
 import { createOnboardingUser } from "@/features/onboarding/api";
 import { useOnboardingForm } from "@/features/onboarding/hooks";
 import type { OnboardingFormData } from "@/features/onboarding/models";
 import { getOnboardingNicknameErrorMessage, getOnboardingSubmitErrorMessage } from "@/features/onboarding/utils";
 import { toApiError } from "@/shared/api";
 import { Button, Textfield } from "@/shared/ui";
-
-const REGISTER_TOKEN_ERROR_CODES = new Set([
-  "EMPTY_REGISTER_TOKEN",
-  "REGISTER_TOKEN_EXPIRED",
-  "INVALID_REGISTER_TOKEN",
-]);
 
 function isRegisterTokenErrorCode(code?: string): code is string {
   return Boolean(code && REGISTER_TOKEN_ERROR_CODES.has(code));

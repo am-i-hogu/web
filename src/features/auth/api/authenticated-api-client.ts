@@ -2,16 +2,10 @@
 
 import { type ApiClientOptions, apiClient, isApiError } from "@/shared/api";
 import { useAuthStore } from "../model";
+import { REFRESH_TOKEN_ERROR_CODES } from "../model/auth-error-code";
 import { refreshAccessToken } from "./auth.service";
 
 let refreshPromise: ReturnType<typeof refreshAccessToken> | null = null;
-
-const REFRESH_TOKEN_ERROR_CODES = new Set([
-  "EMPTY_REFRESH_TOKEN",
-  "REFRESH_TOKEN_EXPIRED",
-  "INVALID_REFRESH_TOKEN",
-  "REFRESH_TOKEN_REUSED",
-]);
 
 /**
  * 전달된 에러 코드가 refresh token 관련 에러 코드인지 판별한다.
