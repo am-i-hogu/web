@@ -31,5 +31,7 @@ export function getOAuthCallbackRedirectPath(status?: string | null, code?: stri
  * @returns `errorCode` 쿼리를 포함한 로그인 페이지 경로
  */
 function getLoginRedirectPath(errorCode: string) {
-  return `/login?errorCode=${errorCode}`;
+  const searchParams = new URLSearchParams({ errorCode });
+
+  return `/login?${searchParams.toString()}`;
 }
