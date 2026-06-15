@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/features/auth/model";
 import { createDomainQueryKeys, unwrapApiResult } from "@/shared/api";
-import { checkNicknameAction, createUserAction, updateProfileAction } from "./mypage.action";
+import { checkNicknameAction, createUserAction } from "./mypage.action";
 import {
   deleteUserWithAuth,
   getHoguReportWithAuth,
@@ -12,6 +12,7 @@ import {
   getMyPageWithAuth,
   getMyPostsWithAuth,
   getMyVotesWithAuth,
+  updateProfileWithAuth,
 } from "./mypage.client-service";
 import type {
   CheckNicknameQueryParams,
@@ -114,7 +115,7 @@ export function useUpdateProfileMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ body }: { body: UpdateProfileBody }) => updateProfileAction(body),
+    mutationFn: ({ body }: { body: UpdateProfileBody }) => updateProfileWithAuth(body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: mypageQueryKeys.all });
     },

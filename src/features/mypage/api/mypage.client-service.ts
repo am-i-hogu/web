@@ -2,6 +2,8 @@
 
 import { authenticatedApiClient } from "@/features/auth/api";
 import type {
+  CheckNicknameQueryParams,
+  CheckNicknameResponse,
   GetHoguReportResponse,
   GetMyBookmarksQueryParams,
   GetMyBookmarksResponse,
@@ -12,7 +14,16 @@ import type {
   GetMyPostsResponse,
   GetMyVotesQueryParams,
   GetMyVotesResponse,
+  UpdateProfileBody,
+  UpdateProfileResponse,
 } from "./mypage.service";
+
+export async function checkNicknameWithAuth(params: CheckNicknameQueryParams) {
+  return authenticatedApiClient<CheckNicknameResponse>("/api/users/check-nickname", {
+    method: "GET",
+    query: params,
+  });
+}
 
 export async function getMyPageWithAuth() {
   return authenticatedApiClient<GetMyPageResponse>("/api/users/me", {
@@ -57,5 +68,12 @@ export async function getMyVotesWithAuth(params: GetMyVotesQueryParams = {}) {
   return authenticatedApiClient<GetMyVotesResponse>("/api/users/me/votes", {
     method: "GET",
     query: params,
+  });
+}
+
+export async function updateProfileWithAuth(body: UpdateProfileBody) {
+  return authenticatedApiClient<UpdateProfileResponse>("/api/users/me", {
+    method: "PATCH",
+    body,
   });
 }
