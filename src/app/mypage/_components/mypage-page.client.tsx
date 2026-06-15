@@ -51,6 +51,7 @@ export default function MypagePageClient() {
           }}
         />
       </main>
+      {/* TODO: 하위 화면의 footer 중복 선언, 공통 wrapper로 감쌀지 고민중... */}
       <footer className="sticky bottom-0 z-20 px-common-padding">
         <FooterWidget activeTab="mypage" />
       </footer>
