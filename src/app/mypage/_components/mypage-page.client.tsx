@@ -16,6 +16,7 @@ export default function MypagePageClient() {
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const { data: mypage, error, isPending, refetch } = useGetMyPageQuery();
 
+  // TODO: auth proxy 머지 후 비로그인 /mypage 접근이 /login으로 이동하는지 확인하기
   if (isPending) {
     return <LoadingState />;
   }
