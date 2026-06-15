@@ -1,9 +1,11 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuthStore } from "@/features/auth/model";
 import { createDomainQueryKeys, unwrapApiResult } from "@/shared/api";
-import { checkNicknameAction, createUserAction, deleteUserAction, updateProfileAction } from "./mypage.action";
+import { checkNicknameAction, createUserAction, updateProfileAction } from "./mypage.action";
 import {
+  deleteUserWithAuth,
   getHoguReportWithAuth,
   getMyBookmarksWithAuth,
   getMyCommentsWithAuth,
@@ -51,11 +53,13 @@ export function useCreateUserMutation() {
 
 export function useDeleteUserMutation() {
   const queryClient = useQueryClient();
+  const clearAccessToken = useAuthStore((state) => state.clearAccessToken);
 
   return useMutation({
-    mutationFn: () => deleteUserAction(),
+    mutationFn: deleteUserWithAuth,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: mypageQueryKeys.all });
+      clearAccessToken();
+      queryClient.clear();
     },
   });
 }

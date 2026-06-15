@@ -20,6 +20,12 @@ export async function getMyPageWithAuth() {
   });
 }
 
+export async function deleteUserWithAuth() {
+  return authenticatedApiClient<void>("/api/users/me", {
+    method: "DELETE",
+  });
+}
+
 export async function getHoguReportWithAuth() {
   return authenticatedApiClient<GetHoguReportResponse>("/api/users/me/report", {
     method: "GET",
