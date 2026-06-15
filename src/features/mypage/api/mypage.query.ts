@@ -2,17 +2,15 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createDomainQueryKeys, unwrapApiResult } from "@/shared/api";
+import { checkNicknameAction, createUserAction, deleteUserAction, updateProfileAction } from "./mypage.action";
 import {
-  checkNicknameAction,
-  createUserAction,
-  deleteUserAction,
-  getMyBookmarksAction,
-  getMyCommentsAction,
-  getMyPostsAction,
-  getMyVotesAction,
-  updateProfileAction,
-} from "./mypage.action";
-import { getHoguReportWithAuth, getMyPageWithAuth } from "./mypage.client-service";
+  getHoguReportWithAuth,
+  getMyBookmarksWithAuth,
+  getMyCommentsWithAuth,
+  getMyPageWithAuth,
+  getMyPostsWithAuth,
+  getMyVotesWithAuth,
+} from "./mypage.client-service";
 import type {
   CheckNicknameQueryParams,
   CreateUserBody,
@@ -69,17 +67,19 @@ export function useGetHoguReportQuery() {
   });
 }
 
-export function useGetMyBookmarksQuery(params: GetMyBookmarksQueryParams = {}) {
+export function useGetMyBookmarksQuery(params: GetMyBookmarksQueryParams = {}, enabled = true) {
   return useQuery({
     queryKey: mypageQueryKeys.myBookmarks(params),
-    queryFn: () => getMyBookmarksAction(params).then(unwrapApiResult),
+    queryFn: () => getMyBookmarksWithAuth(params),
+    enabled,
   });
 }
 
-export function useGetMyCommentsQuery(params: GetMyCommentsQueryParams = {}) {
+export function useGetMyCommentsQuery(params: GetMyCommentsQueryParams = {}, enabled = true) {
   return useQuery({
     queryKey: mypageQueryKeys.myComments(params),
-    queryFn: () => getMyCommentsAction(params).then(unwrapApiResult),
+    queryFn: () => getMyCommentsWithAuth(params),
+    enabled,
   });
 }
 
@@ -90,17 +90,19 @@ export function useGetMyPageQuery() {
   });
 }
 
-export function useGetMyPostsQuery(params: GetMyPostsQueryParams = {}) {
+export function useGetMyPostsQuery(params: GetMyPostsQueryParams = {}, enabled = true) {
   return useQuery({
     queryKey: mypageQueryKeys.myPosts(params),
-    queryFn: () => getMyPostsAction(params).then(unwrapApiResult),
+    queryFn: () => getMyPostsWithAuth(params),
+    enabled,
   });
 }
 
-export function useGetMyVotesQuery(params: GetMyVotesQueryParams = {}) {
+export function useGetMyVotesQuery(params: GetMyVotesQueryParams = {}, enabled = true) {
   return useQuery({
     queryKey: mypageQueryKeys.myVotes(params),
-    queryFn: () => getMyVotesAction(params).then(unwrapApiResult),
+    queryFn: () => getMyVotesWithAuth(params),
+    enabled,
   });
 }
 

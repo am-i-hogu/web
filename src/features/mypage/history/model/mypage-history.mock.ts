@@ -20,6 +20,7 @@ export const MYPAGE_POSTS_RESPONSE_MOCK: MypagePostHistoryResponse = {
     {
       postId: 1,
       title: "이거 150달러면 호구 딜인가요?",
+      category: "USED_TRADE",
       createdAt: "2026-05-20T11:00:00",
       voteSummary: "HOGU",
       commentCount: 24,
@@ -27,6 +28,7 @@ export const MYPAGE_POSTS_RESPONSE_MOCK: MypagePostHistoryResponse = {
     {
       postId: 2,
       title: "우녹스 샵프로 150이면 비싼가요?",
+      category: "USED_TRADE",
       createdAt: "2026-05-19T13:00:00",
       voteSummary: "NOT_HOGU",
       commentCount: 89,
@@ -34,6 +36,7 @@ export const MYPAGE_POSTS_RESPONSE_MOCK: MypagePostHistoryResponse = {
     {
       postId: 3,
       title: "상가 관련 서류 이렇게 했는데 호구잡힌걸까요?",
+      category: "CONTRACT",
       createdAt: "2026-05-16T12:00:00",
       voteSummary: "TIE",
       commentCount: 120,
@@ -41,6 +44,7 @@ export const MYPAGE_POSTS_RESPONSE_MOCK: MypagePostHistoryResponse = {
     {
       postId: 4,
       title: "애인이랑 데이트 비용 9:1... 저 호구인가요?",
+      category: "DATING",
       createdAt: "2026-04-20T12:00:00",
       voteSummary: "NONE",
       commentCount: 999,
@@ -59,6 +63,8 @@ export const MYPAGE_COMMENTS_RESPONSE_MOCK: MypageCommentHistoryResponse = {
       post: {
         postId: 1,
         title: "이거 150달러면 호구 딜인가요?",
+        category: "USED_TRADE",
+        commentCount: 234,
         isDeleted: true,
       },
     },
@@ -69,6 +75,8 @@ export const MYPAGE_COMMENTS_RESPONSE_MOCK: MypageCommentHistoryResponse = {
       post: {
         postId: 2,
         title: "우녹스 샵프로 150이면 비싼가요?",
+        category: "USED_TRADE",
+        commentCount: 234,
         isDeleted: true,
       },
     },
@@ -84,6 +92,8 @@ export const MYPAGE_VOTES_RESPONSE_MOCK: MypageVoteHistoryResponse = {
     post: {
       postId: post.postId,
       title: post.title,
+      category: post.category,
+      commentCount: post.commentCount,
       isDeleted: false,
     },
   })),
