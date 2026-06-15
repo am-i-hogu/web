@@ -9,6 +9,7 @@ import { cn } from "@/shared/utils";
 type MypageHistorySectionProps = {
   activeTab: MypageHistoryTab;
   items: MypageHistoryItem[];
+  onBookmarkRemove?: (postId: number) => void;
 };
 
 function HistoryCategoryPill({ children, size = "default" }: { children: string; size?: "default" | "sm" }) {
@@ -46,12 +47,29 @@ function HistoryResultLabel({ result: resultValue, compact = false }: { result: 
   );
 }
 
-function PostHistoryCard({ item, withBookmark = false }: { item: MypageHistoryItem; withBookmark?: boolean }) {
+function PostHistoryCard({
+  item,
+  withBookmark = false,
+  onBookmarkRemove,
+}: {
+  item: MypageHistoryItem;
+  withBookmark?: boolean;
+  onBookmarkRemove?: (postId: number) => void;
+}) {
   return (
     <article
       className={cn("rounded-[16px] border border-line-01 bg-bg-01 p-6", withBookmark && "flex items-center gap-3")}
     >
-      {withBookmark ? <BookmarkFillIcon aria-hidden className="size-6 shrink-0 text-text-03" /> : null}
+      {withBookmark ? (
+        <button
+          type="button"
+          className="flex size-6 shrink-0 items-center justify-center text-text-03"
+          aria-label={`${item.title} 북마크 해제`}
+          onClick={() => onBookmarkRemove?.(item.postId)}
+        >
+          <BookmarkFillIcon aria-hidden className="size-6" />
+        </button>
+      ) : null}
       <div className="min-w-0 flex-1 space-y-3">
         <header className="flex items-center gap-3">
           <div className="flex min-w-0 flex-1 items-center gap-2">
@@ -107,14 +125,19 @@ function VoteHistoryCard({ item }: { item: MypageHistoryItem }) {
   );
 }
 
-function renderHistoryCard(activeTab: MypageHistoryTab, item: MypageHistoryItem) {
+function renderHistoryCard(
+  activeTab: MypageHistoryTab,
+  item: MypageHistoryItem,
+  onBookmarkRemove?: (postId: number) => void,
+) {
   if (activeTab === "comments") return <CommentHistoryCard item={item} />;
-  if (activeTab === "bookmarks") return <PostHistoryCard item={item} withBookmark />;
+  if (activeTab === "bookmarks")
+    return <PostHistoryCard item={item} withBookmark onBookmarkRemove={onBookmarkRemove} />;
   if (activeTab === "votes") return <VoteHistoryCard item={item} />;
   return <PostHistoryCard item={item} />;
 }
 
-export function MypageHistorySection({ activeTab, items }: MypageHistorySectionProps) {
+export function MypageHistorySection({ activeTab, items, onBookmarkRemove }: MypageHistorySectionProps) {
   if (items.length === 0) {
     return (
       <section aria-labelledby="mypage-history-heading">
@@ -133,7 +156,7 @@ export function MypageHistorySection({ activeTab, items }: MypageHistorySectionP
       </h2>
       <ul className="space-y-4">
         {items.map((item) => (
-          <li key={item.id}>{renderHistoryCard(activeTab, item)}</li>
+          <li key={item.id}>{renderHistoryCard(activeTab, item, onBookmarkRemove)}</li>
         ))}
       </ul>
     </section>

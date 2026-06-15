@@ -1,7 +1,9 @@
 "use client";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import {
+  mypageQueryKeys,
   useGetMyBookmarksQuery,
   useGetMyCommentsQuery,
   useGetMyPageQuery,
@@ -19,18 +21,50 @@ import {
 } from "@/features/mypage/history/utils";
 import { toMypageProfile } from "@/features/mypage/profile/model";
 import { MypageProfileSummary } from "@/features/mypage/profile/ui";
+import { deleteBookmarkWithAuth } from "@/features/post/api";
+import type { MyBookmarkListResponse } from "@/shared/api/generated";
 import { Button, EmptyState, LoadingState } from "@/shared/ui";
 import { cn } from "@/shared/utils";
 import { FooterWidget } from "@/widgets/footer/ui";
 import { HeaderWidget } from "@/widgets/header/ui";
 
+const HISTORY_QUERY_PARAMS = {};
+
 export default function MypageHistoryPageClient() {
   const [selectedTab, setSelectedTab] = useState<MypageHistoryTab>("posts");
+  const queryClient = useQueryClient();
   const mypageQuery = useGetMyPageQuery();
-  const postsQuery = useGetMyPostsQuery({}, selectedTab === "posts");
-  const commentsQuery = useGetMyCommentsQuery({}, selectedTab === "comments");
-  const bookmarksQuery = useGetMyBookmarksQuery({}, selectedTab === "bookmarks");
-  const votesQuery = useGetMyVotesQuery({}, selectedTab === "votes");
+  const postsQuery = useGetMyPostsQuery(HISTORY_QUERY_PARAMS, selectedTab === "posts");
+  const commentsQuery = useGetMyCommentsQuery(HISTORY_QUERY_PARAMS, selectedTab === "comments");
+  const bookmarksQuery = useGetMyBookmarksQuery(HISTORY_QUERY_PARAMS, selectedTab === "bookmarks");
+  const votesQuery = useGetMyVotesQuery(HISTORY_QUERY_PARAMS, selectedTab === "votes");
+  const bookmarksQueryKey = mypageQueryKeys.myBookmarks(HISTORY_QUERY_PARAMS);
+  const deleteBookmarkMutation = useMutation({
+    mutationFn: deleteBookmarkWithAuth,
+    onMutate: async ({ postId }) => {
+      await queryClient.cancelQueries({ queryKey: bookmarksQueryKey });
+      const previousBookmarks = queryClient.getQueryData<MyBookmarkListResponse>(bookmarksQueryKey);
+
+      queryClient.setQueryData<MyBookmarkListResponse>(bookmarksQueryKey, (current) =>
+        current
+          ? {
+              ...current,
+              posts: current.posts.filter((post) => post.postId !== postId),
+            }
+          : current,
+      );
+
+      return { previousBookmarks };
+    },
+    onError: (_error, _variables, context) => {
+      if (context?.previousBookmarks) {
+        queryClient.setQueryData(bookmarksQueryKey, context.previousBookmarks);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: bookmarksQueryKey });
+    },
+  });
 
   const activeQuery = {
     posts: postsQuery,
@@ -115,7 +149,11 @@ export default function MypageHistoryPageClient() {
               }
             />
           ) : (
-            <MypageHistorySection activeTab={selectedTab} items={items} />
+            <MypageHistorySection
+              activeTab={selectedTab}
+              items={items}
+              onBookmarkRemove={(postId) => deleteBookmarkMutation.mutate({ postId })}
+            />
           )}
         </section>
       </main>

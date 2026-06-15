@@ -60,6 +60,7 @@ export type MypageHistoryVoteResponse = {
 
 export type MypageHistoryItem = {
   id: string;
+  postId: number;
   category: string;
   title: string;
   createdAtLabel: string;

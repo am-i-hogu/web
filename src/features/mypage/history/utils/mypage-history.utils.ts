@@ -12,6 +12,7 @@ import { formatNumber, formatRelativeTime } from "@/shared/utils/format";
 export function toPostHistoryItem(post: MyPostItemResponse): MypageHistoryItem {
   return {
     id: `post-${post.postId}`,
+    postId: post.postId,
     category: toPostCategoryLabel(post.category),
     title: post.title,
     createdAtLabel: formatRelativeTime(post.createdAt),
@@ -23,6 +24,7 @@ export function toPostHistoryItem(post: MyPostItemResponse): MypageHistoryItem {
 export function toBookmarkHistoryItem(post: MyBookmarkItemResponse): MypageHistoryItem {
   return {
     id: `bookmark-${post.postId}`,
+    postId: post.postId,
     category: toPostCategoryLabel(post.category),
     title: post.isDeleted ? "(삭제된 게시글)" : post.title,
     createdAtLabel: formatRelativeTime(post.createdAt),
@@ -35,6 +37,7 @@ export function toBookmarkHistoryItem(post: MyBookmarkItemResponse): MypageHisto
 export function toCommentHistoryItem(comment: MyCommentItemResponse): MypageHistoryItem {
   return {
     id: `comment-${comment.commentId}`,
+    postId: comment.post.postId,
     category: toPostCategoryLabel(comment.post.category),
     title: comment.post.title,
     sourceTitle: comment.post.title,
@@ -49,6 +52,7 @@ export function toCommentHistoryItem(comment: MyCommentItemResponse): MypageHist
 export function toVoteHistoryItem(vote: MyVoteItemResponse): MypageHistoryItem {
   return {
     id: `vote-${vote.post.postId}-${vote.createdAt}`,
+    postId: vote.post.postId,
     category: toPostCategoryLabel(vote.post.category),
     title: vote.post.title,
     createdAtLabel: formatRelativeTime(vote.createdAt),
