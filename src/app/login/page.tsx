@@ -1,7 +1,7 @@
 import GoogleLogoIcon from "@/assets/icons/google-logo.svg";
 import KakaoLogoIcon from "@/assets/icons/kakao-logo.svg";
 import ScalesIcon from "@/assets/icons/scales.svg";
-import { getOAuthErrorMessage, getOAuthLoginUrl } from "@/features/auth/utils";
+import { getAuthErrorMessage, getOAuthLoginUrl } from "@/features/auth/utils";
 import { Button } from "@/shared/ui";
 
 type LoginPageProps = {
@@ -13,7 +13,7 @@ type LoginPageProps = {
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
   const errorCode = params?.errorCode;
-  const errorMessage = getOAuthErrorMessage(errorCode);
+  const errorMessage = getAuthErrorMessage(errorCode);
   const kakaoLoginUrl = getOAuthLoginUrl("KAKAO");
   const googleLoginUrl = getOAuthLoginUrl("GOOGLE");
 
