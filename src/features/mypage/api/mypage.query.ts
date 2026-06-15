@@ -6,14 +6,13 @@ import {
   checkNicknameAction,
   createUserAction,
   deleteUserAction,
-  getHoguReportAction,
   getMyBookmarksAction,
   getMyCommentsAction,
   getMyPostsAction,
   getMyVotesAction,
   updateProfileAction,
 } from "./mypage.action";
-import { getMyPageWithAuth } from "./mypage.client-service";
+import { getHoguReportWithAuth, getMyPageWithAuth } from "./mypage.client-service";
 import type {
   CheckNicknameQueryParams,
   CreateUserBody,
@@ -66,7 +65,7 @@ export function useDeleteUserMutation() {
 export function useGetHoguReportQuery() {
   return useQuery({
     queryKey: mypageQueryKeys.hoguReport(),
-    queryFn: () => getHoguReportAction().then(unwrapApiResult),
+    queryFn: getHoguReportWithAuth,
   });
 }
 
