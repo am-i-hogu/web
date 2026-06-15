@@ -30,6 +30,12 @@ export function proxy(request: NextRequest) {
   const hasRegisterToken = hasCookieValue(request, REGISTER_TOKEN_COOKIE);
 
   if (pathname === LOGIN_PATH) {
+    // stale refreshToken cookie가 남아 있을 수 있어,
+    // errorCode가 있는 로그인 진입은 에러를 보여주기 위해 허용한다.
+    if (request.nextUrl.searchParams.has("errorCode")) {
+      return NextResponse.next();
+    }
+
     return hasRefreshToken ? redirectTo(SERVICE_ENTRY_PATH, request) : NextResponse.next();
   }
 
