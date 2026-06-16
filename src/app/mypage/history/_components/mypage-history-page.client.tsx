@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { type InfiniteData, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import {
   mypageQueryKeys,
@@ -29,6 +29,7 @@ import { FooterWidget } from "@/widgets/footer/ui";
 import { HeaderWidget } from "@/widgets/header/ui";
 
 const HISTORY_QUERY_PARAMS = {};
+type MyBookmarksInfiniteData = InfiniteData<MyBookmarkListResponse, string | null>;
 
 export default function MypageHistoryPageClient() {
   const [selectedTab, setSelectedTab] = useState<MypageHistoryTab>("posts");
@@ -43,13 +44,16 @@ export default function MypageHistoryPageClient() {
     mutationFn: deleteBookmarkWithAuth,
     onMutate: async ({ postId }) => {
       await queryClient.cancelQueries({ queryKey: bookmarksQueryKey });
-      const previousBookmarks = queryClient.getQueryData<MyBookmarkListResponse>(bookmarksQueryKey);
+      const previousBookmarks = queryClient.getQueryData<MyBookmarksInfiniteData>(bookmarksQueryKey);
 
-      queryClient.setQueryData<MyBookmarkListResponse>(bookmarksQueryKey, (current) =>
+      queryClient.setQueryData<MyBookmarksInfiniteData>(bookmarksQueryKey, (current) =>
         current
           ? {
               ...current,
-              posts: current.posts.filter((post) => post.postId !== postId),
+              pages: current.pages.map((page) => ({
+                ...page,
+                posts: page.posts.filter((post) => post.postId !== postId),
+              })),
             }
           : current,
       );
@@ -75,16 +79,16 @@ export default function MypageHistoryPageClient() {
 
   const items = useMemo<MypageHistoryItem[]>(() => {
     if (selectedTab === "comments") {
-      return commentsQuery.data?.comments.map(toCommentHistoryItem) ?? [];
+      return commentsQuery.data?.pages.flatMap((page) => page.comments.map(toCommentHistoryItem)) ?? [];
     }
     if (selectedTab === "bookmarks") {
-      return bookmarksQuery.data?.posts.map(toBookmarkHistoryItem) ?? [];
+      return bookmarksQuery.data?.pages.flatMap((page) => page.posts.map(toBookmarkHistoryItem)) ?? [];
     }
     if (selectedTab === "votes") {
-      return votesQuery.data?.votes.map(toVoteHistoryItem) ?? [];
+      return votesQuery.data?.pages.flatMap((page) => page.votes.map(toVoteHistoryItem)) ?? [];
     }
 
-    return postsQuery.data?.posts.map(toPostHistoryItem) ?? [];
+    return postsQuery.data?.pages.flatMap((page) => page.posts.map(toPostHistoryItem)) ?? [];
   }, [bookmarksQuery.data, commentsQuery.data, postsQuery.data, selectedTab, votesQuery.data]);
 
   if (mypageQuery.isPending) {
@@ -153,6 +157,11 @@ export default function MypageHistoryPageClient() {
               activeTab={selectedTab}
               items={items}
               onBookmarkRemove={(postId) => deleteBookmarkMutation.mutate({ postId })}
+              hasNextPage={activeQuery.hasNextPage}
+              isFetchingNextPage={activeQuery.isFetchingNextPage}
+              onLoadMore={() => {
+                activeQuery.fetchNextPage();
+              }}
             />
           )}
         </section>

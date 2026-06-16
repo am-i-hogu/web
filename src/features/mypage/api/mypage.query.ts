@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/features/auth/model";
 import { createDomainQueryKeys, unwrapApiResult } from "@/shared/api";
 import { checkNicknameAction, createUserAction } from "./mypage.action";
@@ -73,17 +73,25 @@ export function useGetHoguReportQuery() {
 }
 
 export function useGetMyBookmarksQuery(params: GetMyBookmarksQueryParams = {}, enabled = true) {
-  return useQuery({
-    queryKey: mypageQueryKeys.myBookmarks(params),
-    queryFn: () => getMyBookmarksWithAuth(params),
+  const { cursor: _cursor, ...baseParams } = params;
+
+  return useInfiniteQuery({
+    queryKey: mypageQueryKeys.myBookmarks(baseParams),
+    queryFn: ({ pageParam }) => getMyBookmarksWithAuth({ ...baseParams, cursor: pageParam }),
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => (lastPage.hasNext ? lastPage.nextCursor : undefined),
     enabled,
   });
 }
 
 export function useGetMyCommentsQuery(params: GetMyCommentsQueryParams = {}, enabled = true) {
-  return useQuery({
-    queryKey: mypageQueryKeys.myComments(params),
-    queryFn: () => getMyCommentsWithAuth(params),
+  const { cursor: _cursor, ...baseParams } = params;
+
+  return useInfiniteQuery({
+    queryKey: mypageQueryKeys.myComments(baseParams),
+    queryFn: ({ pageParam }) => getMyCommentsWithAuth({ ...baseParams, cursor: pageParam }),
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => (lastPage.hasNext ? lastPage.nextCursor : undefined),
     enabled,
   });
 }
@@ -96,17 +104,25 @@ export function useGetMyPageQuery() {
 }
 
 export function useGetMyPostsQuery(params: GetMyPostsQueryParams = {}, enabled = true) {
-  return useQuery({
-    queryKey: mypageQueryKeys.myPosts(params),
-    queryFn: () => getMyPostsWithAuth(params),
+  const { cursor: _cursor, ...baseParams } = params;
+
+  return useInfiniteQuery({
+    queryKey: mypageQueryKeys.myPosts(baseParams),
+    queryFn: ({ pageParam }) => getMyPostsWithAuth({ ...baseParams, cursor: pageParam }),
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => (lastPage.hasNext ? lastPage.nextCursor : undefined),
     enabled,
   });
 }
 
 export function useGetMyVotesQuery(params: GetMyVotesQueryParams = {}, enabled = true) {
-  return useQuery({
-    queryKey: mypageQueryKeys.myVotes(params),
-    queryFn: () => getMyVotesWithAuth(params),
+  const { cursor: _cursor, ...baseParams } = params;
+
+  return useInfiniteQuery({
+    queryKey: mypageQueryKeys.myVotes(baseParams),
+    queryFn: ({ pageParam }) => getMyVotesWithAuth({ ...baseParams, cursor: pageParam }),
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => (lastPage.hasNext ? lastPage.nextCursor : undefined),
     enabled,
   });
 }

@@ -1,15 +1,21 @@
+"use client";
+
 import { clsx } from "clsx";
+import { useEffect, useRef } from "react";
 import BookmarkFillIcon from "@/assets/icons/bookmark-simple-fill.svg";
 import ChatIcon from "@/assets/icons/chat.svg";
 import { MYPAGE_HISTORY_RESULT_COPY } from "@/features/mypage/history/constants";
 import type { HistoryResult, MypageHistoryItem, MypageHistoryTab } from "@/features/mypage/history/model";
-import { EmptyState, Tag } from "@/shared/ui";
+import { EmptyState, LoadingState, Tag } from "@/shared/ui";
 import { cn } from "@/shared/utils";
 
 type MypageHistorySectionProps = {
   activeTab: MypageHistoryTab;
   items: MypageHistoryItem[];
   onBookmarkRemove?: (postId: number) => void;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
+  onLoadMore?: () => void;
 };
 
 function HistoryCategoryPill({ children, size = "default" }: { children: string; size?: "default" | "sm" }) {
@@ -137,7 +143,39 @@ function renderHistoryCard(
   return <PostHistoryCard item={item} />;
 }
 
-export function MypageHistorySection({ activeTab, items, onBookmarkRemove }: MypageHistorySectionProps) {
+export function MypageHistorySection({
+  activeTab,
+  items,
+  onBookmarkRemove,
+  hasNextPage = false,
+  isFetchingNextPage = false,
+  onLoadMore,
+}: MypageHistorySectionProps) {
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!hasNextPage || isFetchingNextPage || !onLoadMore) {
+      return;
+    }
+
+    const target = loadMoreRef.current;
+    if (!target) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          onLoadMore();
+        }
+      },
+      { rootMargin: "160px 0px" },
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, onLoadMore]);
+
   if (items.length === 0) {
     return (
       <section aria-labelledby="mypage-history-heading">
@@ -159,6 +197,8 @@ export function MypageHistorySection({ activeTab, items, onBookmarkRemove }: Myp
           <li key={item.id}>{renderHistoryCard(activeTab, item, onBookmarkRemove)}</li>
         ))}
       </ul>
+      {hasNextPage ? <div ref={loadMoreRef} aria-hidden className="h-6" /> : null}
+      {isFetchingNextPage ? <LoadingState className="min-h-20" /> : null}
     </section>
   );
 }
