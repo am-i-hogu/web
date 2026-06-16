@@ -1,11 +1,11 @@
 "use client";
 
 import { clsx } from "clsx";
-import { useEffect, useRef } from "react";
 import BookmarkFillIcon from "@/assets/icons/bookmark-simple-fill.svg";
 import ChatIcon from "@/assets/icons/chat.svg";
 import { MYPAGE_HISTORY_RESULT_COPY } from "@/features/mypage/history/constants";
 import type { HistoryResult, MypageHistoryItem, MypageHistoryTab } from "@/features/mypage/history/model";
+import { useInfiniteScrollObserver } from "@/shared/hooks";
 import { EmptyState, LoadingState, Tag } from "@/shared/ui";
 import { cn } from "@/shared/utils";
 
@@ -151,30 +151,11 @@ export function MypageHistorySection({
   isFetchingNextPage = false,
   onLoadMore,
 }: MypageHistorySectionProps) {
-  const loadMoreRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!hasNextPage || isFetchingNextPage || !onLoadMore) {
-      return;
-    }
-
-    const target = loadMoreRef.current;
-    if (!target) {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) {
-          onLoadMore();
-        }
-      },
-      { rootMargin: "160px 0px" },
-    );
-
-    observer.observe(target);
-    return () => observer.disconnect();
-  }, [hasNextPage, isFetchingNextPage, onLoadMore]);
+  const loadMoreRef = useInfiniteScrollObserver({
+    enabled: hasNextPage,
+    isFetching: isFetchingNextPage,
+    onIntersect: onLoadMore,
+  });
 
   if (items.length === 0) {
     return (
@@ -197,7 +178,7 @@ export function MypageHistorySection({
           <li key={item.id}>{renderHistoryCard(activeTab, item, onBookmarkRemove)}</li>
         ))}
       </ul>
-      {hasNextPage ? <div ref={loadMoreRef} aria-hidden className="h-6" /> : null}
+      <div ref={loadMoreRef} aria-hidden className="h-6" />
       {isFetchingNextPage ? <LoadingState className="min-h-20" /> : null}
     </section>
   );
