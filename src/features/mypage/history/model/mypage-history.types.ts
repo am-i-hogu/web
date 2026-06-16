@@ -1,3 +1,5 @@
+import type { PostCategoryValue } from "@/features/post/constants";
+
 export type VoteSummary = "HOGU" | "NOT_HOGU" | "TIE" | "NONE";
 export type MyVote = "HOGU" | "NOT_HOGU";
 
@@ -13,6 +15,7 @@ export type MypagePostHistoryResponse = {
 export type MypageHistoryPostResponse = {
   postId: number;
   title: string;
+  category: PostCategoryValue;
   createdAt: string;
   voteSummary: VoteSummary;
   commentCount: number;
@@ -29,8 +32,10 @@ export type MypageHistoryCommentResponse = {
   content: string;
   createdAt: string;
   post: {
-    postId: number | string;
+    postId: number;
     title: string;
+    category: PostCategoryValue;
+    commentCount: number;
     isDeleted: boolean;
   };
 };
@@ -47,12 +52,15 @@ export type MypageHistoryVoteResponse = {
   post: {
     postId: number;
     title: string;
+    category: PostCategoryValue;
+    commentCount: number;
     isDeleted: boolean;
   };
 };
 
 export type MypageHistoryItem = {
   id: string;
+  postId: number;
   category: string;
   title: string;
   createdAtLabel: string;

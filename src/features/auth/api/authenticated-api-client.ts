@@ -114,6 +114,7 @@ export async function authenticatedApiClient<T>(path: string, options: ApiClient
   try {
     return await apiClient<T>(path, {
       ...options,
+      credentials: options.credentials ?? "include",
       headers: createAuthenticatedHeaders(options.headers, accessToken),
     });
   } catch (error) {
@@ -142,6 +143,7 @@ export async function authenticatedApiClient<T>(path: string, options: ApiClient
     // 갱신된 access token으로 원래 요청을 다시 보낸다.
     return await apiClient<T>(path, {
       ...options,
+      credentials: options.credentials ?? "include",
       headers: createAuthenticatedHeaders(options.headers, reissueResponse.accessToken),
     });
   }
