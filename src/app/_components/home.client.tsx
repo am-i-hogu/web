@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import SectionPlusIcon from "@/assets/icons/selection-plus.svg";
-import { type GetHomePostsParams, useHomePostsInfiniteQuery } from "@/features/post/api";
+import { type GetHomePostsParams, useHomePostsInfiniteQuery, useTogglePostBookmarkMutation } from "@/features/post/api";
 import { POST_CATEGORY_VALUE_BY_LABEL, type PostCategoryLabel } from "@/features/post/constants";
 import { getPrimaryPostCategoryLabel } from "@/features/post/model";
 import { useInfiniteScrollObserver } from "@/shared/hooks";
@@ -18,8 +18,7 @@ import {
 } from "@/shared/ui";
 import { formatRelativeTime } from "@/shared/utils/format";
 import { FooterWidget } from "@/widgets/footer/ui";
-import type { SubHeadingWidgetProps } from "@/widgets/sub-heading/ui/sub-heading.widget";
-import { SubHeadingWidget } from "@/widgets/sub-heading/ui/sub-heading.widget";
+import { SubHeadingWidget, type SubHeadingWidgetProps } from "@/widgets/sub-heading/ui/sub-heading.widget";
 
 type HomeCategory = Extract<NonNullable<SubHeadingWidgetProps["selectedOptions"]>[number], PostCategoryLabel>;
 type HomeSortValue = NonNullable<SubHeadingWidgetProps["sortValue"]>;
@@ -37,6 +36,9 @@ const HOME_SORT_QUERY_BY_VALUE: Record<
 export default function HomePageClient() {
   const [selectedCategories, setSelectedCategories] = useState<HomeCategory[]>([]);
   const [sortValue, setSortValue] = useState<HomeSortValue>("latest");
+  const bookmarkMutation = useTogglePostBookmarkMutation();
+
+  // 화면 필터 값을 백엔드 홈 피드 query parameter로 변환한다.
   const selectedCategoryQuery = selectedCategories.map((category) => POST_CATEGORY_VALUE_BY_LABEL[category]).join(",");
 
   const homePostsQuery = useHomePostsInfiniteQuery({
@@ -44,9 +46,10 @@ export default function HomePageClient() {
     sortBy: HOME_SORT_QUERY_BY_VALUE[sortValue],
     pageSize: 10,
   });
+
+  // infinite query 응답을 화면에서 바로 순회할 수 있도록 단일 목록으로 평탄화한다.
   const posts = useMemo(() => homePostsQuery.data?.pages.flatMap((page) => page.posts) ?? [], [homePostsQuery.data]);
   const totalCount = homePostsQuery.data?.pages[0]?.totalPostCount ?? posts.length;
-  const hasPosts = posts.length > 0;
   const loadMoreRef = useInfiniteScrollObserver({
     enabled: Boolean(homePostsQuery.hasNextPage),
     isFetching: homePostsQuery.isFetchingNextPage,
@@ -85,7 +88,7 @@ export default function HomePageClient() {
               </Button>
             }
           />
-        ) : hasPosts ? (
+        ) : posts.length > 0 ? (
           <section className="space-y-3" aria-labelledby="home-posts-heading">
             <h2 id="home-posts-heading" className="sr-only">
               게시글 목록
@@ -93,16 +96,20 @@ export default function HomePageClient() {
             <ul className="space-y-9">
               {posts.map((post) => (
                 <li key={post.postId}>
-                  <Link href={`/post/${post.postId}`} className="block">
-                    <ContentCard>
-                      <ContentCardHeader
-                        authorName={post.writer.nickname}
-                        authorImage={post.writer.profileImageUrl || undefined}
-                        category={getPrimaryPostCategoryLabel(post)}
-                        meta={formatRelativeTime(post.createdAt)}
-                        viewCount={post.viewCount}
-                        isBookmarked={post.isBookmarked}
-                      />
+                  <ContentCard>
+                    <ContentCardHeader
+                      authorName={post.writer.nickname}
+                      authorImage={post.writer.profileImageUrl || undefined}
+                      category={getPrimaryPostCategoryLabel(post)}
+                      meta={formatRelativeTime(post.createdAt)}
+                      viewCount={post.viewCount}
+                      isBookmarked={post.isBookmarked}
+                      isBookmarking={bookmarkMutation.isPending}
+                      onBookmarkToggle={() =>
+                        bookmarkMutation.mutate({ postId: post.postId, isBookmarked: post.isBookmarked })
+                      }
+                    />
+                    <Link href={`/post/${post.postId}`} className="block">
                       <ContentCardBody
                         title={post.title}
                         description={post.contentPreview}
@@ -118,9 +125,9 @@ export default function HomePageClient() {
                         }
                         imageContainerClassName="rounded-[8px] bg-bg-02"
                       />
-                      <ContentCardFooter votes={post.totalVoteCount} comments={post.commentCount} />
-                    </ContentCard>
-                  </Link>
+                      <ContentCardFooter votes={post.totalVoteCount} comments={post.commentCount} className="mt-4" />
+                    </Link>
+                  </ContentCard>
                 </li>
               ))}
             </ul>
