@@ -230,14 +230,16 @@ export function PostCommentCard(props: PostCommentCardProps) {
       </div>
       {renderCommentBody(comment)}
 
-      {!comment.isDeleted && !comment.isMine ? (
+      {!comment.isDeleted ? (
         <div className="mt-3 flex items-center gap-2">
-          <InteractiveHelpfulChip
-            count={commentHelpful.count}
-            active={commentHelpful.active}
-            disabled={isCommentHelpfulPending}
-            onToggle={toggleCommentHelpful}
-          />
+          {!comment.isMine ? (
+            <InteractiveHelpfulChip
+              count={commentHelpful.count}
+              active={commentHelpful.active}
+              disabled={isCommentHelpfulPending}
+              onToggle={toggleCommentHelpful}
+            />
+          ) : null}
           <button type="button" className="text-small-m text-text-03" onClick={() => setIsReplyOpen((prev) => !prev)}>
             {isReplyOpen ? "답글 닫기" : "답글 달기"}
           </button>
