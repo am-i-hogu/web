@@ -158,6 +158,7 @@ export default function MypageHistoryPageClient() {
               items={items}
               onBookmarkRemove={(postId) => deleteBookmarkMutation.mutate({ postId })}
               hasNextPage={activeQuery.hasNextPage}
+              isFetching={activeQuery.isFetching}
               isFetchingNextPage={activeQuery.isFetchingNextPage}
               onLoadMore={() => {
                 activeQuery.fetchNextPage();

@@ -47,7 +47,7 @@ export default function HomePageClient() {
   const totalCount = homePostsQuery.data?.pages[0]?.totalPostCount ?? posts.length;
   const loadMoreRef = useInfiniteScrollObserver({
     enabled: Boolean(homePostsQuery.hasNextPage),
-    isFetching: homePostsQuery.isFetchingNextPage,
+    isFetching: homePostsQuery.isFetching,
     onIntersect: homePostsQuery.fetchNextPage,
   });
 

@@ -14,6 +14,7 @@ type MypageHistorySectionProps = {
   items: MypageHistoryItem[];
   onBookmarkRemove?: (postId: number) => void;
   hasNextPage?: boolean;
+  isFetching?: boolean;
   isFetchingNextPage?: boolean;
   onLoadMore?: () => void;
 };
@@ -148,12 +149,13 @@ export function MypageHistorySection({
   items,
   onBookmarkRemove,
   hasNextPage = false,
+  isFetching = false,
   isFetchingNextPage = false,
   onLoadMore,
 }: MypageHistorySectionProps) {
   const loadMoreRef = useInfiniteScrollObserver({
     enabled: hasNextPage,
-    isFetching: isFetchingNextPage,
+    isFetching,
     onIntersect: onLoadMore,
   });
 

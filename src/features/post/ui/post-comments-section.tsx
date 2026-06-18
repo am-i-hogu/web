@@ -22,6 +22,7 @@ export type PostCommentsSectionProps = ComponentProps<"section"> & {
   onToggleHelpful: (comment: CommentItemResponse) => Promise<{ isHelpful: boolean; totalHelpfulCount: number }>;
   isCreatingComment?: boolean;
   hasNextPage?: boolean;
+  isFetching?: boolean;
   isFetchingNextPage?: boolean;
   onLoadMore?: () => Promise<unknown>;
 };
@@ -47,6 +48,7 @@ export function PostCommentsSection(props: PostCommentsSectionProps) {
     onToggleHelpful,
     isCreatingComment = false,
     hasNextPage = false,
+    isFetching = false,
     isFetchingNextPage = false,
     onLoadMore,
     className,
@@ -55,7 +57,7 @@ export function PostCommentsSection(props: PostCommentsSectionProps) {
   const comments = commentsResponse.comments;
   const loadMoreRef = useInfiniteScrollObserver({
     enabled: hasNextPage,
-    isFetching: isFetchingNextPage,
+    isFetching,
     onIntersect: onLoadMore,
   });
   const rootComments = useMemo(() => {

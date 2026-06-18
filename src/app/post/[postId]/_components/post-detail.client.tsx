@@ -224,6 +224,7 @@ export default function PostDetailPageClient({ postId }: PostDetailPageClientPro
             onToggleHelpful={commentsState.handleToggleCommentHelpful}
             isCreatingComment={commentsState.isCreatingComment}
             hasNextPage={Boolean(commentsState.commentsQuery.hasNextPage)}
+            isFetching={commentsState.commentsQuery.isFetching}
             isFetchingNextPage={commentsState.commentsQuery.isFetchingNextPage}
             onLoadMore={commentsState.handleLoadMoreComments}
           />
