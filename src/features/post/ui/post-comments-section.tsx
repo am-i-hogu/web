@@ -3,14 +3,13 @@
 import type { ComponentProps } from "react";
 import { useMemo } from "react";
 import ChatIcon from "@/assets/icons/chat.svg";
+import { COMMENT_SORT_OPTIONS, type PostCommentSortValue } from "@/features/post/constants";
 import { PostCommentCard } from "@/features/post/ui/post-comment-card";
 import { PostCommentForm } from "@/features/post/ui/post-comment-form";
 import type { CommentItemResponse, CommentReadResponse } from "@/shared/api/generated";
 import { useInfiniteScrollObserver } from "@/shared/hooks";
-import { SortSelect, type SortSelectOption } from "@/shared/ui";
+import { SortSelect } from "@/shared/ui";
 import { cn } from "@/shared/utils";
-
-export type PostCommentSortValue = "latest" | "helpful";
 
 export type PostCommentsSectionProps = ComponentProps<"section"> & {
   commentsResponse: CommentReadResponse;
@@ -26,11 +25,6 @@ export type PostCommentsSectionProps = ComponentProps<"section"> & {
   isFetchingNextPage?: boolean;
   onLoadMore?: () => Promise<unknown>;
 };
-
-const COMMENT_SORT_OPTIONS = [
-  { value: "latest", label: "최신순" },
-  { value: "helpful", label: "유익해요순" },
-] satisfies readonly SortSelectOption<PostCommentSortValue>[];
 
 function EmptyComments() {
   return (

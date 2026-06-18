@@ -3,8 +3,13 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import SectionPlusIcon from "@/assets/icons/selection-plus.svg";
-import { type GetHomePostsParams, useHomePostsInfiniteQuery, useTogglePostBookmarkMutation } from "@/features/post/api";
-import { POST_CATEGORY_VALUE_BY_LABEL, type PostCategoryLabel } from "@/features/post/constants";
+import { useHomePostsInfiniteQuery, useTogglePostBookmarkMutation } from "@/features/post/api";
+import {
+  POST_CATEGORY_VALUE_BY_LABEL,
+  POST_LIST_PAGE_SIZE,
+  POST_SORT_QUERY_BY_VALUE,
+  type PostCategoryLabel,
+} from "@/features/post/constants";
 import { getPrimaryPostCategoryLabel } from "@/features/post/model";
 import { useInfiniteScrollObserver } from "@/shared/hooks";
 import {
@@ -23,16 +28,6 @@ import { SubHeadingWidget, type SubHeadingWidgetProps } from "@/widgets/sub-head
 type HomeCategory = Extract<NonNullable<SubHeadingWidgetProps["selectedOptions"]>[number], PostCategoryLabel>;
 type HomeSortValue = NonNullable<SubHeadingWidgetProps["sortValue"]>;
 
-const HOME_SORT_QUERY_BY_VALUE: Record<
-  HomeSortValue,
-  "LATEST" | "MOST_VIEWED" | "MOST_COMMENTED" | "MOST_PARTICIPATED"
-> = {
-  latest: "LATEST",
-  views: "MOST_VIEWED",
-  comments: "MOST_COMMENTED",
-  votes: "MOST_PARTICIPATED",
-};
-
 export default function HomePageClient() {
   const [selectedCategories, setSelectedCategories] = useState<HomeCategory[]>([]);
   const [sortValue, setSortValue] = useState<HomeSortValue>("latest");
@@ -42,9 +37,9 @@ export default function HomePageClient() {
   const selectedCategoryQuery = selectedCategories.map((category) => POST_CATEGORY_VALUE_BY_LABEL[category]).join(",");
 
   const homePostsQuery = useHomePostsInfiniteQuery({
-    categories: (selectedCategoryQuery || null) as GetHomePostsParams["categories"],
-    sortBy: HOME_SORT_QUERY_BY_VALUE[sortValue],
-    pageSize: 10,
+    categories: selectedCategoryQuery || null,
+    sortBy: POST_SORT_QUERY_BY_VALUE[sortValue],
+    pageSize: POST_LIST_PAGE_SIZE,
   });
 
   // infinite query 응답을 화면에서 바로 순회할 수 있도록 단일 목록으로 평탄화한다.
