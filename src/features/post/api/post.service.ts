@@ -7,7 +7,10 @@ import type {
   PostDetailResponse,
 } from "@/shared/api/generated";
 
-export type GetHomePostsParams = GetHomePostsQuery;
+export type GetHomePostsParams = Omit<GetHomePostsQuery, "categories"> & {
+  /** 쉼표로 구분된 카테고리 코드들 */
+  categories?: string | null;
+};
 export type GetCommentsParams = GetCommentsQuery;
 
 export async function getHomePosts(params: GetHomePostsParams = {}) {
