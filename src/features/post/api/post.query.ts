@@ -49,13 +49,6 @@ type TogglePostBookmarkVariables = {
   isBookmarked: boolean;
 };
 
-export function useHomePostsQuery(params: GetHomePostsParams = {}) {
-  return useQuery({
-    queryKey: postQueryKeys.list(params),
-    queryFn: () => getHomePostsAction(params).then(unwrapApiResult),
-  });
-}
-
 export function useHomePostsInfiniteQuery(params: Omit<GetHomePostsParams, "cursor"> = {}) {
   // 홈 피드 무한 스크롤 쿼리: cursor는 query 내부 pageParam으로만 관리한다.
   return useInfiniteQuery({
