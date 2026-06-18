@@ -110,7 +110,10 @@ export function usePostDetailComments(params: UsePostDetailCommentsParams) {
     try {
       return await toggleCommentHelpfulMutation.mutateAsync(comment);
     } catch (error) {
-      onAuthRequired(error);
+      if (!onAuthRequired(error)) {
+        throw error;
+      }
+
       return {
         isHelpful: comment.isHelpful,
         totalHelpfulCount: comment.totalHelpfulCount,
