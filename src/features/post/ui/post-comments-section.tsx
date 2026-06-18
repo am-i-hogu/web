@@ -6,7 +6,8 @@ import ChatIcon from "@/assets/icons/chat.svg";
 import { PostCommentCard } from "@/features/post/ui/post-comment-card";
 import { PostCommentForm } from "@/features/post/ui/post-comment-form";
 import type { CommentItemResponse, CommentReadResponse } from "@/shared/api/generated";
-import { useInfiniteScrollObserver } from "@/shared/hooks";
+// TODO: 공용 useInfiniteScrollObserver가 홈 피드 PR에 포함되면 주석을 해제해 댓글 무한스크롤도 다시 연결한다.
+// import { useInfiniteScrollObserver } from "@/shared/hooks";
 import { SortSelect, type SortSelectOption } from "@/shared/ui";
 import { cn } from "@/shared/utils";
 
@@ -59,11 +60,11 @@ export function PostCommentsSection(props: PostCommentsSectionProps) {
     ...rest
   } = props;
   const comments = commentsResponse.comments;
-  const loadMoreRef = useInfiniteScrollObserver({
-    enabled: hasNextPage,
-    isFetching: isFetchingNextPage,
-    onIntersect: onLoadMore,
-  });
+  // const loadMoreRef = useInfiniteScrollObserver({
+  //   enabled: hasNextPage,
+  //   isFetching: isFetchingNextPage,
+  //   onIntersect: onLoadMore,
+  // });
   const rootComments = useMemo(() => {
     const roots = comments.filter((comment) => comment.parentId === null);
     const sorted = [...roots];
@@ -133,9 +134,9 @@ export function PostCommentsSection(props: PostCommentsSectionProps) {
       ) : (
         <EmptyComments />
       )}
-      <div ref={loadMoreRef} className="flex min-h-8 items-center justify-center py-2">
+      {/* <div ref={loadMoreRef} className="flex min-h-8 items-center justify-center py-2">
         {isFetchingNextPage ? <span className="text-caption-m text-text-03">댓글을 더 불러오는 중...</span> : null}
-      </div>
+      </div> */}
     </section>
   );
 }
