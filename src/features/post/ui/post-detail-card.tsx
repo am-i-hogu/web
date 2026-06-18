@@ -30,7 +30,11 @@ export type PostDetailHeaderProps = {
   meta: string;
   viewCount: number;
   isBookmarked?: boolean;
+  isBookmarking?: boolean;
   isMine?: boolean;
+  isDeleting?: boolean;
+  onBookmarkToggle?: () => void;
+  onDelete?: () => void;
   className?: string;
 };
 
@@ -40,7 +44,19 @@ function IconButton(props: ComponentProps<"button">) {
 }
 
 export function PostDetailHeader(props: PostDetailHeaderProps) {
-  const { postId, category, meta, viewCount, isBookmarked = false, isMine = false, className } = props;
+  const {
+    postId,
+    category,
+    meta,
+    viewCount,
+    isBookmarked = false,
+    isBookmarking = false,
+    isMine = false,
+    isDeleting = false,
+    onBookmarkToggle,
+    onDelete,
+    className,
+  } = props;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -87,7 +103,12 @@ export function PostDetailHeader(props: PostDetailHeaderProps) {
           </li>
         </ul>
         <div className="inline-flex items-center gap-3 text-text-03">
-          <IconButton aria-label="북마크">
+          <IconButton
+            aria-label={isBookmarked ? "북마크 해제" : "북마크"}
+            aria-pressed={isBookmarked}
+            disabled={isBookmarking}
+            onClick={onBookmarkToggle}
+          >
             {isBookmarked ? (
               <BookmarkFillIcon aria-hidden className={cn(iconClassName, "text-text-03")} />
             ) : (
@@ -119,6 +140,7 @@ export function PostDetailHeader(props: PostDetailHeaderProps) {
                   <button
                     type="button"
                     className="mt-1 block w-full py-1 text-left text-body-m text-danger focus:outline-none focus-visible:outline-none focus-visible:ring-0"
+                    disabled={isDeleting}
                     onClick={() => {
                       setIsMenuOpen(false);
                       setIsDeleteModalOpen(true);
@@ -141,7 +163,11 @@ export function PostDetailHeader(props: PostDetailHeaderProps) {
         open={isDeleteModalOpen}
         mode="post"
         onClose={() => setIsDeleteModalOpen(false)}
-        onConfirmDelete={() => setIsDeleteModalOpen(false)}
+        confirmText={isDeleting ? "삭제 중" : "삭제하기"}
+        onConfirmDelete={() => {
+          onDelete?.();
+          setIsDeleteModalOpen(false);
+        }}
       />
     </>
   );
