@@ -230,7 +230,7 @@ export function PostCommentCard(props: PostCommentCardProps) {
       </div>
       {renderCommentBody(comment)}
 
-      {!comment.isDeleted ? (
+      {!comment.isDeleted && !comment.isMine ? (
         <div className="mt-3 flex items-center gap-2">
           <InteractiveHelpfulChip
             count={commentHelpful.count}
@@ -288,7 +288,7 @@ export function PostCommentCard(props: PostCommentCardProps) {
               ) : null}
             </div>
             {renderCommentBody(reply, true)}
-            {!reply.isDeleted ? (
+            {!reply.isDeleted && !reply.isMine ? (
               <div className="mt-2">
                 <InteractiveHelpfulChip
                   count={replyHelpful.count}
