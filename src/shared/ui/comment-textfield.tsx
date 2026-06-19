@@ -49,6 +49,7 @@ export function CommentTextfield(props: CommentTextfieldProps) {
   return (
     <form onSubmit={onSubmit} className={cn("flex w-full items-center gap-2 rounded-[12px]", className)}>
       <div
+        data-slot="comment-textfield-surface"
         className={cn(
           "flex h-[44px] flex-1 items-center rounded-common-radius px-3 py-2",
           isReply ? "bg-bg-03" : "bg-bg-02",
@@ -67,7 +68,7 @@ export function CommentTextfield(props: CommentTextfieldProps) {
           readOnly={isReadOnly}
           disabled={isDisabled}
           placeholder={isDisabled ? "의견을 남길 수 없습니다." : resolvedPlaceholder}
-          className="text-caption-m placeholder:text-text-03 disabled:placeholder:text-text-02"
+          className="text-body-r text-text-04 placeholder:text-text-02 disabled:placeholder:text-text-02"
         />
       </div>
 
