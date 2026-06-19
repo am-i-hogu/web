@@ -34,13 +34,23 @@ export default function HomePageClient() {
   const bookmarkMutation = useTogglePostBookmarkMutation();
 
   // 화면 필터 값을 백엔드 홈 피드 query parameter로 변환한다.
-  const selectedCategoryQuery = selectedCategories.map((category) => POST_CATEGORY_VALUE_BY_LABEL[category]).join(",");
+  const selectedCategoryQuery = useMemo(
+    () =>
+      selectedCategories.length > 0
+        ? selectedCategories.map((category) => POST_CATEGORY_VALUE_BY_LABEL[category]).join(",")
+        : undefined,
+    [selectedCategories],
+  );
+  const homePostsParams = useMemo(
+    () => ({
+      categories: selectedCategoryQuery,
+      sortBy: POST_SORT_QUERY_BY_VALUE[sortValue],
+      pageSize: POST_LIST_PAGE_SIZE,
+    }),
+    [selectedCategoryQuery, sortValue],
+  );
 
-  const homePostsQuery = usePostListInfiniteQuery({
-    categories: selectedCategoryQuery || null,
-    sortBy: POST_SORT_QUERY_BY_VALUE[sortValue],
-    pageSize: POST_LIST_PAGE_SIZE,
-  });
+  const homePostsQuery = usePostListInfiniteQuery(homePostsParams);
 
   // infinite query 응답을 화면에서 바로 순회할 수 있도록 단일 목록으로 평탄화한다.
   const posts = useMemo(() => homePostsQuery.data?.pages.flatMap((page) => page.posts) ?? [], [homePostsQuery.data]);
