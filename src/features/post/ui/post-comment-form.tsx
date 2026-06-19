@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { Button, CommentTextfield } from "@/shared/ui";
 
 export const COMMENT_CONTENT_MAX_LENGTH = 300;
@@ -39,8 +39,8 @@ export function PostCommentForm(props: PostCommentFormProps) {
   } = props;
   const {
     formState: { isSubmitting: isFormSubmitting },
+    control,
     handleSubmit,
-    register,
     reset,
     watch,
   } = useForm<CommentFormData>({
@@ -48,12 +48,11 @@ export function PostCommentForm(props: PostCommentFormProps) {
       content: initialContent,
     },
   });
-  const content = watch("content");
+  const content = watch("content") ?? "";
   const trimmedContent = content.trim();
   const isPending = isSubmitting || isFormSubmitting;
   const isUnchanged = initialContent.trim().length > 0 && trimmedContent === initialContent.trim();
   const isSubmitDisabled = !isValidCommentContent(content) || isUnchanged || isPending;
-  const contentField = register("content");
 
   useEffect(() => {
     reset({ content: initialContent });
@@ -70,23 +69,37 @@ export function PostCommentForm(props: PostCommentFormProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      <CommentTextfield
-        name={contentField.name}
-        value={content}
-        onBlur={contentField.onBlur}
-        onChange={contentField.onChange}
-        onSubmit={submit}
-        isReply={isReply}
-        ariaLabel={ariaLabel}
-        submitDisabled={isSubmitDisabled}
-        isSubmitting={isPending}
+      <Controller
+        name="content"
+        control={control}
+        render={({ field }) => (
+          <CommentTextfield
+            name={field.name}
+            value={field.value ?? ""}
+            onBlur={field.onBlur}
+            onChange={field.onChange}
+            onSubmit={submit}
+            isReply={isReply}
+            ariaLabel={ariaLabel}
+            submitDisabled={isSubmitDisabled}
+            isSubmitting={isPending}
+            className={showActions ? "[&_[data-slot='comment-textfield-surface']]:bg-bg-03" : undefined}
+          />
+        )}
       />
       {showActions ? (
         <div className="flex justify-end gap-2">
-          <Button type="button" variant="inactive" size="chip" onClick={onCancel}>
+          <Button type="button" variant="chip" size="chip" className="bg-transparent text-text-04" onClick={onCancel}>
             취소
           </Button>
-          <Button type="button" variant="primary" size="chip" disabled={isSubmitDisabled} onClick={submit}>
+          <Button
+            type="button"
+            variant="primary"
+            size="chip"
+            className="bg-primary-strong hover:bg-primary-strong disabled:bg-bg-03 disabled:text-text-02"
+            disabled={isSubmitDisabled}
+            onClick={submit}
+          >
             {submitLabel}
           </Button>
         </div>

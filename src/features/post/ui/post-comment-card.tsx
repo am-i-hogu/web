@@ -7,20 +7,24 @@ import { useCommentHelpfulState } from "@/features/post/hooks";
 import { PostDeleteModal, type PostDeleteMode } from "@/features/post/ui/contents-delete-modal";
 import { PostCommentForm } from "@/features/post/ui/post-comment-form";
 import type { CommentItemResponse } from "@/shared/api/generated";
+import { useToastStore } from "@/shared/model";
 import { Tag } from "@/shared/ui";
 import { cn } from "@/shared/utils";
-import { formatRelativeTime } from "@/shared/utils/format";
+import { formatRelativeTime, isEditedByTimestamp } from "@/shared/utils/format";
 import type { PostCommentsSectionProps } from "./post-comments-section";
+
+const COMMENT_BODY_TEXT_CLASS = "whitespace-pre-line text-caption-m text-text-03";
 
 type InteractiveHelpfulChipProps = {
   count: number;
   active?: boolean;
   disabled?: boolean;
+  title?: string;
   onToggle: () => void;
 };
 
 function InteractiveHelpfulChip(props: InteractiveHelpfulChipProps) {
-  const { count, active = false, disabled = false, onToggle } = props;
+  const { count, active = false, disabled = false, title, onToggle } = props;
 
   return (
     <Tag
@@ -31,11 +35,21 @@ function InteractiveHelpfulChip(props: InteractiveHelpfulChipProps) {
       disabled={disabled}
       onClick={onToggle}
       aria-pressed={active}
+      title={title}
       className="gap-1 disabled:opacity-60"
     >
       <ThumbsUpIcon aria-hidden className="size-4" strokeWidth={20} />
       유익해요 {count}
     </Tag>
+  );
+}
+
+function CommentMeta({ comment }: { comment: CommentItemResponse }) {
+  return (
+    <span className="text-[10px] leading-[1.5] text-text-03">
+      {formatRelativeTime(comment.createdAt)}
+      {!comment.isDeleted && isEditedByTimestamp(comment.createdAt, comment.updatedAt) ? " (수정됨)" : ""}
+    </span>
   );
 }
 
@@ -143,10 +157,11 @@ export type PostCommentCardProps = {
 
 export function PostCommentCard(props: PostCommentCardProps) {
   const { comment, replies, onCreateReply, onUpdateComment, onDeleteComment, onToggleHelpful } = props;
+  const showToast = useToastStore((state) => state.showToast);
   const [isReplyOpen, setIsReplyOpen] = useState(false);
   const [openActionMenuKey, setOpenActionMenuKey] = useState<string | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<{ mode: PostDeleteMode; commentId: number } | null>(null);
-  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ mode: PostDeleteMode; commentId: string | number } | null>(null);
+  const [editingCommentId, setEditingCommentId] = useState<string | number | null>(null);
   const {
     commentHelpful,
     isCommentHelpfulPending,
@@ -178,6 +193,10 @@ export function PostCommentCard(props: PostCommentCardProps) {
     setDeleteTarget(null);
   };
 
+  const showOwnHelpfulToast = (message: string) => {
+    showToast({ message, tone: "warning" });
+  };
+
   const renderCommentBody = (target: CommentItemResponse, isReply = false) => {
     const isEditing = editingCommentId === target.commentId;
     if (isEditing) {
@@ -198,7 +217,7 @@ export function PostCommentCard(props: PostCommentCardProps) {
     }
 
     return (
-      <p className={cn("whitespace-pre-line text-caption-m text-text-03", isReply ? "mt-2" : "mt-[11px]")}>
+      <p data-slot="post-comment-body" className={cn(COMMENT_BODY_TEXT_CLASS, isReply ? "mt-2" : "mt-[11px]")}>
         {target.isDeleted ? "삭제된 의견입니다." : target.content}
       </p>
     );
@@ -212,7 +231,7 @@ export function PostCommentCard(props: PostCommentCardProps) {
             {comment.writer.nickname}
             {comment.writer.isPostWriter ? <span className="ml-0.5 text-small-m">(작성자)</span> : null}
           </strong>
-          <span className="text-[10px] leading-[1.5] text-text-03">{formatRelativeTime(comment.createdAt)}</span>
+          <CommentMeta comment={comment} />
         </div>
         {comment.isMine && !comment.isDeleted ? (
           <CommentActionMenu
@@ -232,14 +251,20 @@ export function PostCommentCard(props: PostCommentCardProps) {
 
       {!comment.isDeleted ? (
         <div className="mt-3 flex items-center gap-2">
-          {!comment.isMine ? (
-            <InteractiveHelpfulChip
-              count={commentHelpful.count}
-              active={commentHelpful.active}
-              disabled={isCommentHelpfulPending}
-              onToggle={toggleCommentHelpful}
-            />
-          ) : null}
+          <InteractiveHelpfulChip
+            count={commentHelpful.count}
+            active={commentHelpful.active}
+            disabled={isCommentHelpfulPending}
+            title={comment.isMine ? "내 댓글에는 유익해요를 누를 수 없습니다." : undefined}
+            onToggle={() => {
+              if (comment.isMine) {
+                showOwnHelpfulToast("내 댓글에는 유익해요를 누를 수 없습니다.");
+                return;
+              }
+
+              toggleCommentHelpful();
+            }}
+          />
           <button type="button" className="text-small-m text-text-03" onClick={() => setIsReplyOpen((prev) => !prev)}>
             {isReplyOpen ? "답글 닫기" : "답글 달기"}
           </button>
@@ -260,7 +285,7 @@ export function PostCommentCard(props: PostCommentCardProps) {
       ) : null}
 
       {replies.map((reply) => {
-        const replyHelpful = replyHelpfulMap[reply.commentId] ?? {
+        const replyHelpful = replyHelpfulMap[String(reply.commentId)] ?? {
           active: reply.isHelpful,
           count: reply.totalHelpfulCount,
         };
@@ -273,7 +298,7 @@ export function PostCommentCard(props: PostCommentCardProps) {
                   {reply.writer.nickname}
                   {reply.writer.isPostWriter ? <span className="ml-0.5 text-small-m">(작성자)</span> : null}
                 </strong>
-                <span className="text-[10px] leading-[1.5] text-text-03">{formatRelativeTime(reply.createdAt)}</span>
+                <CommentMeta comment={reply} />
               </div>
               {reply.isMine && !reply.isDeleted ? (
                 <CommentActionMenu
@@ -290,13 +315,21 @@ export function PostCommentCard(props: PostCommentCardProps) {
               ) : null}
             </div>
             {renderCommentBody(reply, true)}
-            {!reply.isDeleted && !reply.isMine ? (
+            {!reply.isDeleted ? (
               <div className="mt-2">
                 <InteractiveHelpfulChip
                   count={replyHelpful.count}
                   active={replyHelpful.active}
                   disabled={pendingReplyHelpfulId === reply.commentId}
-                  onToggle={() => toggleReplyHelpful(reply)}
+                  title={reply.isMine ? "내 답글에는 유익해요를 누를 수 없습니다." : undefined}
+                  onToggle={() => {
+                    if (reply.isMine) {
+                      showOwnHelpfulToast("내 답글에는 유익해요를 누를 수 없습니다.");
+                      return;
+                    }
+
+                    toggleReplyHelpful(reply);
+                  }}
                 />
               </div>
             ) : null}

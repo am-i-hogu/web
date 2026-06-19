@@ -9,10 +9,13 @@ import {
   useUpdateCommentMutation,
 } from "@/features/post/api";
 import { COMMENT_PAGE_SIZE, COMMENT_SORT_QUERY_BY_VALUE, type PostCommentSortValue } from "@/features/post/constants";
+import type { CommentId } from "@/features/post/model";
+import { isApiError, toApiError } from "@/shared/api";
 import type { CommentItemResponse } from "@/shared/api/generated";
+import { useToastStore } from "@/shared/model";
 
 type UsePostDetailCommentsParams = {
-  postId: number;
+  postId: string | number;
   onAuthRequired: (error: unknown) => boolean;
 };
 
@@ -40,6 +43,7 @@ type UsePostDetailCommentsParams = {
  */
 export function usePostDetailComments(params: UsePostDetailCommentsParams) {
   const { postId, onAuthRequired } = params;
+  const showToast = useToastStore((state) => state.showToast);
   const [commentSortValue, setCommentSortValue] = useState<PostCommentSortValue>("latest");
   const commentsQuery = useCommentsInfiniteQuery(postId, {
     sortBy: COMMENT_SORT_QUERY_BY_VALUE[commentSortValue],
@@ -66,37 +70,37 @@ export function usePostDetailComments(params: UsePostDetailCommentsParams) {
       await createCommentMutation.mutateAsync({ parentId: null, content });
     } catch (error) {
       if (!onAuthRequired(error)) {
-        throw error;
+        showToast({ message: toApiError(error).message || "댓글 작성에 실패했습니다.", tone: "warning" });
       }
     }
   };
 
-  const handleCreateReply = async (parentId: number, content: string) => {
+  const handleCreateReply = async (parentId: CommentId, content: string) => {
     try {
       await createCommentMutation.mutateAsync({ parentId, content });
     } catch (error) {
       if (!onAuthRequired(error)) {
-        throw error;
+        showToast({ message: toApiError(error).message || "답글 작성에 실패했습니다.", tone: "warning" });
       }
     }
   };
 
-  const handleUpdateComment = async (commentId: number, content: string) => {
+  const handleUpdateComment = async (commentId: CommentId, content: string) => {
     try {
       await updateCommentMutation.mutateAsync({ commentId, content });
     } catch (error) {
       if (!onAuthRequired(error)) {
-        throw error;
+        showToast({ message: toApiError(error).message || "댓글 수정에 실패했습니다.", tone: "warning" });
       }
     }
   };
 
-  const handleDeleteComment = async (commentId: number) => {
+  const handleDeleteComment = async (commentId: CommentId) => {
     try {
       await deleteCommentMutation.mutateAsync(commentId);
     } catch (error) {
       if (!onAuthRequired(error)) {
-        throw error;
+        showToast({ message: toApiError(error).message || "댓글 삭제에 실패했습니다.", tone: "warning" });
       }
     }
   };
@@ -105,8 +109,16 @@ export function usePostDetailComments(params: UsePostDetailCommentsParams) {
     try {
       return await toggleCommentHelpfulMutation.mutateAsync(comment);
     } catch (error) {
+      if (isApiError(error) && error.data?.code === "FORBIDDEN_ACCESS") {
+        showToast({ message: "내 댓글에는 유익해요를 누를 수 없습니다.", tone: "warning" });
+        return {
+          isHelpful: comment.isHelpful,
+          totalHelpfulCount: comment.totalHelpfulCount,
+        };
+      }
+
       if (!onAuthRequired(error)) {
-        throw error;
+        showToast({ message: toApiError(error).message || "유익해요 반영에 실패했습니다.", tone: "warning" });
       }
 
       return {
