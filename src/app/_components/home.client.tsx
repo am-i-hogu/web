@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import SectionPlusIcon from "@/assets/icons/selection-plus.svg";
-import { useHomePostsInfiniteQuery, useTogglePostBookmarkMutation } from "@/features/post/api";
+import { usePostListInfiniteQuery, useTogglePostBookmarkMutation } from "@/features/post/api";
 import {
   POST_CATEGORY_VALUE_BY_LABEL,
   POST_LIST_PAGE_SIZE,
@@ -36,7 +36,7 @@ export default function HomePageClient() {
   // 화면 필터 값을 백엔드 홈 피드 query parameter로 변환한다.
   const selectedCategoryQuery = selectedCategories.map((category) => POST_CATEGORY_VALUE_BY_LABEL[category]).join(",");
 
-  const homePostsQuery = useHomePostsInfiniteQuery({
+  const homePostsQuery = usePostListInfiniteQuery({
     categories: selectedCategoryQuery || null,
     sortBy: POST_SORT_QUERY_BY_VALUE[sortValue],
     pageSize: POST_LIST_PAGE_SIZE,

@@ -24,9 +24,9 @@ import {
 import { postQueryKeys } from "./post.keys";
 import type { GetCommentsParams, GetHomePostsParams } from "./post.service";
 
-type HomePostsInfiniteData = InfiniteData<HomePostListResponse>;
+type PostListInfiniteData = InfiniteData<HomePostListResponse>;
 
-function updateHomePostBookmarkState(data: HomePostsInfiniteData | undefined, postId: number, isBookmarked: boolean) {
+function updatePostListBookmarkState(data: PostListInfiniteData | undefined, postId: number, isBookmarked: boolean) {
   return data
     ? {
         ...data,
@@ -38,9 +38,9 @@ function updateHomePostBookmarkState(data: HomePostsInfiniteData | undefined, po
     : data;
 }
 
-function setHomePostBookmarkState(queryClient: QueryClient, postId: number, isBookmarked: boolean) {
-  queryClient.setQueriesData<HomePostsInfiniteData>({ queryKey: postQueryKeys.lists() }, (old) =>
-    updateHomePostBookmarkState(old, postId, isBookmarked),
+function setPostListBookmarkState(queryClient: QueryClient, postId: number, isBookmarked: boolean) {
+  queryClient.setQueriesData<PostListInfiniteData>({ queryKey: postQueryKeys.lists() }, (old) =>
+    updatePostListBookmarkState(old, postId, isBookmarked),
   );
 }
 
@@ -49,8 +49,8 @@ type TogglePostBookmarkVariables = {
   isBookmarked: boolean;
 };
 
-export function useHomePostsInfiniteQuery(params: Omit<GetHomePostsParams, "cursor"> = {}) {
-  // 홈 피드 무한 스크롤 쿼리: cursor는 query 내부 pageParam으로만 관리한다.
+export function usePostListInfiniteQuery(params: Omit<GetHomePostsParams, "cursor"> = {}) {
+  // 게시글 목록 무한 스크롤 쿼리: cursor는 query 내부 pageParam으로만 관리한다.
   return useInfiniteQuery({
     queryKey: postQueryKeys.list(params),
     queryFn: ({ pageParam }) =>
@@ -112,21 +112,21 @@ export function useTogglePostBookmarkMutation() {
       isBookmarked ? deleteBookmarkWithAuth({ postId }) : createBookmarkWithAuth({ postId }),
     onMutate: async ({ postId, isBookmarked }) => {
       await queryClient.cancelQueries({ queryKey: postQueryKeys.lists() });
-      const previousHomePostLists = queryClient.getQueriesData<HomePostsInfiniteData>({
+      const previousPostLists = queryClient.getQueriesData<PostListInfiniteData>({
         queryKey: postQueryKeys.lists(),
       });
 
-      // 낙관적 업데이트: 홈 피드에 로드된 같은 게시글의 북마크 상태를 즉시 반전한다.
-      setHomePostBookmarkState(queryClient, postId, !isBookmarked);
+      // 낙관적 업데이트: 현재 로드된 게시글 목록 캐시의 북마크 상태를 즉시 반전한다.
+      setPostListBookmarkState(queryClient, postId, !isBookmarked);
 
-      return { previousHomePostLists };
+      return { previousPostLists };
     },
     onSuccess: (result, { postId }) => {
       // 서버 응답을 한 번 더 반영해 중복 클릭/동시 요청으로 인한 표시 오차를 줄인다.
-      setHomePostBookmarkState(queryClient, postId, result.isBookmarked);
+      setPostListBookmarkState(queryClient, postId, result.isBookmarked);
     },
     onError: (_error, _variables, context) => {
-      context?.previousHomePostLists.forEach(([queryKey, data]) => {
+      context?.previousPostLists.forEach(([queryKey, data]) => {
         queryClient.setQueryData(queryKey, data);
       });
     },
