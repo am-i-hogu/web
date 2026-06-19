@@ -1,53 +1,24 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import SmileyXEyesIcon from "@/assets/icons/smiley-x-eyes.svg";
-import { useDeletePostMutation, usePostDetailQuery } from "@/features/post/api";
-import { POST_CATEGORY_VALUES, toPostCategoryLabel } from "@/features/post/constants";
-import { usePostDetailBookmarkState, usePostDetailComments } from "@/features/post/hooks";
+import { usePostDetailPageState } from "@/features/post/hooks";
 import {
   PostCommentsSection,
   PostDetailCard,
   PostDetailContent,
   PostDetailHeader,
-  type PostVoteOption,
   PostVoteSection,
 } from "@/features/post/ui";
 import { isApiError } from "@/shared/api";
 import type { PostDetailResponse } from "@/shared/api/generated";
 import { Button, ContentCardCarousel, EmptyState, LoadingState } from "@/shared/ui";
-import { formatNumber, formatRelativeTime } from "@/shared/utils/format";
+import { formatNumber, formatRelativeTime, isEditedByTimestamp } from "@/shared/utils/format";
 import { HeaderWidget } from "@/widgets/header/ui";
 
 type PostDetailPageClientProps = {
-  postId: number;
+  postId: string;
 };
-
-function createVoteOptions(vote: PostDetailResponse["vote"]): PostVoteOption[] {
-  const totalVotes = vote.totalVotes || 0;
-  const calculatePercent = (count: number) => (totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0);
-
-  return [
-    {
-      id: "HOGU",
-      label: "호구 맞다",
-      emoji: "😢",
-      percent: calculatePercent(vote.yesVotes),
-    },
-    {
-      id: "NOT_HOGU",
-      label: "아니다",
-      emoji: "🤔",
-      percent: calculatePercent(vote.noVotes),
-    },
-  ];
-}
-
-function getPrimaryCategoryLabel(post: Pick<PostDetailResponse, "categories">) {
-  const category = post.categories.find((value) => POST_CATEGORY_VALUES.includes(value)) ?? "ETC";
-  return toPostCategoryLabel(category);
-}
 
 function createImageCarouselItems(post: Pick<PostDetailResponse, "postId" | "images" | "title">) {
   return post.images.map((imageUrl, index) => ({
@@ -93,43 +64,32 @@ function PostDetailNotFoundState() {
 }
 
 export default function PostDetailPageClient({ postId }: PostDetailPageClientProps) {
-  const router = useRouter();
-  const postDetailQuery = usePostDetailQuery(postId);
-  const deletePostMutation = useDeletePostMutation(postId);
-  const post = postDetailQuery.data;
-  const voteOptions = useMemo(() => (post ? createVoteOptions(post.vote) : []), [post]);
-  const imageCarouselItems = useMemo(() => (post ? createImageCarouselItems(post) : []), [post]);
-  const initialSelectedVoteId =
-    post?.vote.myVote === "HOGU" || post?.vote.myVote === "NOT_HOGU" ? post.vote.myVote : undefined;
-
-  const handleAuthRequiredError = (error: unknown) => {
-    if (isApiError(error) && error.status === 401) {
-      router.replace("/login?errorCode=AUTH_REQUIRED");
-      return true;
-    }
-
-    return false;
-  };
-  const bookmarkState = usePostDetailBookmarkState({
-    postId,
+  const {
+    postDetailQuery,
     post,
-    onAuthRequired: handleAuthRequiredError,
-  });
-  const commentsState = usePostDetailComments({
-    postId,
-    onAuthRequired: handleAuthRequiredError,
-  });
-
-  const handleDeletePost = async () => {
-    try {
-      await deletePostMutation.mutateAsync();
-      router.replace("/");
-    } catch (error) {
-      if (!handleAuthRequiredError(error)) {
-        throw error;
-      }
+    categoryLabel,
+    voteOptions,
+    selectedVoteId,
+    bookmarkState,
+    commentsState,
+    isDeletingPost,
+    isVotingPost,
+    handleDeletePost,
+    handleVoteSelect,
+  } = usePostDetailPageState({ postId });
+  const imageCarouselItems = useMemo(() => (post ? createImageCarouselItems(post) : []), [post]);
+  const postMeta = useMemo(() => {
+    if (!post) {
+      return "";
     }
-  };
+
+    const relativeTime = formatRelativeTime(post.createdAt);
+    return isEditedByTimestamp(post.createdAt, post.updatedAt) ? `${relativeTime} (수정됨)` : relativeTime;
+  }, [post]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0 });
+  }, []);
 
   if (postDetailQuery.isPending) {
     return (
@@ -174,12 +134,12 @@ export default function PostDetailPageClient({ postId }: PostDetailPageClientPro
         <PostDetailCard>
           <PostDetailHeader
             postId={post.postId}
-            category={getPrimaryCategoryLabel(post)}
-            meta={formatRelativeTime(post.createdAt)}
+            category={categoryLabel}
+            meta={postMeta}
             viewCount={post.viewCount}
             isBookmarked={bookmarkState.isBookmarked}
             isMine={post.isMine}
-            isDeleting={deletePostMutation.isPending}
+            isDeleting={isDeletingPost}
             isBookmarking={bookmarkState.isBookmarking}
             onBookmarkToggle={bookmarkState.handleToggleBookmark}
             onDelete={handleDeletePost}
@@ -204,7 +164,10 @@ export default function PostDetailPageClient({ postId }: PostDetailPageClientPro
           <PostVoteSection
             options={voteOptions}
             totalVotes={post.vote.totalVotes}
-            initialSelectedId={initialSelectedVoteId}
+            selectedId={selectedVoteId ?? null}
+            isDisabled={post.isMine}
+            isVoting={isVotingPost}
+            onVoteSelect={handleVoteSelect}
             aria-label={`판결 참여 ${formatNumber(post.vote.totalVotes)}명`}
           />
         </PostDetailCard>
