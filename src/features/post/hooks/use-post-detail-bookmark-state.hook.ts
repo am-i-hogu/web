@@ -1,18 +1,36 @@
 "use client";
 
+import { type InfiniteData, type QueryClient, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTogglePostBookmarkMutation } from "@/features/post/api";
-import type { PostDetailResponse } from "@/shared/api/generated";
+import { postQueryKeys } from "@/features/post/api/post.keys";
+import { isApiError } from "@/shared/api";
+import type { HomePostListResponse, PostDetailResponse } from "@/shared/api/generated";
 
 type PostDetailWithBookmark = PostDetailResponse & {
   isBookmarked?: boolean;
 };
 
 type UsePostDetailBookmarkStateParams = {
-  postId: number;
+  postId: string | number;
   post?: PostDetailResponse;
   onAuthRequired: (error: unknown) => boolean;
 };
+
+type PostListInfiniteData = InfiniteData<HomePostListResponse>;
+
+function findCachedPostBookmarkState(queryClient: QueryClient, postId: string | number) {
+  const postLists = queryClient.getQueriesData<PostListInfiniteData>({ queryKey: postQueryKeys.lists() });
+
+  for (const [, data] of postLists) {
+    const post = data?.pages.flatMap((page) => page.posts).find((item) => String(item.postId) === String(postId));
+    if (post) {
+      return post.isBookmarked;
+    }
+  }
+
+  return undefined;
+}
 
 /**
  * 게시글 상세의 북마크 토글 상태와 낙관적 업데이트를 관리하는 훅
@@ -32,6 +50,7 @@ type UsePostDetailBookmarkStateParams = {
 export function usePostDetailBookmarkState(params: UsePostDetailBookmarkStateParams) {
   const { postId, post, onAuthRequired } = params;
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const queryClient = useQueryClient();
   const togglePostBookmarkMutation = useTogglePostBookmarkMutation();
 
   useEffect(() => {
@@ -43,8 +62,14 @@ export function usePostDetailBookmarkState(params: UsePostDetailBookmarkStatePar
     // 상세 응답에 isBookmarked가 추가되면 초기 상태를 서버 응답 기준으로 맞추고, 현재는 클릭 후 PostBookmarkResponse만 로컬에 반영한다.
     if ("isBookmarked" in post) {
       setIsBookmarked(Boolean((post as PostDetailWithBookmark).isBookmarked));
+      return;
     }
-  }, [post]);
+
+    const cachedListBookmarkState = findCachedPostBookmarkState(queryClient, postId);
+    if (cachedListBookmarkState !== undefined) {
+      setIsBookmarked(cachedListBookmarkState);
+    }
+  }, [post, postId, queryClient]);
 
   const handleToggleBookmark = async () => {
     const previousBookmarked = isBookmarked;
@@ -54,6 +79,11 @@ export function usePostDetailBookmarkState(params: UsePostDetailBookmarkStatePar
       const result = await togglePostBookmarkMutation.mutateAsync({ postId, isBookmarked: previousBookmarked });
       setIsBookmarked(result.isBookmarked);
     } catch (error) {
+      if (!previousBookmarked && isApiError(error) && error.data?.code === "DUPLICATE_REQUEST") {
+        setIsBookmarked(true);
+        return;
+      }
+
       setIsBookmarked(previousBookmarked);
       if (!onAuthRequired(error)) {
         throw error;
