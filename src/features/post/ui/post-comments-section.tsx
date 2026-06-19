@@ -16,9 +16,9 @@ export type PostCommentsSectionProps = ComponentProps<"section"> & {
   sortValue: PostCommentSortValue;
   onSortChange: (value: PostCommentSortValue) => void;
   onCreateComment: (content: string) => Promise<void>;
-  onCreateReply: (parentId: number, content: string) => Promise<void>;
-  onUpdateComment: (commentId: number, content: string) => Promise<void>;
-  onDeleteComment: (commentId: number) => Promise<void>;
+  onCreateReply: (parentId: string | number, content: string) => Promise<void>;
+  onUpdateComment: (commentId: string | number, content: string) => Promise<void>;
+  onDeleteComment: (commentId: string | number) => Promise<void>;
   onToggleHelpful: (comment: CommentItemResponse) => Promise<{ isHelpful: boolean; totalHelpfulCount: number }>;
   isCreatingComment?: boolean;
   hasNextPage?: boolean;
@@ -73,7 +73,7 @@ export function PostCommentsSection(props: PostCommentsSectionProps) {
     return sorted;
   }, [comments, sortValue]);
   const replyMap = useMemo(() => {
-    const byParent: Record<number, CommentItemResponse[]> = {};
+    const byParent: Record<string, CommentItemResponse[]> = {};
     comments
       .filter((comment) => comment.parentId !== null)
       .forEach((reply) => {
@@ -82,14 +82,15 @@ export function PostCommentsSection(props: PostCommentsSectionProps) {
           return;
         }
 
-        if (!byParent[parentId]) {
-          byParent[parentId] = [];
+        const parentKey = String(parentId);
+        if (!byParent[parentKey]) {
+          byParent[parentKey] = [];
         }
-        byParent[parentId].push(reply);
+        byParent[parentKey].push(reply);
       });
 
     for (const parentId of Object.keys(byParent)) {
-      byParent[Number(parentId)].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      byParent[parentId].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
     }
 
     return byParent;
@@ -118,7 +119,7 @@ export function PostCommentsSection(props: PostCommentsSectionProps) {
             <PostCommentCard
               key={comment.commentId}
               comment={comment}
-              replies={replyMap[comment.commentId] ?? []}
+              replies={replyMap[String(comment.commentId)] ?? []}
               onCreateReply={onCreateReply}
               onUpdateComment={onUpdateComment}
               onDeleteComment={onDeleteComment}
