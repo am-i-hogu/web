@@ -8,13 +8,8 @@ import {
   useToggleCommentHelpfulMutation,
   useUpdateCommentMutation,
 } from "@/features/post/api";
-import type { PostCommentSortValue } from "@/features/post/ui";
+import { COMMENT_PAGE_SIZE, COMMENT_SORT_QUERY_BY_VALUE, type PostCommentSortValue } from "@/features/post/constants";
 import type { CommentItemResponse } from "@/shared/api/generated";
-
-const COMMENT_SORT_QUERY_BY_VALUE: Record<PostCommentSortValue, "LATEST" | "HELPFUL"> = {
-  latest: "LATEST",
-  helpful: "HELPFUL",
-};
 
 type UsePostDetailCommentsParams = {
   postId: number;
@@ -48,7 +43,7 @@ export function usePostDetailComments(params: UsePostDetailCommentsParams) {
   const [commentSortValue, setCommentSortValue] = useState<PostCommentSortValue>("latest");
   const commentsQuery = useCommentsInfiniteQuery(postId, {
     sortBy: COMMENT_SORT_QUERY_BY_VALUE[commentSortValue],
-    pageSize: 15,
+    pageSize: COMMENT_PAGE_SIZE,
   });
   const createCommentMutation = useCreateCommentMutation(postId);
   const updateCommentMutation = useUpdateCommentMutation(postId);

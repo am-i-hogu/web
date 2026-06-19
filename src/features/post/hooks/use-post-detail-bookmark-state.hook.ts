@@ -32,7 +32,7 @@ type UsePostDetailBookmarkStateParams = {
 export function usePostDetailBookmarkState(params: UsePostDetailBookmarkStateParams) {
   const { postId, post, onAuthRequired } = params;
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const togglePostBookmarkMutation = useTogglePostBookmarkMutation(postId);
+  const togglePostBookmarkMutation = useTogglePostBookmarkMutation();
 
   useEffect(() => {
     if (!post) {
@@ -51,7 +51,7 @@ export function usePostDetailBookmarkState(params: UsePostDetailBookmarkStatePar
 
     setIsBookmarked(!previousBookmarked);
     try {
-      const result = await togglePostBookmarkMutation.mutateAsync(previousBookmarked);
+      const result = await togglePostBookmarkMutation.mutateAsync({ postId, isBookmarked: previousBookmarked });
       setIsBookmarked(result.isBookmarked);
     } catch (error) {
       setIsBookmarked(previousBookmarked);

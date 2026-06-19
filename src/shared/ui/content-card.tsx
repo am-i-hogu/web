@@ -30,6 +30,8 @@ export type ContentCardHeaderProps = {
   className?: string;
   viewCount?: number;
   isBookmarked?: boolean;
+  isBookmarking?: boolean;
+  onBookmarkToggle?: () => void;
 };
 
 export function ContentCardHeader({
@@ -39,6 +41,8 @@ export function ContentCardHeader({
   meta,
   viewCount,
   isBookmarked = false,
+  isBookmarking = false,
+  onBookmarkToggle,
   className,
 }: ContentCardHeaderProps) {
   const fallbackInitial = (authorName ?? "?").trim().charAt(0) || "?";
@@ -75,7 +79,22 @@ export function ContentCardHeader({
           <Tag tone="categoryInactive" size="sm">
             {category}
           </Tag>
-          {isBookmarked ? (
+          {onBookmarkToggle ? (
+            <button
+              type="button"
+              aria-label={isBookmarked ? "북마크 해제" : "북마크"}
+              aria-pressed={isBookmarked}
+              disabled={isBookmarking}
+              onClick={onBookmarkToggle}
+              className="flex size-6 items-center justify-center disabled:opacity-60"
+            >
+              {isBookmarked ? (
+                <BookmarkFillIcon aria-hidden className="size-6 text-text-02" />
+              ) : (
+                <BookmarkIcon aria-hidden className="size-6 text-text-02" strokeWidth={20} />
+              )}
+            </button>
+          ) : isBookmarked ? (
             <BookmarkFillIcon aria-hidden className="size-6 text-text-02" />
           ) : (
             <BookmarkIcon aria-hidden className="size-6 text-text-02" strokeWidth={20} />

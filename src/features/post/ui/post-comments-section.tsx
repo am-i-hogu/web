@@ -3,15 +3,13 @@
 import type { ComponentProps } from "react";
 import { useMemo } from "react";
 import ChatIcon from "@/assets/icons/chat.svg";
+import { COMMENT_SORT_OPTIONS, type PostCommentSortValue } from "@/features/post/constants";
 import { PostCommentCard } from "@/features/post/ui/post-comment-card";
 import { PostCommentForm } from "@/features/post/ui/post-comment-form";
 import type { CommentItemResponse, CommentReadResponse } from "@/shared/api/generated";
-// TODO: 공용 useInfiniteScrollObserver가 홈 피드 PR에 포함되면 주석을 해제해 댓글 무한스크롤도 다시 연결한다.
-// import { useInfiniteScrollObserver } from "@/shared/hooks";
-import { SortSelect, type SortSelectOption } from "@/shared/ui";
+import { useInfiniteScrollObserver } from "@/shared/hooks";
+import { SortSelect } from "@/shared/ui";
 import { cn } from "@/shared/utils";
-
-export type PostCommentSortValue = "latest" | "helpful";
 
 export type PostCommentsSectionProps = ComponentProps<"section"> & {
   commentsResponse: CommentReadResponse;
@@ -24,14 +22,10 @@ export type PostCommentsSectionProps = ComponentProps<"section"> & {
   onToggleHelpful: (comment: CommentItemResponse) => Promise<{ isHelpful: boolean; totalHelpfulCount: number }>;
   isCreatingComment?: boolean;
   hasNextPage?: boolean;
+  isFetching?: boolean;
   isFetchingNextPage?: boolean;
   onLoadMore?: () => Promise<unknown>;
 };
-
-const COMMENT_SORT_OPTIONS = [
-  { value: "latest", label: "최신순" },
-  { value: "helpful", label: "유익해요순" },
-] satisfies readonly SortSelectOption<PostCommentSortValue>[];
 
 function EmptyComments() {
   return (
@@ -54,17 +48,18 @@ export function PostCommentsSection(props: PostCommentsSectionProps) {
     onToggleHelpful,
     isCreatingComment = false,
     hasNextPage = false,
+    isFetching = false,
     isFetchingNextPage = false,
     onLoadMore,
     className,
     ...rest
   } = props;
   const comments = commentsResponse.comments;
-  // const loadMoreRef = useInfiniteScrollObserver({
-  //   enabled: hasNextPage,
-  //   isFetching: isFetchingNextPage,
-  //   onIntersect: onLoadMore,
-  // });
+  const loadMoreRef = useInfiniteScrollObserver({
+    enabled: hasNextPage,
+    isFetching,
+    onIntersect: onLoadMore,
+  });
   const rootComments = useMemo(() => {
     const roots = comments.filter((comment) => comment.parentId === null);
     const sorted = [...roots];
@@ -134,9 +129,9 @@ export function PostCommentsSection(props: PostCommentsSectionProps) {
       ) : (
         <EmptyComments />
       )}
-      {/* <div ref={loadMoreRef} className="flex min-h-8 items-center justify-center py-2">
-        {isFetchingNextPage ? <span className="text-caption-m text-text-03">댓글을 더 불러오는 중...</span> : null}
-      </div> */}
+      <div ref={loadMoreRef} className="flex min-h-8 items-center justify-center py-2">
+        {isFetchingNextPage ? <span className="text-caption-m text-text-03">댓글 불러오는 중...</span> : null}
+      </div>
     </section>
   );
 }
