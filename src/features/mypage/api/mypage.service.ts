@@ -1,3 +1,4 @@
+import { parsePostIdJsonResponse } from "@/features/post/api/post-response-parser";
 import { apiClient } from "@/shared/api";
 import type {
   CheckNicknameQuery,
@@ -65,6 +66,7 @@ export async function getHoguReport() {
 export async function getMyBookmarks(params: GetMyBookmarksQueryParams = {}) {
   return apiClient<GetMyBookmarksResponse>("/api/users/me/bookmarks", {
     method: "GET",
+    parseJson: parsePostIdJsonResponse,
     query: params,
   });
 }
@@ -72,6 +74,7 @@ export async function getMyBookmarks(params: GetMyBookmarksQueryParams = {}) {
 export async function getMyComments(params: GetMyCommentsQueryParams = {}) {
   return apiClient<GetMyCommentsResponse>("/api/users/me/comments", {
     method: "GET",
+    parseJson: parsePostIdJsonResponse,
     query: params,
   });
 }
@@ -85,6 +88,7 @@ export async function getMyPage() {
 export async function getMyPosts(params: GetMyPostsQueryParams = {}) {
   return apiClient<GetMyPostsResponse>("/api/users/me/posts", {
     method: "GET",
+    parseJson: parsePostIdJsonResponse,
     query: params,
   });
 }
@@ -92,6 +96,7 @@ export async function getMyPosts(params: GetMyPostsQueryParams = {}) {
 export async function getMyVotes(params: GetMyVotesQueryParams = {}) {
   return apiClient<GetMyVotesResponse>("/api/users/me/votes", {
     method: "GET",
+    parseJson: parsePostIdJsonResponse,
     query: params,
   });
 }

@@ -52,7 +52,7 @@ export default function MypageHistoryPageClient() {
               ...current,
               pages: current.pages.map((page) => ({
                 ...page,
-                posts: page.posts.filter((post) => post.postId !== postId),
+                posts: page.posts.filter((post) => String(post.postId) !== String(postId)),
               })),
             }
           : current,

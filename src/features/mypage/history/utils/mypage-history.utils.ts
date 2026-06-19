@@ -1,6 +1,7 @@
 import { HISTORY_RESULT_BY_MY_VOTE, HISTORY_RESULT_BY_VOTE_SUMMARY } from "@/features/mypage/history/constants";
 import type { MypageHistoryItem } from "@/features/mypage/history/model/mypage-history.types";
 import { toPostCategoryLabel } from "@/features/post/constants";
+import type { PostId } from "@/features/post/model";
 import type {
   MyBookmarkItemResponse,
   MyCommentItemResponse,
@@ -9,7 +10,27 @@ import type {
 } from "@/shared/api/generated";
 import { formatNumber, formatRelativeTime } from "@/shared/utils/format";
 
-export function toPostHistoryItem(post: MyPostItemResponse): MypageHistoryItem {
+type MyPostItemWithSafeId = Omit<MyPostItemResponse, "postId"> & {
+  postId: PostId;
+};
+
+type MyBookmarkItemWithSafeId = Omit<MyBookmarkItemResponse, "postId"> & {
+  postId: PostId;
+};
+
+type MyCommentItemWithSafeId = Omit<MyCommentItemResponse, "post"> & {
+  post: Omit<MyCommentItemResponse["post"], "postId"> & {
+    postId: PostId;
+  };
+};
+
+type MyVoteItemWithSafeId = Omit<MyVoteItemResponse, "post"> & {
+  post: Omit<MyVoteItemResponse["post"], "postId"> & {
+    postId: PostId;
+  };
+};
+
+export function toPostHistoryItem(post: MyPostItemWithSafeId): MypageHistoryItem {
   return {
     id: `post-${post.postId}`,
     postId: post.postId,
@@ -21,7 +42,7 @@ export function toPostHistoryItem(post: MyPostItemResponse): MypageHistoryItem {
   };
 }
 
-export function toBookmarkHistoryItem(post: MyBookmarkItemResponse): MypageHistoryItem {
+export function toBookmarkHistoryItem(post: MyBookmarkItemWithSafeId): MypageHistoryItem {
   return {
     id: `bookmark-${post.postId}`,
     postId: post.postId,
@@ -34,7 +55,7 @@ export function toBookmarkHistoryItem(post: MyBookmarkItemResponse): MypageHisto
   };
 }
 
-export function toCommentHistoryItem(comment: MyCommentItemResponse): MypageHistoryItem {
+export function toCommentHistoryItem(comment: MyCommentItemWithSafeId): MypageHistoryItem {
   return {
     id: `comment-${comment.commentId}`,
     postId: comment.post.postId,
@@ -49,7 +70,7 @@ export function toCommentHistoryItem(comment: MyCommentItemResponse): MypageHist
   };
 }
 
-export function toVoteHistoryItem(vote: MyVoteItemResponse): MypageHistoryItem {
+export function toVoteHistoryItem(vote: MyVoteItemWithSafeId): MypageHistoryItem {
   return {
     id: `vote-${vote.post.postId}-${vote.createdAt}`,
     postId: vote.post.postId,
