@@ -4,7 +4,7 @@ import CaretRightIcon from "@/assets/icons/caret-right.svg";
 import IdeaIcon from "@/assets/icons/idea.svg";
 import XIcon from "@/assets/icons/x.svg";
 import { POST_WRITE_IMAGE_SLOT_ITEMS, POST_WRITE_TITLE_LIMIT } from "@/features/post/constants";
-import { usePostWriteForm } from "@/features/post/hooks";
+import { usePostWriteForm, usePostWriteSubmit } from "@/features/post/hooks";
 import type { PostFormInitialValues } from "@/features/post/model";
 import { PostFilterBottomSheet } from "@/features/post/ui";
 import { Button, Chip, PostImageCarousel, Textarea, Textfield } from "@/shared/ui";
@@ -12,6 +12,7 @@ import { HeaderWidget } from "@/widgets/header/ui";
 
 type PostWritePageClientProps = {
   mode?: "create" | "edit";
+  postId?: string | number;
   headerTitle?: string;
   submitLabel?: string;
   submitAriaLabel?: string;
@@ -19,7 +20,7 @@ type PostWritePageClientProps = {
 };
 
 export default function PostWritePageClient(props: PostWritePageClientProps) {
-  const { mode = "create", initialValues } = props;
+  const { mode = "create", postId, initialValues } = props;
   const headerTitle = props.headerTitle ?? (mode === "edit" ? "게시글 수정" : "게시글 작성");
   const submitLabel = props.submitLabel ?? (mode === "edit" ? "수정하기" : "등록하기");
   const submitAriaLabel = props.submitAriaLabel ?? (mode === "edit" ? "게시글 수정" : "게시글 등록");
@@ -42,24 +43,16 @@ export default function PostWritePageClient(props: PostWritePageClientProps) {
     handleTitleChange,
     handleContentChange,
   } = usePostWriteForm({ initialValues });
-
-  const handleSubmit = () => {
-    // TODO: API 연동 전까지 UI-only로 유지
-    // create: POST /api/posts
-    // edit: PATCH /api/posts/{postId}
-    // Authorization: Bearer {accessToken}
-    // {
-    //   "title": "제목입니다",
-    //   "categories": ["USED_TRADE", "CONTRACT"],
-    //   "content": "본문입니다",
-    //   "images": [
-    //     { "imageUrl": "https://...", "order": 0, "isThumbnail": false },
-    //     { "imageUrl": "https://...", "order": 1, "isThumbnail": false },
-    //     { "imageUrl": "https://...", "order": 2, "isThumbnail": false },
-    //     { "imageUrl": "https://...", "order": 3, "isThumbnail": true }
-    //   ]
-    // }
-  };
+  const { handleSubmit, isSubmitting, submitErrorMessage } = usePostWriteSubmit({
+    mode,
+    postId,
+    isFormValid,
+    values: {
+      title,
+      content,
+      selectedCategories,
+    },
+  });
 
   return (
     <div className="relative flex min-h-full flex-col bg-bg-01">
@@ -138,7 +131,7 @@ export default function PostWritePageClient(props: PostWritePageClientProps) {
                 />
               </section>
 
-              {/* TODO : API 연동 나중에 해주기...  edit mode의 경우, initialValues로 연결 */}
+              {/* TODO: 이미지 업로드/변경 API 연동 시 실제 이미지 목록과 업로드 결과를 연결한다. */}
               <PostImageCarousel items={POST_WRITE_IMAGE_SLOT_ITEMS} />
             </div>
           </section>
@@ -157,18 +150,23 @@ export default function PostWritePageClient(props: PostWritePageClientProps) {
               </div>
             </div>
           </section>
+          {submitErrorMessage ? (
+            <p role="alert" className="text-caption-m text-danger">
+              {submitErrorMessage}
+            </p>
+          ) : null}
         </div>
       </main>
 
       <div className="sticky bottom-0 left-0 w-full bg-bg-01 px-4 pb-6 pt-3">
         <Button
           fullWidth
-          variant={isFormValid ? "primary" : "disabled"}
-          disabled={!isFormValid}
+          variant={isFormValid && !isSubmitting ? "primary" : "disabled"}
+          disabled={!isFormValid || isSubmitting}
           aria-label={submitAriaLabel}
           onClick={handleSubmit}
         >
-          {submitLabel}
+          {isSubmitting ? "저장 중" : submitLabel}
         </Button>
       </div>
 
