@@ -27,6 +27,38 @@ type UseSearchPageStateParams = {
   push: (href: string) => void;
 };
 
+const RECENT_SEARCHES_STORAGE_KEY = "hogu:recent-searches";
+
+function readRecentSearches() {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  try {
+    const rawValue = window.localStorage.getItem(RECENT_SEARCHES_STORAGE_KEY);
+    if (!rawValue) {
+      return [];
+    }
+
+    const parsed = JSON.parse(rawValue);
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    return parsed.filter((item): item is string => typeof item === "string").slice(0, MAX_RECENT_SEARCHES);
+  } catch {
+    return [];
+  }
+}
+
+function writeRecentSearches(recentSearches: string[]) {
+  try {
+    window.localStorage.setItem(RECENT_SEARCHES_STORAGE_KEY, JSON.stringify(recentSearches));
+  } catch {
+    // localStorage 접근이 제한된 환경에서는 화면 상태만 유지한다.
+  }
+}
+
 function upsertRecentSearches(previous: string[], keyword: string) {
   const trimmed = keyword.trim();
   if (!trimmed) {
@@ -48,10 +80,24 @@ export function useSearchPageState(params: UseSearchPageStateParams) {
   const hasSearchCondition = keyword.trim().length > 0 || selectedCategories.length > 0;
   const [keywordDraft, setKeywordDraft] = useState(keyword);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [isRecentSearchesLoaded, setIsRecentSearchesLoaded] = useState(false);
+
+  useEffect(() => {
+    setRecentSearches(readRecentSearches());
+    setIsRecentSearchesLoaded(true);
+  }, []);
 
   useEffect(() => {
     setKeywordDraft(keyword);
   }, [keyword]);
+
+  useEffect(() => {
+    if (!isRecentSearchesLoaded) {
+      return;
+    }
+
+    writeRecentSearches(recentSearches);
+  }, [isRecentSearchesLoaded, recentSearches]);
 
   const pushQuery = (next: {
     keyword?: string;
