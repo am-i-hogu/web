@@ -9,7 +9,7 @@ import { PostCommentForm } from "@/features/post/ui/post-comment-form";
 import type { CommentItemResponse } from "@/shared/api/generated";
 import { useToastStore } from "@/shared/model";
 import { Tag } from "@/shared/ui";
-import { cn } from "@/shared/utils";
+import { cn, toUserDisplay } from "@/shared/utils";
 import { formatRelativeTime, isEditedByTimestamp } from "@/shared/utils/format";
 import type { PostCommentsSectionProps } from "./post-comments-section";
 
@@ -50,6 +50,17 @@ function CommentMeta({ comment }: { comment: CommentItemResponse }) {
       {formatRelativeTime(comment.createdAt)}
       {!comment.isDeleted && isEditedByTimestamp(comment.createdAt, comment.updatedAt) ? " (수정됨)" : ""}
     </span>
+  );
+}
+
+function CommentWriterName({ comment }: { comment: CommentItemResponse }) {
+  const writer = toUserDisplay(comment.writer);
+
+  return (
+    <strong className="text-body-m text-text-04">
+      {writer.displayName}
+      {comment.writer.isPostWriter ? <span className="ml-0.5 text-small-m">(작성자)</span> : null}
+    </strong>
   );
 }
 
@@ -227,10 +238,7 @@ export function PostCommentCard(props: PostCommentCardProps) {
     <article className="rounded-[12px] bg-bg-02 p-5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <strong className="text-body-m text-text-04">
-            {comment.writer.nickname}
-            {comment.writer.isPostWriter ? <span className="ml-0.5 text-small-m">(작성자)</span> : null}
-          </strong>
+          <CommentWriterName comment={comment} />
           <CommentMeta comment={comment} />
         </div>
         {comment.isMine && !comment.isDeleted ? (
@@ -294,10 +302,7 @@ export function PostCommentCard(props: PostCommentCardProps) {
           <div key={reply.commentId} className="mt-4 pl-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <strong className="text-body-m text-text-04">
-                  {reply.writer.nickname}
-                  {reply.writer.isPostWriter ? <span className="ml-0.5 text-small-m">(작성자)</span> : null}
-                </strong>
+                <CommentWriterName comment={reply} />
                 <CommentMeta comment={reply} />
               </div>
               {reply.isMine && !reply.isDeleted ? (

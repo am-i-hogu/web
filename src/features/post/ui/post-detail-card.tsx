@@ -12,7 +12,7 @@ import ShareIcon from "@/assets/icons/share-network.svg";
 import { useSharePostLink } from "@/features/post/hooks/use-share-post-link.hook";
 import { PostDeleteModal } from "@/features/post/ui/contents-delete-modal";
 import { Tag, Toast } from "@/shared/ui";
-import { cn } from "@/shared/utils";
+import { cn, toUserDisplay } from "@/shared/utils";
 import { formatNumber } from "@/shared/utils/format";
 
 const iconButtonClassName = "inline-flex size-6 items-center justify-center leading-none";
@@ -185,16 +185,17 @@ export type PostDetailContentProps = {
 
 export function PostDetailContent(props: PostDetailContentProps) {
   const { title, authorName, authorImage, content, media, className, mediaContainerClassName } = props;
-  const fallbackInitial = authorName.trim().charAt(0) || "?";
+  const author = toUserDisplay({ nickname: authorName, profileImageUrl: authorImage });
+  const fallbackInitial = author.isDeletedUser ? "" : author.displayName.trim().charAt(0) || "?";
 
   return (
     <section className={cn("flex flex-col gap-5", className)} aria-label="게시글 본문">
       <h1 className="text-title1-m text-text-04">{title}</h1>
       <div className="flex items-center gap-3">
-        {authorImage ? (
+        {author.profileImageUrl ? (
           <Image
-            src={authorImage}
-            alt={`${authorName} 프로필 이미지`}
+            src={author.profileImageUrl}
+            alt={`${author.displayName} 프로필 이미지`}
             width={40}
             height={40}
             className="rounded-full object-cover"
@@ -204,7 +205,7 @@ export function PostDetailContent(props: PostDetailContentProps) {
             {fallbackInitial}
           </div>
         )}
-        <span className="text-body-m text-text-04">{authorName}</span>
+        <span className="text-body-m text-text-04">{author.displayName}</span>
       </div>
       <div className="flex flex-col gap-4">
         <p className="whitespace-pre-line text-body-r text-text-04">{content}</p>
