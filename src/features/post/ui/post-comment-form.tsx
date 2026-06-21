@@ -96,7 +96,7 @@ export function PostCommentForm(props: PostCommentFormProps) {
             type="button"
             variant="primary"
             size="chip"
-            className="bg-primary-strong hover:bg-primary-strong disabled:bg-bg-03 disabled:text-text-02"
+            className="bg-primary-strong text-text-01 hover:bg-primary-strong disabled:bg-bg-03 disabled:text-text-02"
             disabled={isSubmitDisabled}
             onClick={submit}
           >
