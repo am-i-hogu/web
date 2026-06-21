@@ -3,7 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useCreatePostMutation, useUpdatePostMutation } from "@/features/post/api";
-import { createPostCreateRequest, createPostUpdateRequest, type PostWriteSchemaType } from "@/features/post/model";
+import {
+  createPostCreateRequest,
+  createPostUpdateRequest,
+  type PostFormInitialValues,
+  type PostWriteSchemaType,
+} from "@/features/post/model";
 import { isApiError, toApiError } from "@/shared/api";
 import { useToastStore } from "@/shared/model";
 
@@ -11,10 +16,19 @@ type UsePostWriteSubmitParams = {
   mode: "create" | "edit";
   postId?: string | number;
   isFormValid: boolean;
+  isFormChanged: boolean;
+  initialValues?: PostFormInitialValues;
   values: Pick<PostWriteSchemaType, "content" | "selectedCategories" | "title">;
 };
 
-export function usePostWriteSubmit({ mode, postId, isFormValid, values }: UsePostWriteSubmitParams) {
+export function usePostWriteSubmit({
+  mode,
+  postId,
+  isFormValid,
+  isFormChanged,
+  initialValues,
+  values,
+}: UsePostWriteSubmitParams) {
   const router = useRouter();
   const showToast = useToastStore((state) => state.showToast);
   const createPostMutation = useCreatePostMutation();
@@ -32,7 +46,7 @@ export function usePostWriteSubmit({ mode, postId, isFormValid, values }: UsePos
   };
 
   const handleSubmit = async () => {
-    if (!isFormValid || isSubmitting) {
+    if (!isFormValid || isSubmitting || (mode === "edit" && !isFormChanged)) {
       return;
     }
 
@@ -44,7 +58,7 @@ export function usePostWriteSubmit({ mode, postId, isFormValid, values }: UsePos
           throw new Error("수정할 게시글 정보를 찾을 수 없습니다.");
         }
 
-        const response = await updatePostMutation.mutateAsync(createPostUpdateRequest(values));
+        const response = await updatePostMutation.mutateAsync(createPostUpdateRequest(values, initialValues));
         showToast({ message: "게시글이 수정되었습니다." });
         router.replace(`/post/${response.postId}`);
         return;

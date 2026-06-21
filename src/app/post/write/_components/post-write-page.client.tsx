@@ -35,6 +35,7 @@ export default function PostWritePageClient(props: PostWritePageClientProps) {
     titleHelperText,
     isTitleTooLong,
     isFormValid,
+    isFormChanged,
     openCategorySheet,
     closeCategorySheet,
     toggleDraftCategory,
@@ -47,12 +48,15 @@ export default function PostWritePageClient(props: PostWritePageClientProps) {
     mode,
     postId,
     isFormValid,
+    isFormChanged,
+    initialValues,
     values: {
       title,
       content,
       selectedCategories,
     },
   });
+  const isSubmitDisabled = !isFormValid || isSubmitting || (mode === "edit" && !isFormChanged);
 
   return (
     <div className="relative flex min-h-full flex-col bg-bg-01">
@@ -161,8 +165,8 @@ export default function PostWritePageClient(props: PostWritePageClientProps) {
       <div className="sticky bottom-0 left-0 w-full bg-bg-01 px-4 pb-6 pt-3">
         <Button
           fullWidth
-          variant={isFormValid && !isSubmitting ? "primary" : "disabled"}
-          disabled={!isFormValid || isSubmitting}
+          variant={isSubmitDisabled ? "disabled" : "primary"}
+          disabled={isSubmitDisabled}
           aria-label={submitAriaLabel}
           onClick={handleSubmit}
         >
