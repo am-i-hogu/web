@@ -29,12 +29,18 @@ export default function MypageReportPageClient() {
     );
   }
 
+  const hoguIndex = toReportHoguIndex(report);
+
   return (
     <div className="flex min-h-full flex-col bg-bg-01">
       <main className="flex flex-1 flex-col gap-6 px-common-padding pb-8 pt-10">
         <MypageProfileSummary profile={toMypageProfile(report)} />
-        <HoguIndexCard index={toReportHoguIndex(report)} variant="detail" />
-        <MypageReportSection categories={toHoguCategoryBreakdown(report)} stats={toMypageStats(report)} />
+        <HoguIndexCard index={hoguIndex} variant="detail" />
+        <MypageReportSection
+          categories={toHoguCategoryBreakdown(report)}
+          isPendingAggregation={hoguIndex.isPendingAggregation}
+          stats={toMypageStats(report)}
+        />
       </main>
       <footer className="sticky bottom-0 z-20 px-common-padding">
         <FooterWidget activeTab="mypage" />

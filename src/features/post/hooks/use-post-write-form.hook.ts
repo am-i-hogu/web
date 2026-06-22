@@ -1,6 +1,6 @@
 import { type ChangeEvent, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { type POST_FILTER_OPTIONS, POST_WRITE_TITLE_LIMIT } from "@/features/post/constants";
-import type { PostFormInitialValues, PostWriteSchemaType } from "@/features/post/model";
+import { hasPostWriteFormChanged, type PostFormInitialValues, type PostWriteSchemaType } from "@/features/post/model";
 import { postWriteSchema } from "@/features/post/model/post-write.schema";
 
 type CategoryOption = (typeof POST_FILTER_OPTIONS)[number];
@@ -34,6 +34,7 @@ const resizeContentTextarea = (element: HTMLTextAreaElement) => {
  * @returns titleHelperText - 제목 validation helper text입니다.
  * @returns isTitleTooLong - 제목 길이 초과 여부입니다.
  * @returns isFormValid - 제출 가능 여부입니다.
+ * @returns isFormChanged - 수정 모드에서 기존 값 대비 변경 여부입니다.
  * @returns openCategorySheet - 카테고리 바텀시트를 여는 핸들러입니다.
  * @returns closeCategorySheet - 카테고리 바텀시트를 닫는 핸들러입니다.
  * @returns toggleDraftCategory - 바텀시트의 임시 카테고리 선택을 토글하는 핸들러입니다.
@@ -59,6 +60,7 @@ export function usePostWriteForm({ initialValues }: UsePostWriteFormParams) {
     : undefined;
 
   const isFormValid = useMemo(() => postWriteSchema.safeParse(formValues).success, [formValues]);
+  const isFormChanged = useMemo(() => hasPostWriteFormChanged(formValues, initialValues), [formValues, initialValues]);
 
   const updateFormValue = <Key extends keyof PostWriteSchemaType>(name: Key, value: PostWriteSchemaType[Key]) => {
     setFormValues((prev) => ({ ...prev, [name]: value }));
@@ -119,6 +121,7 @@ export function usePostWriteForm({ initialValues }: UsePostWriteFormParams) {
     titleHelperText,
     isTitleTooLong,
     isFormValid,
+    isFormChanged,
     openCategorySheet,
     closeCategorySheet,
     toggleDraftCategory,

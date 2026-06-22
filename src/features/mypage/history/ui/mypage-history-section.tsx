@@ -1,18 +1,21 @@
 "use client";
 
 import { clsx } from "clsx";
+import Link from "next/link";
 import BookmarkFillIcon from "@/assets/icons/bookmark-simple-fill.svg";
 import ChatIcon from "@/assets/icons/chat.svg";
 import { MYPAGE_HISTORY_RESULT_COPY } from "@/features/mypage/history/constants";
 import type { HistoryResult, MypageHistoryItem, MypageHistoryTab } from "@/features/mypage/history/model";
+import type { PostId } from "@/features/post/model";
 import { useInfiniteScrollObserver } from "@/shared/hooks";
+import { useToastStore } from "@/shared/model";
 import { EmptyState, LoadingState, Tag } from "@/shared/ui";
 import { cn } from "@/shared/utils";
 
 type MypageHistorySectionProps = {
   activeTab: MypageHistoryTab;
   items: MypageHistoryItem[];
-  onBookmarkRemove?: (postId: number) => void;
+  onBookmarkRemove?: (postId: PostId) => void;
   hasNextPage?: boolean;
   isFetching?: boolean;
   isFetchingNextPage?: boolean;
@@ -54,14 +57,48 @@ function HistoryResultLabel({ result: resultValue, compact = false }: { result: 
   );
 }
 
+function HistoryCardAction({
+  item,
+  children,
+  className,
+  onDeletedPostClick,
+}: {
+  item: MypageHistoryItem;
+  children: React.ReactNode;
+  className?: string;
+  onDeletedPostClick: () => void;
+}) {
+  const actionClassName = cn(
+    "block w-full min-w-0 appearance-none text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-default",
+    item.isSourceDeleted && "cursor-not-allowed",
+    className,
+  );
+
+  if (item.isSourceDeleted) {
+    return (
+      <button type="button" className={actionClassName} onClick={onDeletedPostClick}>
+        {children}
+      </button>
+    );
+  }
+
+  return (
+    <Link href={`/post/${item.postId}`} scroll className={actionClassName}>
+      {children}
+    </Link>
+  );
+}
+
 function PostHistoryCard({
   item,
   withBookmark = false,
   onBookmarkRemove,
+  onDeletedPostClick,
 }: {
   item: MypageHistoryItem;
   withBookmark?: boolean;
-  onBookmarkRemove?: (postId: number) => void;
+  onBookmarkRemove?: (postId: PostId) => void;
+  onDeletedPostClick: () => void;
 }) {
   return (
     <article
@@ -77,7 +114,7 @@ function PostHistoryCard({
           <BookmarkFillIcon aria-hidden className="size-6" />
         </button>
       ) : null}
-      <div className="min-w-0 flex-1 space-y-3">
+      <HistoryCardAction item={item} className="flex-1 space-y-3" onDeletedPostClick={onDeletedPostClick}>
         <header className="flex items-center gap-3">
           <div className="flex min-w-0 flex-1 items-center gap-2">
             {item.category ? <HistoryCategoryPill>{item.category}</HistoryCategoryPill> : null}
@@ -89,45 +126,49 @@ function PostHistoryCard({
           <HistoryResultLabel result={item.result} />
           <HistoryCommentsMeta count={item.commentCountLabel} />
         </footer>
-      </div>
+      </HistoryCardAction>
     </article>
   );
 }
 
-function CommentHistoryCard({ item }: { item: MypageHistoryItem }) {
+function CommentHistoryCard({ item, onDeletedPostClick }: { item: MypageHistoryItem; onDeletedPostClick: () => void }) {
   return (
     <article className="space-y-3 rounded-[16px] border border-line-01 bg-bg-01 p-6">
-      <header className="flex items-center gap-4">
-        <h3 className="min-w-0 flex-1 truncate text-body-m text-text-04">{item.comment}</h3>
-        <time className="shrink-0 text-small-m text-text-03">{item.createdAtLabel}</time>
-      </header>
-      <footer className="flex items-center justify-between gap-5">
-        <div className="flex min-w-0 flex-1 items-center gap-1.5">
-          {item.category ? <HistoryCategoryPill size="sm">{item.category}</HistoryCategoryPill> : null}
-          <span className="truncate text-small-m text-text-03">
-            {item.isSourceDeleted ? "(삭제된 게시글)" : (item.sourceTitle ?? item.title)}
-          </span>
-        </div>
-        <HistoryCommentsMeta count={item.commentCountLabel} />
-      </footer>
+      <HistoryCardAction item={item} className="space-y-3" onDeletedPostClick={onDeletedPostClick}>
+        <header className="flex items-center gap-4">
+          <h3 className="min-w-0 flex-1 truncate text-body-m text-text-04">{item.comment}</h3>
+          <time className="shrink-0 text-small-m text-text-03">{item.createdAtLabel}</time>
+        </header>
+        <footer className="flex items-center justify-between gap-5">
+          <div className="flex min-w-0 flex-1 items-center gap-1.5">
+            {item.category ? <HistoryCategoryPill size="sm">{item.category}</HistoryCategoryPill> : null}
+            <span className="truncate text-small-m text-text-03">
+              {item.isSourceDeleted ? "(삭제된 게시글)" : (item.sourceTitle ?? item.title)}
+            </span>
+          </div>
+          <HistoryCommentsMeta count={item.commentCountLabel} />
+        </footer>
+      </HistoryCardAction>
     </article>
   );
 }
 
-function VoteHistoryCard({ item }: { item: MypageHistoryItem }) {
+function VoteHistoryCard({ item, onDeletedPostClick }: { item: MypageHistoryItem; onDeletedPostClick: () => void }) {
   return (
     <article className="space-y-3 rounded-[16px] border border-line-01 bg-bg-01 p-6">
-      <header className="flex items-center justify-between">
-        <HistoryResultLabel result={item.result} />
-        <time className="shrink-0 text-small-m text-text-03">{item.createdAtLabel}</time>
-      </header>
-      <footer className="flex items-center justify-between gap-5">
-        <div className="flex min-w-0 flex-1 items-center gap-1.5">
-          {item.category ? <HistoryCategoryPill size="sm">{item.category}</HistoryCategoryPill> : null}
-          <h3 className="truncate text-small-m text-text-03">{item.title}</h3>
-        </div>
-        <HistoryCommentsMeta count={item.commentCountLabel} />
-      </footer>
+      <HistoryCardAction item={item} className="space-y-3" onDeletedPostClick={onDeletedPostClick}>
+        <header className="flex items-center justify-between">
+          <HistoryResultLabel result={item.result} />
+          <time className="shrink-0 text-small-m text-text-03">{item.createdAtLabel}</time>
+        </header>
+        <footer className="flex items-center justify-between gap-5">
+          <div className="flex min-w-0 flex-1 items-center gap-1.5">
+            {item.category ? <HistoryCategoryPill size="sm">{item.category}</HistoryCategoryPill> : null}
+            <h3 className="truncate text-small-m text-text-03">{item.title}</h3>
+          </div>
+          <HistoryCommentsMeta count={item.commentCountLabel} />
+        </footer>
+      </HistoryCardAction>
     </article>
   );
 }
@@ -135,13 +176,23 @@ function VoteHistoryCard({ item }: { item: MypageHistoryItem }) {
 function renderHistoryCard(
   activeTab: MypageHistoryTab,
   item: MypageHistoryItem,
-  onBookmarkRemove?: (postId: number) => void,
+  onBookmarkRemove?: (postId: PostId) => void,
+  onDeletedPostClick?: () => void,
 ) {
-  if (activeTab === "comments") return <CommentHistoryCard item={item} />;
+  const handleDeletedPostClick = onDeletedPostClick ?? (() => undefined);
+
+  if (activeTab === "comments") return <CommentHistoryCard item={item} onDeletedPostClick={handleDeletedPostClick} />;
   if (activeTab === "bookmarks")
-    return <PostHistoryCard item={item} withBookmark onBookmarkRemove={onBookmarkRemove} />;
-  if (activeTab === "votes") return <VoteHistoryCard item={item} />;
-  return <PostHistoryCard item={item} />;
+    return (
+      <PostHistoryCard
+        item={item}
+        withBookmark
+        onBookmarkRemove={onBookmarkRemove}
+        onDeletedPostClick={handleDeletedPostClick}
+      />
+    );
+  if (activeTab === "votes") return <VoteHistoryCard item={item} onDeletedPostClick={handleDeletedPostClick} />;
+  return <PostHistoryCard item={item} onDeletedPostClick={handleDeletedPostClick} />;
 }
 
 export function MypageHistorySection({
@@ -153,6 +204,7 @@ export function MypageHistorySection({
   isFetchingNextPage = false,
   onLoadMore,
 }: MypageHistorySectionProps) {
+  const showToast = useToastStore((state) => state.showToast);
   const loadMoreRef = useInfiniteScrollObserver({
     enabled: hasNextPage,
     isFetching,
@@ -177,7 +229,11 @@ export function MypageHistorySection({
       </h2>
       <ul className="space-y-4">
         {items.map((item) => (
-          <li key={item.id}>{renderHistoryCard(activeTab, item, onBookmarkRemove)}</li>
+          <li key={item.id}>
+            {renderHistoryCard(activeTab, item, onBookmarkRemove, () => {
+              showToast({ message: "삭제된 게시글입니다.", tone: "warning" });
+            })}
+          </li>
         ))}
       </ul>
       <div ref={loadMoreRef} aria-hidden className="h-6" />

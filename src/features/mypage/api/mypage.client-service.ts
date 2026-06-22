@@ -1,6 +1,7 @@
 "use client";
 
 import { authenticatedApiClient } from "@/features/auth/api";
+import { parsePostIdJsonResponse } from "@/features/post/api/post-response-parser";
 import type {
   CheckNicknameQueryParams,
   CheckNicknameResponse,
@@ -46,6 +47,7 @@ export async function getHoguReportWithAuth() {
 export async function getMyBookmarksWithAuth(params: GetMyBookmarksQueryParams = {}) {
   return authenticatedApiClient<GetMyBookmarksResponse>("/api/users/me/bookmarks", {
     method: "GET",
+    parseJson: parsePostIdJsonResponse,
     query: params,
   });
 }
@@ -53,6 +55,7 @@ export async function getMyBookmarksWithAuth(params: GetMyBookmarksQueryParams =
 export async function getMyCommentsWithAuth(params: GetMyCommentsQueryParams = {}) {
   return authenticatedApiClient<GetMyCommentsResponse>("/api/users/me/comments", {
     method: "GET",
+    parseJson: parsePostIdJsonResponse,
     query: params,
   });
 }
@@ -60,6 +63,7 @@ export async function getMyCommentsWithAuth(params: GetMyCommentsQueryParams = {
 export async function getMyPostsWithAuth(params: GetMyPostsQueryParams = {}) {
   return authenticatedApiClient<GetMyPostsResponse>("/api/users/me/posts", {
     method: "GET",
+    parseJson: parsePostIdJsonResponse,
     query: params,
   });
 }
@@ -67,6 +71,7 @@ export async function getMyPostsWithAuth(params: GetMyPostsQueryParams = {}) {
 export async function getMyVotesWithAuth(params: GetMyVotesQueryParams = {}) {
   return authenticatedApiClient<GetMyVotesResponse>("/api/users/me/votes", {
     method: "GET",
+    parseJson: parsePostIdJsonResponse,
     query: params,
   });
 }

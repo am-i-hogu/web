@@ -40,8 +40,8 @@ export function useCommentHelpfulState(params: UseCommentHelpfulStateParams) {
     count: comment.totalHelpfulCount,
   });
   const [isCommentHelpfulPending, setIsCommentHelpfulPending] = useState(false);
-  const [replyHelpfulMap, setReplyHelpfulMap] = useState<Record<number, HelpfulState>>({});
-  const [pendingReplyHelpfulId, setPendingReplyHelpfulId] = useState<number | null>(null);
+  const [replyHelpfulMap, setReplyHelpfulMap] = useState<Record<string, HelpfulState>>({});
+  const [pendingReplyHelpfulId, setPendingReplyHelpfulId] = useState<string | number | null>(null);
 
   useEffect(() => {
     setCommentHelpful({
@@ -53,7 +53,7 @@ export function useCommentHelpfulState(params: UseCommentHelpfulStateParams) {
   useEffect(() => {
     setReplyHelpfulMap(
       Object.fromEntries(
-        replies.map((reply) => [reply.commentId, { active: reply.isHelpful, count: reply.totalHelpfulCount }]),
+        replies.map((reply) => [String(reply.commentId), { active: reply.isHelpful, count: reply.totalHelpfulCount }]),
       ),
     );
   }, [replies]);
@@ -84,7 +84,8 @@ export function useCommentHelpfulState(params: UseCommentHelpfulStateParams) {
       return;
     }
 
-    const current = replyHelpfulMap[reply.commentId] ?? {
+    const replyKey = String(reply.commentId);
+    const current = replyHelpfulMap[replyKey] ?? {
       active: reply.isHelpful,
       count: reply.totalHelpfulCount,
     };
@@ -97,7 +98,7 @@ export function useCommentHelpfulState(params: UseCommentHelpfulStateParams) {
       });
       setReplyHelpfulMap((prev) => ({
         ...prev,
-        [reply.commentId]: {
+        [replyKey]: {
           active: result.isHelpful,
           count: result.totalHelpfulCount,
         },

@@ -28,10 +28,14 @@ export const mypageQueryKeys = {
   ...createDomainQueryKeys("users"),
   myPage: () => ["users", "me"] as const,
   hoguReport: () => ["users", "me", "report"] as const,
-  myBookmarks: (params: GetMyBookmarksQueryParams = {}) => ["users", "me", "bookmarks", params] as const,
-  myComments: (params: GetMyCommentsQueryParams = {}) => ["users", "me", "comments", params] as const,
-  myPosts: (params: GetMyPostsQueryParams = {}) => ["users", "me", "posts", params] as const,
-  myVotes: (params: GetMyVotesQueryParams = {}) => ["users", "me", "votes", params] as const,
+  myBookmarksRoot: () => ["users", "me", "bookmarks"] as const,
+  myCommentsRoot: () => ["users", "me", "comments"] as const,
+  myPostsRoot: () => ["users", "me", "posts"] as const,
+  myVotesRoot: () => ["users", "me", "votes"] as const,
+  myBookmarks: (params: GetMyBookmarksQueryParams = {}) => [...mypageQueryKeys.myBookmarksRoot(), params] as const,
+  myComments: (params: GetMyCommentsQueryParams = {}) => [...mypageQueryKeys.myCommentsRoot(), params] as const,
+  myPosts: (params: GetMyPostsQueryParams = {}) => [...mypageQueryKeys.myPostsRoot(), params] as const,
+  myVotes: (params: GetMyVotesQueryParams = {}) => [...mypageQueryKeys.myVotesRoot(), params] as const,
 };
 
 export function useCheckNicknameQuery(params: CheckNicknameQueryParams) {

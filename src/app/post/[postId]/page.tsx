@@ -1,27 +1,26 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getPostDetail } from "@/features/post/api";
+import { getPostDetail, isValidPostId } from "@/features/post/api";
 import { isApiError } from "@/shared/api";
 import PostDetailPageClient from "./_components/post-detail.client";
 
 function parsePostId(postId: string) {
-  const numericPostId = Number(postId);
-  if (!Number.isInteger(numericPostId) || numericPostId <= 0) {
+  if (!isValidPostId(postId)) {
     return null;
   }
 
-  return numericPostId;
+  return postId;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ postId: string }> }): Promise<Metadata> {
   const { postId } = await params;
-  const numericPostId = parsePostId(postId);
-  if (!numericPostId) {
+  const resolvedPostId = parsePostId(postId);
+  if (!resolvedPostId) {
     notFound();
   }
 
   try {
-    const post = await getPostDetail(numericPostId);
+    const post = await getPostDetail(resolvedPostId);
 
     // TODO: Cypress 도입 시 /post/[postId] 메타 회귀 테스트 추가 필요
     // - 각 값이 title/description/openGraph 게시글 데이터와 일치하는지 +
@@ -47,10 +46,10 @@ export async function generateMetadata({ params }: { params: Promise<{ postId: s
 
 export default async function PostDetailPage({ params }: { params: Promise<{ postId: string }> }) {
   const { postId } = await params;
-  const numericPostId = parsePostId(postId);
-  if (!numericPostId) {
+  const resolvedPostId = parsePostId(postId);
+  if (!resolvedPostId) {
     notFound();
   }
 
-  return <PostDetailPageClient postId={numericPostId} />;
+  return <PostDetailPageClient key={resolvedPostId} postId={resolvedPostId} />;
 }

@@ -16,9 +16,9 @@ export type PostCommentsSectionProps = ComponentProps<"section"> & {
   sortValue: PostCommentSortValue;
   onSortChange: (value: PostCommentSortValue) => void;
   onCreateComment: (content: string) => Promise<void>;
-  onCreateReply: (parentId: number, content: string) => Promise<void>;
-  onUpdateComment: (commentId: number, content: string) => Promise<void>;
-  onDeleteComment: (commentId: number) => Promise<void>;
+  onCreateReply: (parentId: string | number, content: string) => Promise<void>;
+  onUpdateComment: (commentId: string | number, content: string) => Promise<void>;
+  onDeleteComment: (commentId: string | number) => Promise<void>;
   onToggleHelpful: (comment: CommentItemResponse) => Promise<{ isHelpful: boolean; totalHelpfulCount: number }>;
   isCreatingComment?: boolean;
   hasNextPage?: boolean;
@@ -73,7 +73,7 @@ export function PostCommentsSection(props: PostCommentsSectionProps) {
     return sorted;
   }, [comments, sortValue]);
   const replyMap = useMemo(() => {
-    const byParent: Record<number, CommentItemResponse[]> = {};
+    const byParent: Record<string, CommentItemResponse[]> = {};
     comments
       .filter((comment) => comment.parentId !== null)
       .forEach((reply) => {
@@ -82,14 +82,15 @@ export function PostCommentsSection(props: PostCommentsSectionProps) {
           return;
         }
 
-        if (!byParent[parentId]) {
-          byParent[parentId] = [];
+        const parentKey = String(parentId);
+        if (!byParent[parentKey]) {
+          byParent[parentKey] = [];
         }
-        byParent[parentId].push(reply);
+        byParent[parentKey].push(reply);
       });
 
     for (const parentId of Object.keys(byParent)) {
-      byParent[Number(parentId)].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      byParent[parentId].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
     }
 
     return byParent;
@@ -98,7 +99,7 @@ export function PostCommentsSection(props: PostCommentsSectionProps) {
   return (
     <section className={cn("flex flex-col gap-4", className)} aria-label="집단 지성 댓글" {...rest}>
       <div className="flex flex-col gap-1">
-        <h2 className="text-subtitle-b text-text-04">로드된 집단 지성 ({rootComments.length})</h2>
+        <h2 className="text-subtitle-b text-text-04">집단 지성 ({rootComments.length})</h2>
         <div className="flex justify-end">
           <SortSelect
             value={sortValue}
@@ -118,7 +119,7 @@ export function PostCommentsSection(props: PostCommentsSectionProps) {
             <PostCommentCard
               key={comment.commentId}
               comment={comment}
-              replies={replyMap[comment.commentId] ?? []}
+              replies={replyMap[String(comment.commentId)] ?? []}
               onCreateReply={onCreateReply}
               onUpdateComment={onUpdateComment}
               onDeleteComment={onDeleteComment}

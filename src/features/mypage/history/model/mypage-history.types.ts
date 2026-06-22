@@ -1,4 +1,5 @@
 import type { PostCategoryValue } from "@/features/post/constants";
+import type { PostId } from "@/features/post/model";
 
 export type VoteSummary = "HOGU" | "NOT_HOGU" | "TIE" | "NONE";
 export type MyVote = "HOGU" | "NOT_HOGU";
@@ -13,7 +14,7 @@ export type MypagePostHistoryResponse = {
 };
 
 export type MypageHistoryPostResponse = {
-  postId: number;
+  postId: PostId;
   title: string;
   category: PostCategoryValue;
   createdAt: string;
@@ -32,7 +33,7 @@ export type MypageHistoryCommentResponse = {
   content: string;
   createdAt: string;
   post: {
-    postId: number;
+    postId: PostId;
     title: string;
     category: PostCategoryValue;
     commentCount: number;
@@ -50,7 +51,7 @@ export type MypageHistoryVoteResponse = {
   myVote: MyVote;
   createdAt: string;
   post: {
-    postId: number;
+    postId: PostId;
     title: string;
     category: PostCategoryValue;
     commentCount: number;
@@ -60,7 +61,7 @@ export type MypageHistoryVoteResponse = {
 
 export type MypageHistoryItem = {
   id: string;
-  postId: number;
+  postId: PostId;
   category: string;
   title: string;
   createdAtLabel: string;

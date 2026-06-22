@@ -1,3 +1,4 @@
+import QuestionIcon from "@/assets/icons/question.svg";
 import type { HoguIndexCardProps } from "@/features/mypage/report/model";
 import { Tag } from "@/shared/ui";
 import { cn } from "@/shared/utils";
@@ -5,6 +6,21 @@ import { HoguIndexProgress } from "./hogu-index-progress";
 
 export function HoguIndexCard({ index, variant = "compact", className }: HoguIndexCardProps) {
   const isDetail = variant === "detail";
+
+  if (index.isPendingAggregation) {
+    return (
+      <section
+        className={cn(
+          "flex min-h-[168px] flex-col items-center justify-center gap-3 rounded-[32px] bg-bg-02 px-12 py-8 text-center",
+          className,
+        )}
+        aria-label="호구 레벨 집계 대기"
+      >
+        <QuestionIcon aria-hidden className="size-12 text-text-02" strokeWidth={15} />
+        <p className="text-caption-m text-text-02">아직 레벨을 집계할 수 없어요.</p>
+      </section>
+    );
+  }
 
   return (
     <section

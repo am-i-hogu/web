@@ -8,6 +8,7 @@ import {
   getComments,
   getHomePosts,
   getPostDetail,
+  type PostId,
 } from "./post.service";
 
 export async function getHomePostsAction(params: GetHomePostsParams = {}): Promise<ApiResult<HomePostListResponse>> {
@@ -19,7 +20,7 @@ export async function getHomePostsAction(params: GetHomePostsParams = {}): Promi
 }
 
 export async function getCommentsAction(
-  postId: number,
+  postId: PostId,
   params: GetCommentsParams = {},
 ): Promise<ApiResult<CommentReadResponse>> {
   try {
@@ -29,7 +30,7 @@ export async function getCommentsAction(
   }
 }
 
-export async function getPostDetailAction(postId: number): Promise<ApiResult<PostDetailResponse>> {
+export async function getPostDetailAction(postId: PostId): Promise<ApiResult<PostDetailResponse>> {
   try {
     return apiSuccess(await getPostDetail(postId));
   } catch (error) {
