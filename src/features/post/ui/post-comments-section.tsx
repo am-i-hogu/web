@@ -99,7 +99,7 @@ export function PostCommentsSection(props: PostCommentsSectionProps) {
   return (
     <section className={cn("flex flex-col gap-4", className)} aria-label="집단 지성 댓글" {...rest}>
       <div className="flex flex-col gap-1">
-        <h2 className="text-subtitle-b text-text-04">로드된 집단 지성 ({rootComments.length})</h2>
+        <h2 className="text-subtitle-b text-text-04">집단 지성 ({rootComments.length})</h2>
         <div className="flex justify-end">
           <SortSelect
             value={sortValue}
