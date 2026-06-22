@@ -40,7 +40,7 @@ type GetHomePostsParams = Omit<GetHomePostsQuery, "categories"> & {
 };
 type GetCommentsParams = GetCommentsQuery;
 type PostWriteResponse = Omit<PostCreateResponse, "postId"> & {
-  postId: string;
+  postId: PostId;
 };
 type PostIdPath = {
   postId: PostId;
