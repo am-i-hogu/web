@@ -20,6 +20,7 @@ import type {
   GetCommentsQuery,
   GetHomePostsQuery,
   HomePostListResponse,
+  ImageUploadResponse,
   PostBookmarkResponse,
   PostCreateRequest,
   PostCreateResponse,
@@ -145,6 +146,17 @@ export async function updatePostWithAuth({ postId }: UpdatePostParams, request: 
     method: "PATCH",
     body: request,
     parseJson: parsePostIdJsonResponse<PostWriteResponse>,
+  });
+}
+
+export async function uploadPostImageWithAuth(file: File) {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  // 이미지 파일 업로드는 별도 POST endpoint를 사용하고, 게시글 create/update에는 반환된 imageUrl만 전달한다.
+  return authenticatedApiClient<ImageUploadResponse>("/api/images", {
+    method: "POST",
+    body: formData,
   });
 }
 

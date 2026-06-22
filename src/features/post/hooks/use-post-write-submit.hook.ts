@@ -2,11 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useCreatePostMutation, useUpdatePostMutation } from "@/features/post/api";
+import { uploadPostImageWithAuth, useCreatePostMutation, useUpdatePostMutation } from "@/features/post/api";
 import {
   createPostCreateRequest,
   createPostUpdateRequest,
   type PostFormInitialValues,
+  type PostWriteImageItem,
   type PostWriteSchemaType,
 } from "@/features/post/model";
 import { isApiError, toApiError } from "@/shared/api";
@@ -18,7 +19,9 @@ type UsePostWriteSubmitParams = {
   isFormValid: boolean;
   isFormChanged: boolean;
   initialValues?: PostFormInitialValues;
-  values: Pick<PostWriteSchemaType, "content" | "selectedCategories" | "title">;
+  values: Pick<PostWriteSchemaType, "content" | "selectedCategories" | "title"> & {
+    images: PostWriteImageItem[];
+  };
 };
 
 export function usePostWriteSubmit({
@@ -34,7 +37,8 @@ export function usePostWriteSubmit({
   const createPostMutation = useCreatePostMutation();
   const updatePostMutation = useUpdatePostMutation(postId);
   const [submitErrorMessage, setSubmitErrorMessage] = useState<string | null>(null);
-  const isSubmitting = createPostMutation.isPending || updatePostMutation.isPending;
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
+  const isSubmitting = isUploadingImages || createPostMutation.isPending || updatePostMutation.isPending;
 
   const handleAuthRequiredError = (error: unknown) => {
     if (isApiError(error) && error.status === 401) {
@@ -51,20 +55,41 @@ export function usePostWriteSubmit({
     }
 
     setSubmitErrorMessage(null);
+    setIsUploadingImages(true);
 
     try {
-      if (mode === "edit") {
-        if (!postId) {
-          throw new Error("수정할 게시글 정보를 찾을 수 없습니다.");
-        }
+      if (mode === "edit" && !postId) {
+        throw new Error("수정할 게시글 정보를 찾을 수 없습니다.");
+      }
 
-        const response = await updatePostMutation.mutateAsync(createPostUpdateRequest(values, initialValues));
+      // 게시글 API는 imageUrl 목록만 받기 때문에, 신규 파일은 저장 요청 전에 이미지 서버에 먼저 업로드한다.
+      const uploadedImages = await Promise.all(
+        values.images.map(async (image) => {
+          if (!image.file) {
+            return image;
+          }
+
+          const response = await uploadPostImageWithAuth(image.file);
+          return {
+            ...image,
+            imageUrl: response.imageUrl,
+            file: undefined,
+          };
+        }),
+      );
+      const requestValues = {
+        ...values,
+        images: uploadedImages,
+      };
+
+      if (mode === "edit") {
+        const response = await updatePostMutation.mutateAsync(createPostUpdateRequest(requestValues, initialValues));
         showToast({ message: "게시글이 수정되었습니다." });
         router.replace(`/post/${response.postId}`);
         return;
       }
 
-      const response = await createPostMutation.mutateAsync(createPostCreateRequest(values));
+      const response = await createPostMutation.mutateAsync(createPostCreateRequest(requestValues));
       showToast({ message: "게시글이 등록되었습니다." });
       router.replace(`/post/${response.postId}`);
     } catch (error) {
@@ -73,6 +98,8 @@ export function usePostWriteSubmit({
       }
 
       setSubmitErrorMessage(toApiError(error).message);
+    } finally {
+      setIsUploadingImages(false);
     }
   };
 
