@@ -28,11 +28,11 @@ const createImageItemId = () =>
     ? crypto.randomUUID()
     : `post-image-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-const createInitialImageItems = (imageUrls: string[] = []): PostWriteImageItem[] =>
-  imageUrls.slice(0, POST_WRITE_IMAGE_LIMIT).map((imageUrl, index) => ({
+const createInitialImageItems = (images: PostFormInitialValues["images"] = []): PostWriteImageItem[] =>
+  images.slice(0, POST_WRITE_IMAGE_LIMIT).map((image, index) => ({
     id: `post-image-existing-${index}`,
-    imageUrl,
-    isThumbnail: index === 0,
+    imageUrl: image.imageUrl,
+    isThumbnail: image.isThumbnail,
   }));
 
 const createPreviewUrl = (file: File) => URL.createObjectURL(file);

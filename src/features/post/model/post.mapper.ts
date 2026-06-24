@@ -4,13 +4,15 @@ import {
   type PostCategoryValue,
   toPostCategoryLabel,
 } from "@/features/post/constants";
-import type { HomePostItemResponse, PostDetailResponse } from "@/shared/api/generated";
+import type { HomePostItemResponse, PostDetailResponse, PostImageResponse } from "@/shared/api/generated";
+
+export type PostFormInitialImage = Pick<PostImageResponse, "imageUrl" | "isThumbnail" | "order">;
 
 export type PostFormInitialValues = {
   title: string;
   content: string;
   selectedCategories: PostCategoryLabel[];
-  images: string[];
+  images: PostFormInitialImage[];
 };
 
 export type PostWriteImageItem = {
@@ -41,6 +43,12 @@ export function createPostFormInitialValues(post: PostFormInitialValuesSource): 
     title: post.title,
     content: post.content,
     selectedCategories: post.categories.filter(isPostCategoryValue).map(toPostCategoryLabel),
-    images: post.images ?? [],
+    images: [...(post.images ?? [])]
+      .sort((a, b) => a.order - b.order)
+      .map((image) => ({
+        imageUrl: image.imageUrl,
+        order: image.order,
+        isThumbnail: image.isThumbnail,
+      })),
   };
 }

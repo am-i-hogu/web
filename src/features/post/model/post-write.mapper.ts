@@ -40,14 +40,16 @@ function createPostImageRequests(images: PostWriteRequestValues["images"]) {
     }));
 }
 
-function areSameImages(values: PostWriteRequestValues["images"], initialImageUrls: string[] = []) {
-  if (values.length !== initialImageUrls.length) {
+function areSameImages(values: PostWriteRequestValues["images"], initialImages: PostFormInitialValues["images"] = []) {
+  if (values.length !== initialImages.length) {
     return false;
   }
 
-  return values.every(
-    (image, index) => image.imageUrl === initialImageUrls[index] && image.isThumbnail === (index === 0),
-  );
+  return values.every((image, index) => {
+    const initialImage = initialImages[index];
+
+    return image.imageUrl === initialImage.imageUrl && image.isThumbnail === initialImage.isThumbnail;
+  });
 }
 
 export function createPostCreateRequest(values: PostWriteRequestValues): PostCreateRequest {
