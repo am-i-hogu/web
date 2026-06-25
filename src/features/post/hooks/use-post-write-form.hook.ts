@@ -58,7 +58,7 @@ const resizeContentTextarea = (element: HTMLTextAreaElement) => {
  *
  * @description
  * 작성 페이지와 수정 페이지가 같은 UI를 쓰도록 제목/본문/카테고리 입력값은 하나의 객체로 관리합니다.
- * 수정 페이지는 `initialValues`로 제목/본문/카테고리만 주입하고, 이미지는 API 연동 시 별도로 연결합니다.
+ * 수정 페이지는 `initialValues`로 제목/본문/카테고리/기존 이미지와 썸네일 여부를 주입합니다.
  * 본문 textarea는 초기값이 들어온 edit mode에서도 작성 페이지처럼 내용 높이에 맞춰 자동 확장합니다.
  *
  * @param params.initialValues - 수정 모드에서 주입할 게시글 초기값입니다.

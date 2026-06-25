@@ -14,8 +14,8 @@ type UsePostDetailBookmarkStateParams = {
  * 게시글 상세의 북마크 토글 상태와 낙관적 업데이트를 관리하는 훅
  *
  * @description
- * 북마크 클릭 시 먼저 로컬 상태를 뒤집고, 서버 응답의 `isBookmarked` 값으로 다시 동기화합니다.
- * 요청 실패 시 이전 상태로 되돌리며, 인증 에러는 호출자가 주입한 로그인 이동 핸들러에 위임합니다.
+ * 상세 API의 `isBookmarked` 값을 표시 상태로 사용하고, 토글 요청은 mutation의 낙관적 캐시 업데이트에 위임합니다.
+ * 인증 에러는 호출자가 주입한 로그인 이동 핸들러에 위임합니다.
  *
  * @param params.postId - 북마크를 토글할 게시글 ID입니다.
  * @param params.post - 상세 API 응답입니다.
