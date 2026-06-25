@@ -1,6 +1,6 @@
+import { AUTH_ERROR_CODE } from "../model/auth-error-code";
+
 const LOGIN_SUCCESS_STATUS = "LOGIN_SUCCESS";
-const LOGIN_FAILED_STATUS = "LOGIN_FAILED";
-const UNKNOWN_AUTH_STATUS_CODE = "UNKNOWN_AUTH_STATUS";
 
 /**
  * OAuth 콜백 페이지에서 받은 인증 결과를 프론트 라우팅 경로로 변환한다.
@@ -17,11 +17,11 @@ export function getOAuthCallbackRedirectPath(status?: string | null, code?: stri
     return "/";
   }
 
-  if (status === LOGIN_FAILED_STATUS) {
-    return getLoginRedirectPath(code ?? LOGIN_FAILED_STATUS);
+  if (status === AUTH_ERROR_CODE.LOGIN_FAILED) {
+    return getLoginRedirectPath(code ?? AUTH_ERROR_CODE.LOGIN_FAILED);
   }
 
-  return getLoginRedirectPath(UNKNOWN_AUTH_STATUS_CODE);
+  return getLoginRedirectPath(AUTH_ERROR_CODE.UNKNOWN_AUTH_STATUS);
 }
 
 /**
@@ -31,5 +31,7 @@ export function getOAuthCallbackRedirectPath(status?: string | null, code?: stri
  * @returns `errorCode` 쿼리를 포함한 로그인 페이지 경로
  */
 function getLoginRedirectPath(errorCode: string) {
-  return `/login?errorCode=${errorCode}`;
+  const searchParams = new URLSearchParams({ errorCode });
+
+  return `/login?${searchParams.toString()}`;
 }

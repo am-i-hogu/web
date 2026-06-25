@@ -5,7 +5,7 @@ import BookmarkFillIcon from "@/assets/icons/bookmark-simple-fill.svg";
 import ChatIcon from "@/assets/icons/chat.svg";
 import EyeIcon from "@/assets/icons/eye.svg";
 import { Tag } from "@/shared/ui/tag";
-import { cn } from "@/shared/utils";
+import { cn, toUserDisplay } from "@/shared/utils";
 import { formatNumber } from "@/shared/utils/format";
 
 export type ContentCardProps = ComponentProps<"article">;
@@ -30,6 +30,8 @@ export type ContentCardHeaderProps = {
   className?: string;
   viewCount?: number;
   isBookmarked?: boolean;
+  isBookmarking?: boolean;
+  onBookmarkToggle?: () => void;
 };
 
 export function ContentCardHeader({
@@ -39,18 +41,21 @@ export function ContentCardHeader({
   meta,
   viewCount,
   isBookmarked = false,
+  isBookmarking = false,
+  onBookmarkToggle,
   className,
 }: ContentCardHeaderProps) {
-  const fallbackInitial = (authorName ?? "?").trim().charAt(0) || "?";
+  const author = toUserDisplay({ nickname: authorName, profileImageUrl: authorImage });
+  const fallbackInitial = author.isDeletedUser ? "" : author.displayName.trim().charAt(0) || "?";
 
   return (
     <header className={cn(className)}>
       <div className="flex flex-row justify-between items-center gap-2">
         <div className="flex items-center gap-2 text-caption-m text-text-03">
-          {authorImage ? (
+          {author.profileImageUrl ? (
             <Image
-              src={authorImage}
-              alt={`${authorName ?? "작성자"} 프로필 이미지`}
+              src={author.profileImageUrl}
+              alt={`${author.displayName || "작성자"} 프로필 이미지`}
               width={40}
               height={40}
               className="rounded-full object-cover"
@@ -61,7 +66,7 @@ export function ContentCardHeader({
             </div>
           )}
           <div className="flex flex-col">
-            {authorName ? <span className="text-body-m text-text-04">{authorName}</span> : null}
+            {author.displayName ? <span className="text-body-m text-text-04">{author.displayName}</span> : null}
             <div className="flex flex-row items-center gap-2">
               <span className="text-caption-m text-text-03">{meta}</span>
               <div className="flex flex-row items-center gap-1">
@@ -75,7 +80,22 @@ export function ContentCardHeader({
           <Tag tone="categoryInactive" size="sm">
             {category}
           </Tag>
-          {isBookmarked ? (
+          {onBookmarkToggle ? (
+            <button
+              type="button"
+              aria-label={isBookmarked ? "북마크 해제" : "북마크"}
+              aria-pressed={isBookmarked}
+              disabled={isBookmarking}
+              onClick={onBookmarkToggle}
+              className="flex size-6 items-center justify-center disabled:opacity-60"
+            >
+              {isBookmarked ? (
+                <BookmarkFillIcon aria-hidden className="size-6 text-text-02" />
+              ) : (
+                <BookmarkIcon aria-hidden className="size-6 text-text-02" strokeWidth={20} />
+              )}
+            </button>
+          ) : isBookmarked ? (
             <BookmarkFillIcon aria-hidden className="size-6 text-text-02" />
           ) : (
             <BookmarkIcon aria-hidden className="size-6 text-text-02" strokeWidth={20} />

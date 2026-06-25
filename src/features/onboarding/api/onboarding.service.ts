@@ -14,5 +14,6 @@ export async function createOnboardingUser(request: OnboardingRequest) {
   return apiClient<OnboardingResponse>("/api/users", {
     method: "POST",
     body: request,
+    credentials: "include",
   });
 }

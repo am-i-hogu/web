@@ -7,11 +7,17 @@ type JsonObject = object;
 
 export type ApiClientOptions = Omit<RequestInit, "body"> & {
   body?: BodyInit | JsonObject | unknown[] | null;
+  parseJson?: (text: string) => unknown;
   query?: Record<string, string | number | boolean | null | undefined>;
   timeoutMs?: number;
 };
 
 function getApiBaseUrl() {
+  if (typeof window !== "undefined") {
+    // 클라이언트(브라우저)에서는 NEXT_PUBLIC_ 접두사가 붙은 환경 변수만 사용할 수 있다.
+    return process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+  }
+
   return process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 }
 
@@ -33,14 +39,16 @@ function isJsonBody(body: ApiClientOptions["body"]): body is JsonObject | unknow
   return Boolean(body) && typeof body === "object" && !(body instanceof FormData) && !(body instanceof Blob);
 }
 
-async function parseResponseBody(response: Response) {
+async function parseResponseBody(response: Response, parseJson?: ApiClientOptions["parseJson"]) {
   if (response.status === 204) {
     return null;
   }
 
   const contentType = response.headers.get("content-type") ?? "";
   if (contentType.includes("application/json")) {
-    return response.json();
+    const text = await response.text();
+
+    return parseJson ? parseJson(text) : JSON.parse(text);
   }
 
   return response.text();
@@ -55,7 +63,7 @@ function getErrorMessage(data: unknown, fallback: string) {
 }
 
 export async function apiClient<T>(path: string, options: ApiClientOptions = {}): Promise<T> {
-  const { body, headers, query, timeoutMs = DEFAULT_API_TIMEOUT_MS, ...requestInit } = options;
+  const { body, headers, parseJson, query, timeoutMs = DEFAULT_API_TIMEOUT_MS, ...requestInit } = options;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
   const shouldJsonStringify = isJsonBody(body);
@@ -70,7 +78,7 @@ export async function apiClient<T>(path: string, options: ApiClientOptions = {})
       },
       signal: controller.signal,
     });
-    const data = await parseResponseBody(response);
+    const data = await parseResponseBody(response, response.ok ? parseJson : undefined);
 
     if (!response.ok) {
       throw new ApiError({

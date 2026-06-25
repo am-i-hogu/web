@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller } from "react-hook-form";
+import { useAuthStore } from "@/features/auth/model";
+import { REGISTER_TOKEN_ERROR_CODES } from "@/features/auth/model/auth-error-code";
 import { createOnboardingUser } from "@/features/onboarding/api";
 import { useOnboardingForm } from "@/features/onboarding/hooks";
 import type { OnboardingFormData } from "@/features/onboarding/models";
@@ -10,8 +12,19 @@ import { getOnboardingNicknameErrorMessage, getOnboardingSubmitErrorMessage } fr
 import { toApiError } from "@/shared/api";
 import { Button, Textfield } from "@/shared/ui";
 
+function isRegisterTokenErrorCode(code?: string): code is string {
+  return Boolean(code && REGISTER_TOKEN_ERROR_CODES.has(code));
+}
+
+function getLoginErrorPath(errorCode: string) {
+  const searchParams = new URLSearchParams({ errorCode });
+
+  return `/login?${searchParams.toString()}`;
+}
+
 export default function OnboardingPageClient() {
   const router = useRouter();
+  const setAccessToken = useAuthStore((state) => state.setAccessToken);
   const [submitErrorMessage, setSubmitErrorMessage] = useState<string | null>(null);
   const { control, handleSubmit, helperText, tone, isNicknameCheckPending, isSubmitting, isValid, setError } =
     useOnboardingForm();
@@ -21,18 +34,29 @@ export default function OnboardingPageClient() {
     setSubmitErrorMessage(null);
 
     try {
-      await createOnboardingUser(data);
+      const { accessToken } = await createOnboardingUser(data);
+
+      setAccessToken(accessToken);
       router.replace("/");
+
       return;
     } catch (error) {
       const apiError = toApiError(error);
       const nicknameErrorMessage = getOnboardingNicknameErrorMessage(apiError.data);
+      const errorCode = apiError.data?.code;
+
+      if (isRegisterTokenErrorCode(errorCode)) {
+        router.replace(getLoginErrorPath(errorCode));
+
+        return;
+      }
 
       if (nicknameErrorMessage) {
         setError("nickname", {
           type: "server",
           message: nicknameErrorMessage,
         });
+
         return;
       }
 

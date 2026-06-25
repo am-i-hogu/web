@@ -12,7 +12,7 @@ import ShareIcon from "@/assets/icons/share-network.svg";
 import { useSharePostLink } from "@/features/post/hooks/use-share-post-link.hook";
 import { PostDeleteModal } from "@/features/post/ui/contents-delete-modal";
 import { Tag, Toast } from "@/shared/ui";
-import { cn } from "@/shared/utils";
+import { cn, toUserDisplay } from "@/shared/utils";
 import { formatNumber } from "@/shared/utils/format";
 
 const iconButtonClassName = "inline-flex size-6 items-center justify-center leading-none";
@@ -30,7 +30,11 @@ export type PostDetailHeaderProps = {
   meta: string;
   viewCount: number;
   isBookmarked?: boolean;
+  isBookmarking?: boolean;
   isMine?: boolean;
+  isDeleting?: boolean;
+  onBookmarkToggle?: () => void;
+  onDelete?: () => void;
   className?: string;
 };
 
@@ -40,7 +44,19 @@ function IconButton(props: ComponentProps<"button">) {
 }
 
 export function PostDetailHeader(props: PostDetailHeaderProps) {
-  const { postId, category, meta, viewCount, isBookmarked = false, isMine = false, className } = props;
+  const {
+    postId,
+    category,
+    meta,
+    viewCount,
+    isBookmarked = false,
+    isBookmarking = false,
+    isMine = false,
+    isDeleting = false,
+    onBookmarkToggle,
+    onDelete,
+    className,
+  } = props;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -87,7 +103,12 @@ export function PostDetailHeader(props: PostDetailHeaderProps) {
           </li>
         </ul>
         <div className="inline-flex items-center gap-3 text-text-03">
-          <IconButton aria-label="북마크">
+          <IconButton
+            aria-label={isBookmarked ? "북마크 해제" : "북마크"}
+            aria-pressed={isBookmarked}
+            disabled={isBookmarking}
+            onClick={onBookmarkToggle}
+          >
             {isBookmarked ? (
               <BookmarkFillIcon aria-hidden className={cn(iconClassName, "text-text-03")} />
             ) : (
@@ -119,6 +140,7 @@ export function PostDetailHeader(props: PostDetailHeaderProps) {
                   <button
                     type="button"
                     className="mt-1 block w-full py-1 text-left text-body-m text-danger focus:outline-none focus-visible:outline-none focus-visible:ring-0"
+                    disabled={isDeleting}
                     onClick={() => {
                       setIsMenuOpen(false);
                       setIsDeleteModalOpen(true);
@@ -141,7 +163,11 @@ export function PostDetailHeader(props: PostDetailHeaderProps) {
         open={isDeleteModalOpen}
         mode="post"
         onClose={() => setIsDeleteModalOpen(false)}
-        onConfirmDelete={() => setIsDeleteModalOpen(false)}
+        confirmText={isDeleting ? "삭제 중" : "삭제하기"}
+        onConfirmDelete={() => {
+          onDelete?.();
+          setIsDeleteModalOpen(false);
+        }}
       />
     </>
   );
@@ -159,16 +185,17 @@ export type PostDetailContentProps = {
 
 export function PostDetailContent(props: PostDetailContentProps) {
   const { title, authorName, authorImage, content, media, className, mediaContainerClassName } = props;
-  const fallbackInitial = authorName.trim().charAt(0) || "?";
+  const author = toUserDisplay({ nickname: authorName, profileImageUrl: authorImage });
+  const fallbackInitial = author.isDeletedUser ? "" : author.displayName.trim().charAt(0) || "?";
 
   return (
     <section className={cn("flex flex-col gap-5", className)} aria-label="게시글 본문">
       <h1 className="text-title1-m text-text-04">{title}</h1>
       <div className="flex items-center gap-3">
-        {authorImage ? (
+        {author.profileImageUrl ? (
           <Image
-            src={authorImage}
-            alt={`${authorName} 프로필 이미지`}
+            src={author.profileImageUrl}
+            alt={`${author.displayName} 프로필 이미지`}
             width={40}
             height={40}
             className="rounded-full object-cover"
@@ -178,7 +205,7 @@ export function PostDetailContent(props: PostDetailContentProps) {
             {fallbackInitial}
           </div>
         )}
-        <span className="text-body-m text-text-04">{authorName}</span>
+        <span className="text-body-m text-text-04">{author.displayName}</span>
       </div>
       <div className="flex flex-col gap-4">
         <p className="whitespace-pre-line text-body-r text-text-04">{content}</p>
