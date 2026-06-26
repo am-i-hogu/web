@@ -56,6 +56,7 @@ export function CommentTextfield(props: CommentTextfieldProps) {
         )}
       >
         <Input
+          data-slot="comment-textfield-input"
           variant="plain"
           type="text"
           id={id}
@@ -68,7 +69,7 @@ export function CommentTextfield(props: CommentTextfieldProps) {
           readOnly={isReadOnly}
           disabled={isDisabled}
           placeholder={isDisabled ? "의견을 남길 수 없습니다." : resolvedPlaceholder}
-          className="text-body-r text-text-04 placeholder:text-text-02 disabled:placeholder:text-text-02"
+          className="text-text-04 placeholder:text-text-03 disabled:placeholder:text-text-02"
         />
       </div>
 

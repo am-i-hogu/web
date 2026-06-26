@@ -4,16 +4,25 @@ import {
   type PostCategoryValue,
   toPostCategoryLabel,
 } from "@/features/post/constants";
-import type { HomePostItemResponse, PostDetailResponse } from "@/shared/api/generated";
+import type { HomePostItemResponse, PostDetailResponse, PostImageResponse } from "@/shared/api/generated";
+
+export type PostFormInitialImage = Pick<PostImageResponse, "imageUrl" | "isThumbnail" | "order">;
 
 export type PostFormInitialValues = {
   title: string;
   content: string;
   selectedCategories: PostCategoryLabel[];
+  images: PostFormInitialImage[];
 };
 
-// TODO: 수정 페이지의 기존 이미지 목록 API 연동시, PostFormInitialValues에 추가해주기
-type PostFormInitialValuesSource = Pick<PostDetailResponse, "content" | "title"> & {
+export type PostWriteImageItem = {
+  id: string;
+  imageUrl?: string;
+  file?: File;
+  isThumbnail: boolean;
+};
+
+type PostFormInitialValuesSource = Pick<PostDetailResponse, "content" | "images" | "title"> & {
   categories: string[];
 };
 
@@ -34,5 +43,12 @@ export function createPostFormInitialValues(post: PostFormInitialValuesSource): 
     title: post.title,
     content: post.content,
     selectedCategories: post.categories.filter(isPostCategoryValue).map(toPostCategoryLabel),
+    images: [...(post.images ?? [])]
+      .sort((a, b) => a.order - b.order)
+      .map((image) => ({
+        imageUrl: image.imageUrl,
+        order: image.order,
+        isThumbnail: image.isThumbnail,
+      })),
   };
 }

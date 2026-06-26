@@ -21,17 +21,19 @@ type PostDetailPageClientProps = {
 };
 
 function createImageCarouselItems(post: Pick<PostDetailResponse, "postId" | "images" | "title">) {
-  return post.images.map((imageUrl, index) => ({
-    id: `${post.postId}-image-${index + 1}`,
-    content: (
-      // biome-ignore lint/performance/noImgElement: 외부 이미지 도메인 정책의 경우, 추후 이미지 연동 이슈에서 정리될 예정
-      <img
-        src={imageUrl}
-        alt={`${post.title} 첨부 이미지 ${index + 1}`}
-        className="h-[196px] w-full rounded-[8px] object-cover"
-      />
-    ),
-  }));
+  return [...post.images]
+    .sort((a, b) => a.order - b.order)
+    .map((image, index) => ({
+      id: `${post.postId}-image-${index + 1}`,
+      content: (
+        // biome-ignore lint/performance/noImgElement: 외부 이미지 도메인 정책의 경우, 추후 이미지 연동 이슈에서 정리될 예정
+        <img
+          src={image.imageUrl}
+          alt={`${post.title} 첨부 이미지 ${index + 1}`}
+          className="h-[196px] w-full rounded-[8px] object-cover"
+        />
+      ),
+    }));
 }
 
 function PostDetailErrorState({ onRetry }: { onRetry: () => void }) {

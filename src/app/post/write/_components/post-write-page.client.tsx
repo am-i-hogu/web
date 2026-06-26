@@ -3,7 +3,7 @@
 import CaretRightIcon from "@/assets/icons/caret-right.svg";
 import IdeaIcon from "@/assets/icons/idea.svg";
 import XIcon from "@/assets/icons/x.svg";
-import { POST_WRITE_IMAGE_SLOT_ITEMS, POST_WRITE_TITLE_LIMIT } from "@/features/post/constants";
+import { POST_WRITE_TITLE_LIMIT } from "@/features/post/constants";
 import { usePostWriteForm, usePostWriteSubmit } from "@/features/post/hooks";
 import type { PostFormInitialValues } from "@/features/post/model";
 import { PostFilterBottomSheet } from "@/features/post/ui";
@@ -36,6 +36,8 @@ export default function PostWritePageClient(props: PostWritePageClientProps) {
     isTitleTooLong,
     isFormValid,
     isFormChanged,
+    imageItems,
+    carouselImageItems,
     openCategorySheet,
     closeCategorySheet,
     toggleDraftCategory,
@@ -43,6 +45,10 @@ export default function PostWritePageClient(props: PostWritePageClientProps) {
     removeSelectedCategory,
     handleTitleChange,
     handleContentChange,
+    handleImageSelect,
+    handleImageDrop,
+    handleImageRemove,
+    handleImagePromote,
   } = usePostWriteForm({ initialValues });
   const { handleSubmit, isSubmitting, submitErrorMessage } = usePostWriteSubmit({
     mode,
@@ -54,6 +60,7 @@ export default function PostWritePageClient(props: PostWritePageClientProps) {
       title,
       content,
       selectedCategories,
+      images: imageItems,
     },
   });
   const isSubmitDisabled = !isFormValid || isSubmitting || (mode === "edit" && !isFormChanged);
@@ -135,8 +142,17 @@ export default function PostWritePageClient(props: PostWritePageClientProps) {
                 />
               </section>
 
-              {/* TODO: 이미지 업로드/변경 API 연동 시 실제 이미지 목록과 업로드 결과를 연결한다. */}
-              <PostImageCarousel items={POST_WRITE_IMAGE_SLOT_ITEMS} />
+              <PostImageCarousel
+                items={carouselImageItems.map((item) => ({
+                  ...item,
+                  disabled: isSubmitting,
+                  onImageSelect: (file) => handleImageSelect(item.id, file),
+                  onRemove: "imageUrl" in item && item.imageUrl ? () => handleImageRemove(item.id) : undefined,
+                  onPromoteToRepresentative:
+                    "imageUrl" in item && item.imageUrl ? () => handleImagePromote(item.id) : undefined,
+                }))}
+                onFilesDrop={isSubmitting ? undefined : handleImageDrop}
+              />
             </div>
           </section>
 

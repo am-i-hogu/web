@@ -43,9 +43,6 @@ import { isValidPostId } from "./post.service";
 
 type PostListInfiniteData = InfiniteData<HomePostListResponse>;
 type MyBookmarkListInfiniteData = InfiniteData<MyBookmarkListResponse>;
-type PostDetailWithBookmark = PostDetailResponse & {
-  isBookmarked?: boolean;
-};
 
 function updatePostListBookmarkState(data: PostListInfiniteData | undefined, postId: PostId, isBookmarked: boolean) {
   return data
@@ -66,7 +63,7 @@ function setPostListBookmarkState(queryClient: QueryClient, postId: PostId, isBo
 }
 
 function setPostDetailBookmarkState(queryClient: QueryClient, postId: PostId, isBookmarked: boolean) {
-  queryClient.setQueryData<PostDetailWithBookmark>(postQueryKeys.detail(postId), (old) =>
+  queryClient.setQueryData<PostDetailResponse>(postQueryKeys.detail(postId), (old) =>
     old ? { ...old, isBookmarked } : old,
   );
 }
