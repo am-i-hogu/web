@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { uploadPostImageWithAuth, useCreatePostMutation, useUpdatePostMutation } from "@/features/post/api";
 import {
   createPostCreateRequest,
@@ -38,6 +38,7 @@ export function usePostWriteSubmit({
   const updatePostMutation = useUpdatePostMutation(postId);
   const [submitErrorMessage, setSubmitErrorMessage] = useState<string | null>(null);
   const [isUploadingImages, setIsUploadingImages] = useState(false);
+  const uploadedImageUrlsByFileRef = useRef(new WeakMap<File, string>());
   const isSubmitting = isUploadingImages || createPostMutation.isPending || updatePostMutation.isPending;
 
   const handleAuthRequiredError = (error: unknown) => {
@@ -69,7 +70,20 @@ export function usePostWriteSubmit({
             return image;
           }
 
+          const cachedImageUrl = uploadedImageUrlsByFileRef.current.get(image.file);
+          if (cachedImageUrl) {
+            return {
+              ...image,
+              imageUrl: cachedImageUrl,
+              file: undefined,
+            };
+          }
+
           const response = await uploadPostImageWithAuth(image.file);
+          // 저장 재시도 시 이미지 업로드 비용을 줄이되, 제출 중간에 폼 preview 상태를 바꾸지는 않는다.
+          // 같은 File 객체만 재사용되도록 캐시해 이미지 교체 시 이전 업로드 URL이 섞이지 않게 한다.
+          uploadedImageUrlsByFileRef.current.set(image.file, response.imageUrl);
+
           return {
             ...image,
             imageUrl: response.imageUrl,

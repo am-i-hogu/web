@@ -145,12 +145,13 @@ export default function PostWritePageClient(props: PostWritePageClientProps) {
               <PostImageCarousel
                 items={carouselImageItems.map((item) => ({
                   ...item,
+                  disabled: isSubmitting,
                   onImageSelect: (file) => handleImageSelect(item.id, file),
                   onRemove: "imageUrl" in item && item.imageUrl ? () => handleImageRemove(item.id) : undefined,
                   onPromoteToRepresentative:
                     "imageUrl" in item && item.imageUrl ? () => handleImagePromote(item.id) : undefined,
                 }))}
-                onFilesDrop={handleImageDrop}
+                onFilesDrop={isSubmitting ? undefined : handleImageDrop}
               />
             </div>
           </section>
