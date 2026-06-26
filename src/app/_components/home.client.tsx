@@ -19,6 +19,7 @@ import {
   ContentCardFooter,
   ContentCardHeader,
   EmptyState,
+  FooterActionBar,
   LoadingState,
 } from "@/shared/ui";
 import { formatRelativeTime } from "@/shared/utils/format";
@@ -64,8 +65,8 @@ export default function HomePageClient() {
   return (
     <div className="flex min-h-full flex-col bg-bg-01">
       <main className="flex flex-1 flex-col gap-6 px-common-padding py-6">
-        <section className="space-y-5" aria-labelledby="home-judgment-heading">
-          <div className="space-y-2">
+        <header className="min-w-0 space-y-5">
+          <div className="min-w-0 space-y-2">
             <h1 id="home-judgment-heading" className="text-heading-b text-text-04">
               오늘의 <span className="text-secondary-strong">호구</span> 판결
             </h1>
@@ -78,7 +79,7 @@ export default function HomePageClient() {
             onSelectedOptionsChange={setSelectedCategories}
             onSortValueChange={setSortValue}
           />
-        </section>
+        </header>
 
         {homePostsQuery.isPending ? (
           <LoadingState className="min-h-[320px]" />
@@ -153,9 +154,9 @@ export default function HomePageClient() {
           </section>
         )}
       </main>
-      <footer className="sticky bottom-0 z-20 px-common-padding">
+      <FooterActionBar className="px-0 py-0">
         <FooterWidget activeTab="home" />
-      </footer>
+      </FooterActionBar>
     </div>
   );
 }
