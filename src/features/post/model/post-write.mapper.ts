@@ -1,10 +1,19 @@
 import { POST_CATEGORY_VALUE_BY_LABEL } from "@/features/post/constants/post-filter.constants";
 import type { PostCreateRequest, PostUpdateRequest } from "@/shared/api/generated";
+import type { PostFormInitialValues, PostWriteImageItem } from "./post.mapper";
 import type { PostWriteSchemaType } from "./post-write.schema";
 
-type PostWriteFormValues = Pick<PostWriteSchemaType, "content" | "selectedCategories" | "title">;
+type PostWriteFormValues = Pick<PostWriteSchemaType, "content" | "selectedCategories" | "title"> & {
+  images: PostWriteImageItem[];
+};
 
-function normalizePostWriteValues(values: PostWriteFormValues): PostWriteFormValues {
+type PostWriteRequestValues = Pick<PostWriteSchemaType, "content" | "selectedCategories" | "title"> & {
+  images: Array<Pick<PostWriteImageItem, "imageUrl" | "isThumbnail">>;
+};
+
+function normalizePostWriteValues<T extends Pick<PostWriteFormValues, "content" | "selectedCategories" | "title">>(
+  values: T,
+) {
   return {
     title: values.title.trim(),
     selectedCategories: values.selectedCategories,
@@ -19,17 +28,40 @@ function areSameCategories(
   return left.length === right.length && left.every((category, index) => category === right[index]);
 }
 
-export function createPostCreateRequest(values: PostWriteFormValues): PostCreateRequest {
+function createPostImageRequests(images: PostWriteRequestValues["images"]) {
+  return images
+    .filter((image): image is PostWriteRequestValues["images"][number] & { imageUrl: string } =>
+      Boolean(image.imageUrl),
+    )
+    .map((image, index) => ({
+      imageUrl: image.imageUrl,
+      order: index,
+      isThumbnail: image.isThumbnail,
+    }));
+}
+
+function areSameImages(values: PostWriteRequestValues["images"], initialImages: PostFormInitialValues["images"] = []) {
+  if (values.length !== initialImages.length) {
+    return false;
+  }
+
+  return values.every((image, index) => {
+    const initialImage = initialImages[index];
+
+    return image.imageUrl === initialImage.imageUrl && image.isThumbnail === initialImage.isThumbnail;
+  });
+}
+
+export function createPostCreateRequest(values: PostWriteRequestValues): PostCreateRequest {
   return {
     title: values.title.trim(),
     categories: values.selectedCategories.map((category) => POST_CATEGORY_VALUE_BY_LABEL[category]),
     content: values.content.trim(),
-    // TODO: 이미지 업로드 연동 시 PostImageRequest[]로 교체한다.
-    images: [],
+    images: createPostImageRequests(values.images),
   };
 }
 
-export function hasPostWriteFormChanged(values: PostWriteFormValues, initialValues?: PostWriteFormValues) {
+export function hasPostWriteFormChanged(values: PostWriteFormValues, initialValues?: PostFormInitialValues) {
   if (!initialValues) {
     return true;
   }
@@ -40,13 +72,14 @@ export function hasPostWriteFormChanged(values: PostWriteFormValues, initialValu
   return (
     normalizedValues.title !== normalizedInitialValues.title ||
     normalizedValues.content !== normalizedInitialValues.content ||
-    !areSameCategories(normalizedValues.selectedCategories, normalizedInitialValues.selectedCategories)
+    !areSameCategories(normalizedValues.selectedCategories, normalizedInitialValues.selectedCategories) ||
+    !areSameImages(values.images, initialValues.images)
   );
 }
 
 export function createPostUpdateRequest(
-  values: PostWriteFormValues,
-  initialValues?: PostWriteFormValues,
+  values: PostWriteRequestValues,
+  initialValues?: PostFormInitialValues,
 ): PostUpdateRequest {
   const request: PostUpdateRequest = {};
   const normalizedValues = normalizePostWriteValues(values);
@@ -68,6 +101,9 @@ export function createPostUpdateRequest(
     request.content = normalizedValues.content;
   }
 
-  // TODO: 이미지 변경 연동 시 기존 이미지와 신규 이미지를 함께 반영한다.
+  if (!initialValues || !areSameImages(values.images, initialValues.images)) {
+    request.images = createPostImageRequests(values.images);
+  }
+
   return request;
 }
