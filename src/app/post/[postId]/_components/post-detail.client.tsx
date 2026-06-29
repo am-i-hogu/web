@@ -30,7 +30,7 @@ function createImageCarouselItems(post: Pick<PostDetailResponse, "postId" | "ima
         <img
           src={image.imageUrl}
           alt={`${post.title} 첨부 이미지 ${index + 1}`}
-          className="h-[196px] w-full rounded-[8px] object-cover"
+          className="aspect-[5/3] w-full rounded-[8px] object-cover"
         />
       ),
     }));
@@ -38,7 +38,7 @@ function createImageCarouselItems(post: Pick<PostDetailResponse, "postId" | "ima
 
 function PostDetailErrorState({ onRetry }: { onRetry: () => void }) {
   return (
-    <div className="flex min-h-[calc(100dvh-60px)] flex-col justify-center">
+    <div className="flex flex-1 flex-col justify-center px-common-padding py-6">
       <EmptyState
         layout="inline"
         icon={<SmileyXEyesIcon aria-hidden className="size-20 text-text-03" />}
@@ -55,7 +55,7 @@ function PostDetailErrorState({ onRetry }: { onRetry: () => void }) {
 
 function PostDetailNotFoundState() {
   return (
-    <div className="flex min-h-[calc(100dvh-60px)] flex-col justify-center">
+    <div className="flex flex-1 flex-col justify-center px-common-padding py-6">
       <EmptyState
         layout="inline"
         icon={<SmileyXEyesIcon aria-hidden className="size-20 text-text-03" />}
@@ -95,42 +95,44 @@ export default function PostDetailPageClient({ postId }: PostDetailPageClientPro
 
   if (postDetailQuery.isPending) {
     return (
-      <div className="flex min-h-full flex-col">
+      <>
         <HeaderWidget title="게시글 상세" />
-        <LoadingState />
-      </div>
+        <main className="flex flex-1 flex-col justify-center px-common-padding py-6">
+          <LoadingState className="min-h-[320px]" />
+        </main>
+      </>
     );
   }
 
   if (postDetailQuery.isError) {
     if (isApiError(postDetailQuery.error) && postDetailQuery.error.status === 404) {
       return (
-        <div className="flex min-h-full flex-col">
+        <>
           <HeaderWidget title="게시글 상세" />
           <PostDetailNotFoundState />
-        </div>
+        </>
       );
     }
 
     return (
-      <div className="flex min-h-full flex-col">
+      <>
         <HeaderWidget title="게시글 상세" />
         <PostDetailErrorState onRetry={() => postDetailQuery.refetch()} />
-      </div>
+      </>
     );
   }
 
   if (!post) {
     return (
-      <div className="flex min-h-full flex-col">
+      <>
         <HeaderWidget title="게시글 상세" />
         <PostDetailNotFoundState />
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="flex min-h-full flex-col">
+    <>
       <HeaderWidget title="게시글 상세" />
       <main className="flex-1 px-common-padding py-6">
         <PostDetailCard>
@@ -178,7 +180,7 @@ export default function PostDetailPageClient({ postId }: PostDetailPageClientPro
           <PostDetailErrorState onRetry={() => commentsState.commentsQuery.refetch()} />
         ) : (
           <PostCommentsSection
-            className="mt-16"
+            className="mt-12"
             commentsResponse={commentsState.commentsResponse}
             sortValue={commentsState.commentSortValue}
             onSortChange={commentsState.setCommentSortValue}
@@ -195,6 +197,6 @@ export default function PostDetailPageClient({ postId }: PostDetailPageClientPro
           />
         )}
       </main>
-    </div>
+    </>
   );
 }
