@@ -3,6 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useSearchPageState } from "@/features/search/hooks";
 import { RecentSearchSection, SearchHeader, SearchResultSection } from "@/features/search/ui";
+import { FooterActionBar } from "@/shared/ui";
 import { FooterWidget } from "@/widgets/footer/ui";
 
 export default function SearchPageClient() {
@@ -45,9 +46,9 @@ export default function SearchPageClient() {
         )}
       </main>
 
-      <footer className="sticky bottom-0 z-20 px-common-padding">
+      <FooterActionBar className="px-0 py-0">
         <FooterWidget activeTab="search" />
-      </footer>
+      </FooterActionBar>
     </div>
   );
 }
