@@ -134,7 +134,7 @@ export default function PostDetailPageClient({ postId }: PostDetailPageClientPro
   return (
     <>
       <HeaderWidget title="게시글 상세" />
-      <main className="flex-1 px-common-padding py-6">
+      <main className="min-w-0 flex-1 overflow-x-hidden px-common-padding py-6">
         <PostDetailCard>
           <PostDetailHeader
             postId={post.postId}
