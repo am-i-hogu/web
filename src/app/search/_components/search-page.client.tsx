@@ -3,8 +3,6 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useSearchPageState } from "@/features/search/hooks";
 import { RecentSearchSection, SearchHeader, SearchResultSection } from "@/features/search/ui";
-import { FooterActionBar } from "@/shared/ui";
-import { FooterWidget } from "@/widgets/footer/ui";
 
 export default function SearchPageClient() {
   const router = useRouter();
@@ -18,7 +16,7 @@ export default function SearchPageClient() {
 
   return (
     <div className="flex min-h-full flex-col bg-bg-01">
-      <main className="flex flex-1 flex-col">
+      <main className="flex flex-1 flex-col pb-28">
         <SearchHeader
           keywordDraft={searchPageState.keywordDraft}
           onKeywordDraftChange={searchPageState.setKeywordDraft}
@@ -45,10 +43,6 @@ export default function SearchPageClient() {
           />
         )}
       </main>
-
-      <FooterActionBar className="px-0 py-0">
-        <FooterWidget activeTab="search" />
-      </FooterActionBar>
     </div>
   );
 }

@@ -19,11 +19,9 @@ import {
   ContentCardFooter,
   ContentCardHeader,
   EmptyState,
-  FooterActionBar,
   LoadingState,
 } from "@/shared/ui";
 import { formatRelativeTime } from "@/shared/utils/format";
-import { FooterWidget } from "@/widgets/footer/ui";
 import { SubHeadingWidget, type SubHeadingWidgetProps } from "@/widgets/sub-heading/ui/sub-heading.widget";
 
 type HomeCategory = Extract<NonNullable<SubHeadingWidgetProps["selectedOptions"]>[number], PostCategoryLabel>;
@@ -64,7 +62,7 @@ export default function HomePageClient() {
 
   return (
     <div className="flex min-h-full flex-col bg-bg-01">
-      <main className="flex flex-1 flex-col gap-6 px-common-padding py-6">
+      <main className="flex flex-1 flex-col gap-6 px-common-padding pb-28 pt-6">
         <header className="min-w-0 space-y-5">
           <div className="min-w-0 space-y-2">
             <h1 id="home-judgment-heading" className="text-heading-b text-text-04">
@@ -154,9 +152,6 @@ export default function HomePageClient() {
           </section>
         )}
       </main>
-      <FooterActionBar className="px-0 py-0">
-        <FooterWidget activeTab="home" />
-      </FooterActionBar>
     </div>
   );
 }
