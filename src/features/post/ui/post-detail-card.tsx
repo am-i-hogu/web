@@ -21,7 +21,7 @@ const iconClassName = "block size-6";
 export type PostDetailCardProps = ComponentProps<"article">;
 
 export function PostDetailCard({ className, ...props }: PostDetailCardProps) {
-  return <article className={cn("flex flex-col gap-6 overflow-hidden bg-bg-01", className)} {...props} />;
+  return <article className={cn("flex min-w-0 flex-col gap-6 overflow-hidden bg-bg-01", className)} {...props} />;
 }
 
 export type PostDetailHeaderProps = {
@@ -89,20 +89,20 @@ export function PostDetailHeader(props: PostDetailHeaderProps) {
 
   return (
     <>
-      <header className={cn("flex items-center justify-between gap-3", className)}>
-        <ul className="inline-flex items-center gap-2 text-small-m text-text-03">
+      <header className={cn("flex min-w-0 flex-wrap items-start justify-between gap-3", className)}>
+        <ul className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1 text-small-m text-text-03">
           <li>
             <Tag tone="categoryActive" size="md">
               {category}
             </Tag>
           </li>
-          <li>{meta}</li>
-          <li className="inline-flex items-center gap-1">
-            <EyeIcon aria-hidden className="size-4 text-text-03" strokeWidth={20} />
-            {formatNumber(viewCount)}
+          <li className="whitespace-nowrap">{meta}</li>
+          <li className="inline-flex min-w-0 items-center gap-1 whitespace-nowrap">
+            <EyeIcon aria-hidden className="size-4 shrink-0 text-text-03" strokeWidth={20} />
+            <span className="min-w-0">{formatNumber(viewCount)}</span>
           </li>
         </ul>
-        <div className="inline-flex items-center gap-3 text-text-03">
+        <div className="inline-flex shrink-0 items-center gap-3 text-text-03">
           <IconButton
             aria-label={isBookmarked ? "북마크 해제" : "북마크"}
             aria-pressed={isBookmarked}
@@ -189,27 +189,29 @@ export function PostDetailContent(props: PostDetailContentProps) {
   const fallbackInitial = author.isDeletedUser ? "" : author.displayName.trim().charAt(0) || "?";
 
   return (
-    <section className={cn("flex flex-col gap-5", className)} aria-label="게시글 본문">
-      <h1 className="text-title1-m text-text-04">{title}</h1>
-      <div className="flex items-center gap-3">
+    <section className={cn("flex min-w-0 flex-col gap-5", className)} aria-label="게시글 본문">
+      <h1 className="min-w-0 break-words text-title1-m text-text-04">{title}</h1>
+      <div className="flex min-w-0 items-center gap-3">
         {author.profileImageUrl ? (
           <Image
             src={author.profileImageUrl}
             alt={`${author.displayName} 프로필 이미지`}
             width={40}
             height={40}
-            className="rounded-full object-cover"
+            className="shrink-0 rounded-full object-cover"
           />
         ) : (
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-bg-02 text-caption-sb text-text-03">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-bg-02 text-caption-sb text-text-03">
             {fallbackInitial}
           </div>
         )}
-        <span className="text-body-m text-text-04">{author.displayName}</span>
+        <span className="min-w-0 break-words text-body-m text-text-04">{author.displayName}</span>
       </div>
-      <div className="flex flex-col gap-4">
-        <p className="whitespace-pre-line text-body-r text-text-04">{content}</p>
-        {media ? <div className={cn("overflow-hidden rounded-[8px]", mediaContainerClassName)}>{media}</div> : null}
+      <div className="flex min-w-0 flex-col gap-4">
+        <p className="min-w-0 whitespace-pre-line break-words text-body-r text-text-04">{content}</p>
+        {media ? (
+          <div className={cn("min-w-0 overflow-hidden rounded-[8px]", mediaContainerClassName)}>{media}</div>
+        ) : null}
       </div>
     </section>
   );

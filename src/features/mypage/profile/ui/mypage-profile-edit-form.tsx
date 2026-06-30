@@ -22,7 +22,7 @@ import {
 import { toApiError } from "@/shared/api";
 import type { ErrorResponse } from "@/shared/api/generated";
 import { useToastStore } from "@/shared/model";
-import { Button, EditableAvatar, Textfield } from "@/shared/ui";
+import { Button, EditableAvatar, FooterActionBar, Textfield } from "@/shared/ui";
 
 function getProfileNicknameErrorMessage(errorResponse?: ErrorResponse) {
   if (!errorResponse) {
@@ -112,11 +112,11 @@ export function MypageProfileEditForm({ profile }: MypageProfileEditFormProps) {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(handleProfileSubmit)}
-      className="flex min-h-[calc(100dvh-108px)] flex-col px-common-padding py-8"
-    >
-      <section className="flex flex-1 flex-col gap-14" aria-labelledby="profile-edit-heading">
+    <form onSubmit={handleSubmit(handleProfileSubmit)} className="flex min-w-0 flex-1 flex-col overflow-x-hidden">
+      <section
+        className="flex min-w-0 flex-1 flex-col gap-14 px-common-padding pb-28 pt-8"
+        aria-labelledby="profile-edit-heading"
+      >
         <h1 id="profile-edit-heading" className="sr-only">
           프로필 편집
         </h1>
@@ -151,7 +151,7 @@ export function MypageProfileEditForm({ profile }: MypageProfileEditFormProps) {
         />
       </section>
 
-      <div className="flex flex-col gap-3">
+      <FooterActionBar mode="fixed" className="flex flex-col gap-3">
         {submitErrorMessage ? (
           <p className="text-center text-small-m text-danger" role="alert">
             {submitErrorMessage}
@@ -160,7 +160,7 @@ export function MypageProfileEditForm({ profile }: MypageProfileEditFormProps) {
         <Button type="submit" disabled={isSubmitDisabled} variant={isSubmitDisabled ? "disabled" : "primary"} fullWidth>
           {isSavePending ? "저장 중" : "저장하기"}
         </Button>
-      </div>
+      </FooterActionBar>
     </form>
   );
 }

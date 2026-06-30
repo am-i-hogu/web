@@ -14,7 +14,7 @@ export function ContentCard({ className, ...props }: ContentCardProps) {
   return (
     <article
       className={cn(
-        "flex flex-col gap-4 overflow-hidden rounded-[24px] border border-line-02 bg-bg-01 px-6 py-5",
+        "flex min-w-0 flex-col gap-4 overflow-hidden rounded-[24px] border border-line-02 bg-bg-01 px-[var(--spacing-content-card-inline)] py-[var(--spacing-content-card-block)]",
         className,
       )}
       {...props}
@@ -50,33 +50,35 @@ export function ContentCardHeader({
 
   return (
     <header className={cn(className)}>
-      <div className="flex flex-row justify-between items-center gap-2">
-        <div className="flex items-center gap-2 text-caption-m text-text-03">
+      <div className="flex min-w-0 flex-row items-center justify-between gap-2">
+        <div className="flex min-w-0 flex-1 items-center gap-2 text-caption-m text-text-03">
           {author.profileImageUrl ? (
             <Image
               src={author.profileImageUrl}
               alt={`${author.displayName || "작성자"} 프로필 이미지`}
               width={40}
               height={40}
-              className="rounded-full object-cover"
+              className="shrink-0 rounded-full object-cover"
             />
           ) : (
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-bg-02 text-caption-sb text-text-03">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-bg-02 text-caption-sb text-text-03">
               {fallbackInitial}
             </div>
           )}
-          <div className="flex flex-col">
-            {author.displayName ? <span className="text-body-m text-text-04">{author.displayName}</span> : null}
-            <div className="flex flex-row items-center gap-2">
-              <span className="text-caption-m text-text-03">{meta}</span>
-              <div className="flex flex-row items-center gap-1">
+          <div className="flex min-w-0 flex-col">
+            {author.displayName ? (
+              <span className="truncate text-body-m text-text-04">{author.displayName}</span>
+            ) : null}
+            <div className="flex min-w-0 flex-row items-center gap-2">
+              <span className="truncate text-caption-m text-text-03">{meta}</span>
+              <div className="flex shrink-0 flex-row items-center gap-1">
                 <EyeIcon aria-hidden className="size-4 text-text-03" strokeWidth={20} />
                 <span className="text-caption-m text-text-03">{formatNumber(viewCount ?? 0)}</span>
               </div>
             </div>
           </div>
         </div>
-        <div className="flex flex-row items-center gap-2">
+        <div className="flex shrink-0 flex-row items-center gap-2">
           <Tag tone="categoryInactive" size="sm">
             {category}
           </Tag>
@@ -141,12 +143,12 @@ export function ContentCardFooter(props: ContentCardFooterProps) {
   return (
     <footer
       className={cn(
-        "flex items-center justify-between border-t border-line-02 text-caption-m text-text-03 pt-4",
+        "flex min-w-0 items-center justify-between gap-3 border-t border-line-02 pt-4 text-caption-m text-text-03",
         className,
       )}
     >
-      <span className="truncate text-small-m">현재까지 {formatNumber(votes)}명이 판결에 참여했습니다.</span>
-      <span className="inline-flex items-center gap-2 text-body-m">
+      <span className="min-w-0 truncate text-small-m">현재까지 {formatNumber(votes)}명이 판결에 참여했습니다.</span>
+      <span className="inline-flex shrink-0 items-center gap-2 text-body-m">
         <ChatIcon aria-hidden className="size-5" strokeWidth={20} />
         {comments}
       </span>

@@ -4,7 +4,6 @@ import SmileyXEyesIcon from "@/assets/icons/smiley-x-eyes.svg";
 import { usePostDetailQuery } from "@/features/post/api";
 import { createPostFormInitialValues } from "@/features/post/model";
 import { Button, EmptyState, LoadingState } from "@/shared/ui";
-import { HeaderWidget } from "@/widgets/header/ui";
 import PostWritePageClient from "../../../write/_components/post-write-page.client";
 
 type PostEditPageClientProps = {
@@ -47,7 +46,6 @@ export default function PostEditPageClient({ postId }: PostEditPageClientProps) 
   if (postDetailQuery.isPending) {
     return (
       <div className="flex min-h-full flex-col">
-        <HeaderWidget title="게시글 수정" />
         <LoadingState />
       </div>
     );
@@ -56,7 +54,6 @@ export default function PostEditPageClient({ postId }: PostEditPageClientProps) 
   if (postDetailQuery.isError) {
     return (
       <div className="flex min-h-full flex-col">
-        <HeaderWidget title="게시글 수정" />
         <PostEditErrorState onRetry={() => postDetailQuery.refetch()} />
       </div>
     );
@@ -65,7 +62,6 @@ export default function PostEditPageClient({ postId }: PostEditPageClientProps) 
   if (!post?.isMine) {
     return (
       <div className="flex min-h-full flex-col">
-        <HeaderWidget title="게시글 수정" />
         <PostEditNotFoundState />
       </div>
     );
@@ -75,7 +71,6 @@ export default function PostEditPageClient({ postId }: PostEditPageClientProps) 
     <PostWritePageClient
       mode="edit"
       postId={postId}
-      headerTitle="게시글 수정"
       submitLabel="수정하기"
       submitAriaLabel="게시글 수정"
       initialValues={createPostFormInitialValues(post)}

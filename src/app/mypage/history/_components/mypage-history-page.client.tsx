@@ -25,8 +25,6 @@ import { deleteBookmarkWithAuth } from "@/features/post/api";
 import type { MyBookmarkListResponse } from "@/shared/api/generated";
 import { Button, EmptyState, LoadingState } from "@/shared/ui";
 import { cn } from "@/shared/utils";
-import { FooterWidget } from "@/widgets/footer/ui";
-import { HeaderWidget } from "@/widgets/header/ui";
 
 const HISTORY_QUERY_PARAMS = {};
 type MyBookmarksInfiniteData = InfiniteData<MyBookmarkListResponse, string | null>;
@@ -92,33 +90,42 @@ export default function MypageHistoryPageClient() {
   }, [bookmarksQuery.data, commentsQuery.data, postsQuery.data, selectedTab, votesQuery.data]);
 
   if (mypageQuery.isPending) {
-    return <LoadingState />;
+    return (
+      <div data-app-shell-bottom-nav="hidden" className="flex min-h-full flex-col bg-bg-01">
+        <main className="flex min-w-0 flex-1 flex-col justify-center overflow-x-hidden px-common-padding py-6">
+          <LoadingState className="min-h-[320px]" />
+        </main>
+      </div>
+    );
   }
 
   if (mypageQuery.error || !mypageQuery.data) {
     return (
-      <EmptyState
-        title="히스토리 정보를 불러오지 못했어요."
-        description="잠시 후 다시 시도해주세요."
-        action={
-          <Button type="button" onClick={() => mypageQuery.refetch()} className="mx-auto w-fit">
-            다시 불러오기
-          </Button>
-        }
-      />
+      <div className="flex min-h-full flex-col bg-bg-01">
+        <main className="flex min-w-0 flex-1 flex-col justify-center overflow-x-hidden px-common-padding pb-28 pt-6">
+          <EmptyState
+            title="히스토리 정보를 불러오지 못했어요."
+            description="잠시 후 다시 시도해주세요."
+            action={
+              <Button type="button" onClick={() => mypageQuery.refetch()} className="mx-auto w-fit">
+                다시 불러오기
+              </Button>
+            }
+          />
+        </main>
+      </div>
     );
   }
 
   return (
     <div className="flex min-h-full flex-col bg-bg-01">
-      <HeaderWidget title="히스토리" />
-      <main className="flex flex-1 flex-col gap-6 px-common-padding pb-8 pt-10">
+      <main className="flex min-w-0 flex-1 flex-col gap-6 overflow-x-hidden px-common-padding pb-28 pt-10">
         <MypageProfileSummary profile={toMypageProfile(mypageQuery.data)} />
-        <section className="space-y-6" aria-labelledby="mypage-history-tabs-heading">
+        <section className="min-w-0 space-y-6" aria-labelledby="mypage-history-tabs-heading">
           <h1 id="mypage-history-tabs-heading" className="sr-only">
             히스토리
           </h1>
-          <div className="grid grid-cols-4 border-b border-line-02" role="tablist" aria-label="히스토리 필터">
+          <div className="grid min-w-0 grid-cols-4 border-b border-line-02" role="tablist" aria-label="히스토리 필터">
             {MYPAGE_HISTORY_TABS.map((tab) => {
               const isSelected = selectedTab === tab.value;
 
@@ -129,7 +136,7 @@ export default function MypageHistoryPageClient() {
                   role="tab"
                   aria-selected={isSelected}
                   className={cn(
-                    "border-b-2 pb-3 text-body-m",
+                    "min-w-0 break-words border-b-2 pb-3 text-center text-body-m",
                     isSelected ? "border-primary-strong text-primary-strong" : "border-transparent text-text-02",
                   )}
                   onClick={() => setSelectedTab(tab.value)}
@@ -167,9 +174,6 @@ export default function MypageHistoryPageClient() {
           )}
         </section>
       </main>
-      <footer className="sticky bottom-0 z-20 px-common-padding">
-        <FooterWidget activeTab="mypage" />
-      </footer>
     </div>
   );
 }
