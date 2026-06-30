@@ -14,7 +14,6 @@ import { isApiError } from "@/shared/api";
 import type { PostDetailResponse } from "@/shared/api/generated";
 import { Button, ContentCardCarousel, EmptyState, LoadingState } from "@/shared/ui";
 import { formatNumber, formatRelativeTime, isEditedByTimestamp } from "@/shared/utils/format";
-import { HeaderWidget } from "@/widgets/header/ui";
 
 type PostDetailPageClientProps = {
   postId: string;
@@ -95,45 +94,26 @@ export default function PostDetailPageClient({ postId }: PostDetailPageClientPro
 
   if (postDetailQuery.isPending) {
     return (
-      <>
-        <HeaderWidget title="게시글 상세" />
-        <main className="flex flex-1 flex-col justify-center px-common-padding py-6">
-          <LoadingState className="min-h-[320px]" />
-        </main>
-      </>
+      <main className="flex flex-1 flex-col justify-center px-common-padding py-6">
+        <LoadingState className="min-h-[320px]" />
+      </main>
     );
   }
 
   if (postDetailQuery.isError) {
     if (isApiError(postDetailQuery.error) && postDetailQuery.error.status === 404) {
-      return (
-        <>
-          <HeaderWidget title="게시글 상세" />
-          <PostDetailNotFoundState />
-        </>
-      );
+      return <PostDetailNotFoundState />;
     }
 
-    return (
-      <>
-        <HeaderWidget title="게시글 상세" />
-        <PostDetailErrorState onRetry={() => postDetailQuery.refetch()} />
-      </>
-    );
+    return <PostDetailErrorState onRetry={() => postDetailQuery.refetch()} />;
   }
 
   if (!post) {
-    return (
-      <>
-        <HeaderWidget title="게시글 상세" />
-        <PostDetailNotFoundState />
-      </>
-    );
+    return <PostDetailNotFoundState />;
   }
 
   return (
-    <>
-      <HeaderWidget title="게시글 상세" />
+    <div className="flex min-h-full flex-col bg-bg-01">
       <main className="min-w-0 flex-1 overflow-x-hidden px-common-padding py-6">
         <PostDetailCard>
           <PostDetailHeader
@@ -197,6 +177,6 @@ export default function PostDetailPageClient({ postId }: PostDetailPageClientPro
           />
         )}
       </main>
-    </>
+    </div>
   );
 }
