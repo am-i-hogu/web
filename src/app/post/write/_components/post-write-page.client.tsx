@@ -190,21 +190,15 @@ export default function PostWritePageClient(props: PostWritePageClientProps) {
         </Button>
       </div>
 
-      {isCategorySheetOpen ? (
-        <div className="fixed inset-0 z-20 flex items-end justify-center bg-[rgba(0,0,0,0.4)]">
-          <div className="w-full max-w-common-width">
-            <PostFilterBottomSheet
-              className="mx-auto w-full"
-              title="카테고리 선택"
-              selectedOptions={draftCategories}
-              onToggleOption={toggleDraftCategory}
-              onSave={saveCategories}
-              onClose={closeCategorySheet}
-              saveText="저장하기"
-            />
-          </div>
-        </div>
-      ) : null}
+      <PostFilterBottomSheet
+        title="카테고리 선택"
+        selectedOptions={draftCategories}
+        onToggleOption={toggleDraftCategory}
+        onSave={saveCategories}
+        onClose={closeCategorySheet}
+        saveText="저장하기"
+        open={isCategorySheetOpen}
+      />
     </div>
   );
 }
