@@ -6,10 +6,10 @@ import MagnifyingGlassIcon from "@/assets/icons/magnifying-glass.svg";
 import UserIcon from "@/assets/icons/user.svg";
 import { cn } from "@/shared/utils";
 
-type FooterTab = "home" | "search" | "mypage";
+export type FooterTabId = "home" | "search" | "mypage";
 
 type FooterTabItem = {
-  key: FooterTab;
+  key: FooterTabId;
   label: string;
   href: string;
   icon: ComponentType<SVGProps<SVGSVGElement>>;
@@ -22,7 +22,7 @@ const footerTabs: FooterTabItem[] = [
 ];
 
 export type FooterWidgetProps = {
-  activeTab?: FooterTab;
+  activeTab?: FooterTabId;
 };
 
 function getFooterTabButtonToneClass(isActive: boolean) {
@@ -31,7 +31,7 @@ function getFooterTabButtonToneClass(isActive: boolean) {
     : "bg-transparent text-primary-light hover:bg-primary-light/20 hover:text-primary-default";
 }
 
-function getFooterTabIconProps(key: FooterTab, isActive: boolean) {
+function getFooterTabIconProps(key: FooterTabId, isActive: boolean) {
   return {
     ...(key === "search" || (key === "home" && !isActive) ? { strokeWidth: 25 } : {}),
     ...(key === "search" ? { fill: isActive ? "currentColor" : "none" } : {}),
@@ -39,7 +39,7 @@ function getFooterTabIconProps(key: FooterTab, isActive: boolean) {
 }
 
 type FooterTabButtonProps = {
-  tabKey: FooterTab;
+  tabKey: FooterTabId;
   label: string;
   href: string;
   isActive: boolean;
