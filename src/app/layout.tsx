@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { GlobalFloatingControls } from "@/features/home/ui";
 import { QueryProvider } from "@/shared/providers/query-provider";
+import { ToastProvider } from "@/shared/providers/toast-provider";
 import "./globals.css";
 
 // 폰트 설정
@@ -34,6 +35,7 @@ export default function RootLayout({
               <GlobalFloatingControls />
             </div>
           </div>
+          <ToastProvider />
         </QueryProvider>
       </body>
     </html>

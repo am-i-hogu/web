@@ -27,20 +27,40 @@ export type PostVoteSectionProps = ComponentProps<"section"> & {
   options: PostVoteOption[];
   totalVotes: number;
   initialSelectedId?: VoteId;
+  isDisabled?: boolean;
+  isVoting?: boolean;
+  selectedId?: VoteId | null;
+  onVoteSelect?: (id: VoteId) => void;
 };
 
 export function PostVoteSection(props: PostVoteSectionProps) {
-  const { options, totalVotes, initialSelectedId, className, ...rest } = props;
-  const [selectedId, setSelectedId] = useState<VoteId | null>(initialSelectedId ?? null);
+  const {
+    options,
+    totalVotes,
+    initialSelectedId,
+    isDisabled = false,
+    isVoting = false,
+    selectedId,
+    onVoteSelect,
+    className,
+    ...rest
+  } = props;
+  const [internalSelectedId, setInternalSelectedId] = useState<VoteId | null>(initialSelectedId ?? null);
+  const currentSelectedId = selectedId !== undefined ? selectedId : internalSelectedId;
 
   const handleSelect = (id: VoteId) => {
-    setSelectedId((prev) => (prev === id ? null : id));
+    if (onVoteSelect) {
+      onVoteSelect(id);
+      return;
+    }
+
+    setInternalSelectedId((prev) => (prev === id ? null : id));
   };
 
   const renderVoteRow = (option: PostVoteOption) => {
     const tone = option.id === "HOGU" ? "yellow" : "indigo";
-    const isSelected = selectedId === option.id;
-    const hasSelection = selectedId !== null;
+    const isSelected = currentSelectedId === option.id;
+    const hasSelection = currentSelectedId !== null;
     const percentage = Math.max(0, Math.min(100, option.percent));
     const isOpposite = hasSelection && !isSelected;
 
@@ -64,6 +84,7 @@ export function PostVoteSection(props: PostVoteSectionProps) {
           type="button"
           onClick={() => handleSelect(option.id)}
           aria-pressed={isSelected}
+          disabled={isDisabled || isVoting}
           className={cn("relative w-full overflow-hidden rounded-full px-4 py-4 text-left", surfaceClassName)}
         >
           <div
